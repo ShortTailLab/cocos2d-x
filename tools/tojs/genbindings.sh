@@ -16,18 +16,18 @@ fi
 
 if [ -z "${NDK_ROOT+aaa}" ]; then
 # ... if NDK_ROOT is not set, use "$HOME/bin/android-ndk"
-    NDK_ROOT="$HOME/bin/android-ndk"
+    NDK_ROOT="/usr/local/android/ndk"
 fi
 
 if [ -z "${CLANG_ROOT+aaa}" ]; then
 # ... if CLANG_ROOT is not set, use "$HOME/bin/clang+llvm-3.1"
-    CLANG_ROOT="$HOME/bin/clang+llvm-3.1"
+CLANG_ROOT="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.0"
 fi
 
-if [ -z "${PYTHON_BIN+aaa}" ]; then
-# ... if PYTHON_BIN is not set, use "/usr/bin/python2.7"
-    PYTHON_BIN="/usr/bin/python2.7"
-fi
+#if [ -z "${PYTHON_BIN+aaa}" ]; then
+# ... if PYTHON_BIN is not set, use "/usr/bin/python"
+#    PYTHON_BIN="/usr/bin/python2.7"
+#fi
 
 # find current dir
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -84,7 +84,6 @@ public:
 	virtual void setOpacityModifyRGB (bool value);
 	virtual bool isOpacityModifyRGB ();
 
-protected:
 	CCSkeleton ();
 	void setSkeletonData (SkeletonData* skeletonData, bool ownsSkeletonData);
 	cocos2d::CCTextureAtlas* getTextureAtlas (RegionAttachment* regionAttachment) const;
