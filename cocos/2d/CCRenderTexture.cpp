@@ -102,11 +102,11 @@ void RenderTexture::listenToBackground(cocos2d::Object *obj)
     if (_UITextureImage)
     {
         const Size& s = _texture->getContentSizeInPixels();
-        VolatileTexture::addDataTexture(_texture, _UITextureImage->getData(), s.width * s.height * 4, Texture2D::PixelFormat::RGBA8888, s);
+        VolatileTextureMgr::addDataTexture(_texture, _UITextureImage->getData(), s.width * s.height * 4, Texture2D::PixelFormat::RGBA8888, s);
         
         if ( _textureCopy )
         {
-            VolatileTexture::addDataTexture(_textureCopy, _UITextureImage->getData(), s.width * s.height * 4, Texture2D::PixelFormat::RGBA8888, s);
+            VolatileTextureMgr::addDataTexture(_textureCopy, _UITextureImage->getData(), s.width * s.height * 4, Texture2D::PixelFormat::RGBA8888, s);
         }
     }
     else
@@ -543,20 +543,20 @@ void RenderTexture::draw()
 	}
 }
 
-bool RenderTexture::saveToFile(const char *szFilePath)
+bool RenderTexture::saveToFile(const std::string& filename)
 {
     bool ret = false;
 
     Image *image = newImage(true);
     if (image)
     {
-        ret = image->saveToFile(szFilePath);
+        ret = image->saveToFile(filename);
     }
 
     CC_SAFE_DELETE(image);
     return ret;
 }
-bool RenderTexture::saveToFile(const char *fileName, Image::Format format)
+bool RenderTexture::saveToFile(const std::string& fileName, Image::Format format)
 {
     bool bRet = false;
     CCASSERT(format == Image::Format::JPG || format == Image::Format::PNG,

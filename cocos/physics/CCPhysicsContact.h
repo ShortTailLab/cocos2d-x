@@ -22,11 +22,10 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCPhysicsSetting.h"
-#ifdef CC_USE_PHYSICS
-
 #ifndef __CCPHYSICS_CONTACT_H__
 #define __CCPHYSICS_CONTACT_H__
+
+#ifdef CC_USE_PHYSICS
 
 #include "CCObject.h"
 #include "CCGeometry.h"
@@ -41,10 +40,12 @@ class PhysicsWorld;
 
 class PhysicsContactInfo;
 
+typedef Point Vect;
 
 typedef struct PhysicsContactData
 {
-    Point points[PHYSICS_CONTACT_POINT_MAX];
+    static const long POINT_MAX = 4;
+    Point points[POINT_MAX];
     int   count;
     Point normal;
     
@@ -69,33 +70,28 @@ public:
         SEPERATE
     };
     
-    /*
-     * @brief get contact shape A.
-     */
+    /** get contact shape A. */
     inline PhysicsShape* getShapeA() const { return _shapeA; }
-    /*
-     * @brief get contact shape B.
-     */
+    /** get contact shape B. */
     inline PhysicsShape* getShapeB() const { return _shapeB; }
+    /** get contact data */
     inline const PhysicsContactData* getContactData() const { return _contactData; }
-    /*
-     * @brief get data.
-     */
+    /** get data. */
     inline void* getData() const { return _data; }
-    /*
-     * @brief set data to contact. you must manage the memory yourself, Generally you can set data at contact begin, and distory it at contact end.
+    /**
+     * @brief set data to contact. you must manage the memory yourself, Generally you can set data at contact begin, and distory it at contact seperate.
      */
     inline void setData(void* data) { _data = data; }
-    
+    /** get the event code */
     EventCode getEventCode() const { return _eventCode; };
     
 private:
-    static PhysicsContact* create(PhysicsShape* a, PhysicsShape* b);
+    static PhysicsContact* construct(PhysicsShape* a, PhysicsShape* b);
     bool init(PhysicsShape* a, PhysicsShape* b);
     
     void setEventCode(EventCode eventCode) { _eventCode = eventCode; };
-    inline bool getNotify() const { return _notify; }
-    inline void setNotify(bool notify) { _notify = notify; }
+    inline bool isNotificationEnabled() const { return _notificationEnable; }
+    inline void setNotificationEnable(bool enable) { _notificationEnable = enable; }
     inline PhysicsWorld* getWorld() const { return _world; }
     inline void setWorld(PhysicsWorld* world) { _world = world; }
     inline void setResult(bool result) { _result = result; }
@@ -113,7 +109,7 @@ private:
     PhysicsShape* _shapeB;
     EventCode _eventCode;
     PhysicsContactInfo* _info;
-    bool _notify;
+    bool _notificationEnable;
     bool _begin;
     bool _result;
     
@@ -132,13 +128,20 @@ private:
 class PhysicsContactPreSolve
 {
 public:
-    // getter/setter
+    /** get elasticity between two bodies*/
     float getElasticity() const;
-    float getFriciton() const;
+    /** get friction between two bodies*/
+    float getFriction() const;
+    /** get surface velocity between two bodies*/
     Point getSurfaceVelocity() const;
+    /** set the elasticity*/
     void setElasticity(float elasticity);
+    /** set the friction*/
     void setFriction(float friction);
-    void setSurfaceVelocity(Point surfaceVelocity);
+    /** set the surface velocity*/
+    void setSurfaceVelocity(const Vect& velocity);
+    /** ignore the rest of the contact presolve and postsolve callbacks */
+    void ignore();
     
 private:
     PhysicsContactPreSolve(PhysicsContactData* data, void* contactInfo);
@@ -160,9 +163,11 @@ private:
 class PhysicsContactPostSolve
 {
 public:
-    // getter
+    /** get elasticity between two bodies*/
     float getElasticity() const;
-    float getFriciton() const;
+    /** get friction between two bodies*/
+    float getFriction() const;
+    /** get surface velocity between two bodies*/
     Point getSurfaceVelocity() const;
     
 private:
@@ -175,17 +180,21 @@ private:
     friend class EventListenerPhysicsContact;
 };
 
-/*
- * @brief contact listener.
- */
+/* contact listener. it will recive all the contact callbacks. */
 class EventListenerPhysicsContact : public EventListenerCustom
 {
 public:
+    /** create the listener */
     static EventListenerPhysicsContact* create();
-    
-    virtual bool test(PhysicsShape* shapeA, PhysicsShape* shapeB);
     virtual bool checkAvailable() override;
     virtual EventListenerPhysicsContact* clone() override;
+    
+protected:
+    /**
+     * it will be call when two body have contact.
+     * if return false, it will not invoke callbacks
+     */
+    virtual bool hitTest(PhysicsShape* shapeA, PhysicsShape* shapeB);
     
 public:
     /*
@@ -213,14 +222,17 @@ protected:
 protected:
     EventListenerPhysicsContact();
     virtual ~EventListenerPhysicsContact();
+    
+    friend class PhysicsWorld;
 };
 
+/** this event listener only be called when bodyA and bodyB have contacts */
 class EventListenerPhysicsContactWithBodies : public EventListenerPhysicsContact
 {
 public:
     static EventListenerPhysicsContactWithBodies* create(PhysicsBody* bodyA, PhysicsBody* bodyB);
     
-    virtual bool test(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
+    virtual bool hitTest(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
     virtual EventListenerPhysicsContactWithBodies* clone() override;
     
 protected:
@@ -232,12 +244,13 @@ protected:
     virtual ~EventListenerPhysicsContactWithBodies();
 };
 
+/** this event listener only be called when shapeA and shapeB have contacts */
 class EventListenerPhysicsContactWithShapes : public EventListenerPhysicsContact
 {
 public:
     static EventListenerPhysicsContactWithShapes* create(PhysicsShape* shapeA, PhysicsShape* shapeB);
     
-    virtual bool test(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
+    virtual bool hitTest(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
     virtual EventListenerPhysicsContactWithShapes* clone() override;
     
 protected:
@@ -249,12 +262,13 @@ protected:
     virtual ~EventListenerPhysicsContactWithShapes();
 };
 
+/** this event listener only be called when shapeA or shapeB is in the group your specified */
 class EventListenerPhysicsContactWithGroup : public EventListenerPhysicsContact
 {
 public:
     static EventListenerPhysicsContactWithGroup* create(int group);
     
-    virtual bool test(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
+    virtual bool hitTest(PhysicsShape* shapeA, PhysicsShape* shapeB) override;
     virtual EventListenerPhysicsContactWithGroup* clone() override;
     
 protected:
@@ -266,6 +280,6 @@ protected:
 };
 
 NS_CC_END
-#endif //__CCPHYSICS_CONTACT_H__
 
 #endif // CC_USE_PHYSICS
+#endif //__CCPHYSICS_CONTACT_H__

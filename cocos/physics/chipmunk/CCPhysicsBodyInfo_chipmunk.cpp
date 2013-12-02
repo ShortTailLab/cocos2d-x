@@ -22,24 +22,19 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifdef CC_USE_PHYSICS
 #include "CCPhysicsBodyInfo_chipmunk.h"
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
 NS_CC_BEGIN
 
 PhysicsBodyInfo::PhysicsBodyInfo()
-: body(nullptr)
+: _body(nullptr)
 {
 }
 
 PhysicsBodyInfo::~PhysicsBodyInfo()
 {
-    if (body) cpBodyFree(body);
-}
-
-Clonable* PhysicsBodyInfo::clone() const
-{
-    return nullptr;
+    if (_body) cpBodyFree(_body);
 }
 
 NS_CC_END
-#endif // CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK
+#endif // CC_USE_PHYSICS

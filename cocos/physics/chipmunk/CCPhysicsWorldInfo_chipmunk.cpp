@@ -22,19 +22,79 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifdef CC_USE_PHYSICS
 #include "CCPhysicsWorldInfo_chipmunk.h"
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
+#include "CCPhysicsHelper_chipmunk.h"
+#include "CCPhysicsBodyInfo_chipmunk.h"
+#include "CCPhysicsShapeInfo_chipmunk.h"
+#include "CCPhysicsJointInfo_chipmunk.h"
 NS_CC_BEGIN
 
 PhysicsWorldInfo::PhysicsWorldInfo()
 {
-    space = cpSpaceNew();
+    _space = cpSpaceNew();
 }
 
 PhysicsWorldInfo::~PhysicsWorldInfo()
 {
-    cpSpaceFree(space);
+    cpSpaceFree(_space);
+}
+
+void PhysicsWorldInfo::setGravity(const Vect& gravity)
+{
+    cpSpaceSetGravity(_space, PhysicsHelper::point2cpv(gravity));
+}
+
+void PhysicsWorldInfo::addBody(PhysicsBodyInfo& body)
+{
+    if (!cpSpaceContainsBody(_space, body.getBody()))
+    {
+        cpSpaceAddBody(_space, body.getBody());
+    }
+}
+
+void PhysicsWorldInfo::removeBody(PhysicsBodyInfo& body)
+{
+    if (cpSpaceContainsBody(_space, body.getBody()))
+    {
+        cpSpaceRemoveBody(_space, body.getBody());
+    }
+}
+
+void PhysicsWorldInfo::addShape(PhysicsShapeInfo& shape)
+{
+    for (auto cps : shape.getShapes())
+    {
+        cpSpaceAddShape(_space, cps);
+    }
+}
+
+void PhysicsWorldInfo::removeShape(PhysicsShapeInfo& shape)
+{
+    for (auto cps : shape.getShapes())
+    {
+        if (cpSpaceContainsShape(_space, cps))
+        {
+            cpSpaceRemoveShape(_space, cps);
+        }
+    }
+}
+
+void PhysicsWorldInfo::addJoint(PhysicsJointInfo& joint)
+{
+    for (auto subjoint : joint.getJoints())
+    {
+        cpSpaceAddConstraint(_space, subjoint);
+    }
+}
+
+void PhysicsWorldInfo::removeJoint(PhysicsJointInfo& joint)
+{
+    for (auto subjoint : joint.getJoints())
+    {
+        cpSpaceRemoveConstraint(_space, subjoint);
+    }
 }
 
 NS_CC_END
-#endif // CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK
+#endif // CC_USE_PHYSICS

@@ -12,6 +12,7 @@ extern "C" {
 #include "LuaBasicConversions.h"
 #include "LuaScriptHandlerMgr.h"
 #include "CCLuaValue.h"
+#include "CCLuaEngine.h"
 
 static int tolua_cocos2d_MenuItemImage_create(lua_State* tolua_S)
 {
@@ -51,8 +52,8 @@ static int tolua_cocos2d_MenuItemImage_create(lua_State* tolua_S)
             ok = true;
             break;
         }
-        const char* normalImage = ((const char*)  tolua_tostring(tolua_S,2,0));
-        const char* selectedImage = ((const char*)  tolua_tostring(tolua_S,3,0));
+        const std::string normalImage = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+        const std::string selectedImage = ((const std::string)  tolua_tocppstring(tolua_S,3,0));
         MenuItemImage* tolua_ret = (MenuItemImage*)  MenuItemImage::create(normalImage,selectedImage);
         int nID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
         int* pLuaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
@@ -70,9 +71,9 @@ static int tolua_cocos2d_MenuItemImage_create(lua_State* tolua_S)
             break;
         }
 #endif
-        const char* normalImage = ((const char*)  tolua_tostring(tolua_S,2,0));
-        const char* selectedImage = ((const char*)  tolua_tostring(tolua_S,3,0));
-        const char* disabledImage = ((const char*)  tolua_tostring(tolua_S,4,0));
+        const std::string normalImage = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+        const std::string selectedImage = ((const std::string)  tolua_tocppstring(tolua_S,3,0));
+        const std::string disabledImage = ((const std::string)  tolua_tocppstring(tolua_S,4,0));
         
         MenuItemImage* tolua_ret = (MenuItemImage*)  MenuItemImage::create(normalImage,selectedImage,disabledImage);
         int nID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
@@ -155,7 +156,7 @@ static int tolua_cocos2d_MenuItemFont_create(lua_State* tolua_S)
             goto tolua_lerror;
         }
 #endif
-        const char* value = ((const char*)  tolua_tostring(tolua_S,2,0));
+        const std::string value = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
         MenuItemFont* tolua_ret = (MenuItemFont*)  MenuItemFont::create(value);
         int nID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
         int* pLuaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
@@ -407,15 +408,9 @@ static int tolua_cocos2d_MenuItemToggle_create(lua_State* tolua_S)
             }
 #endif
             MenuItem* item = static_cast<MenuItem*>(tolua_tousertype(tolua_S, i + 2,0));
-            if (0 == i)
-            {
-                tolua_ret->initWithItem(item);
-            }
-            else
-            {
-                tolua_ret->addSubItem(item);
-            }
+            tolua_ret->addSubItem(item);
         }
+        tolua_ret->setSelectedIndex(0);
         
         int  nID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
         int* pLuaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
@@ -547,6 +542,7 @@ static void setTouchEnabledForLayer(Layer* layer, bool enabled)
     auto touchListenerOneByOne = static_cast<EventListenerTouchOneByOne*>(dict->objectForKey("touchListenerOneByOne"));
     auto touchMode = static_cast<Integer*>(dict->objectForKey("touchMode"));
     auto swallowTouches = static_cast<Bool*>(dict->objectForKey("swallowTouches"));
+    auto priority  = static_cast<Integer*>(dict->objectForKey("priority"));
     
     auto dispatcher = layer->getEventDispatcher();
     if (nullptr != dispatcher)
@@ -573,7 +569,14 @@ static void setTouchEnabledForLayer(Layer* layer, bool enabled)
                 executeScriptTouchesHandler(layer, EventTouch::EventCode::CANCELLED, touches);
             };
             
-            dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
+            if (nullptr != priority && 0 != priority->getValue())
+            {
+                dispatcher->addEventListenerWithFixedPriority(listener, priority->getValue());
+            }
+            else
+            {
+                dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
+            }
             
             dict->setObject(listener, "touchListenerAllAtOnce");
         }
@@ -594,7 +597,14 @@ static void setTouchEnabledForLayer(Layer* layer, bool enabled)
                 executeScriptTouchHandler(layer, EventTouch::EventCode::CANCELLED, touch);
             };
             
-            dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
+            if (nullptr != priority && 0 != priority->getValue())
+            {
+                dispatcher->addEventListenerWithFixedPriority(listener, priority->getValue());
+            }
+            else
+            {
+                dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
+            }
             
             dict->setObject(listener, "touchListenerOneByOne");
         }
@@ -1249,7 +1259,6 @@ static int tolua_cocos2d_Layer_registerScriptTouchHandler(lua_State* tolua_S)
 #endif
         LUA_FUNCTION handler = (  toluafix_ref_function(tolua_S,2,0));
         bool isMultiTouches  = false;
-        //Note:priority is useless
         int  priority        = 0;
         bool swallowTouches  = true;
         
@@ -1291,14 +1300,27 @@ static int tolua_cocos2d_Layer_registerScriptTouchHandler(lua_State* tolua_S)
             self->setUserObject(dict);
         }
         
-        auto touchModeobj = static_cast<Integer*>(dict->objectForKey("touchMode"));
+        auto touchModeValue = static_cast<Integer*>(dict->objectForKey("touchMode"));
         auto swallowTouchesValue = static_cast<Bool*>(dict->objectForKey("swallowTouches"));
+        auto priorityValue = static_cast<Integer*>(dict->objectForKey("priority"));
         
         //touch model
-        int32_t mode = touchModeobj?touchModeobj->getValue() : 0;
+        int32_t mode = touchModeValue?touchModeValue->getValue() : 0;
         if (mode != (int)touchesMode)
         {
             dict->setObject(Integer::create((int)touchesMode), "touchMode");
+            Bool* enabled = static_cast<Bool*>(dict->objectForKey("touchEnabled"));
+            if (enabled && enabled->getValue())
+            {
+                setTouchEnabledForLayer(self, false);
+                setTouchEnabledForLayer(self, true);
+            }
+        }
+        
+        int oldPriorityValue = priorityValue?priorityValue->getValue() : 0;
+        if (priority != oldPriorityValue)
+        {
+            dict->setObject(Integer::create(priority), "priority");
             Bool* enabled = static_cast<Bool*>(dict->objectForKey("touchEnabled"));
             if (enabled && enabled->getValue())
             {
@@ -1749,15 +1771,67 @@ static int tolua_cocos2d_CallFunc_create(lua_State* tolua_S)
     
     argc = lua_gettop(tolua_S) - 1;
     
-    if (argc == 1)
+    if (argc == 1 || argc == 2)
     {
 #if COCOS2D_DEBUG >= 1
         if(!toluafix_isfunction(tolua_S,2,"LUA_FUNCTION",0,&tolua_err))
             goto tolua_lerror;
 #endif
         
-        LUA_FUNCTION funcID = (  toluafix_ref_function(tolua_S,2,0));
-        LuaCallFunc* tolua_ret = (LuaCallFunc*)  LuaCallFunc::create(funcID);
+        LUA_FUNCTION handler = (  toluafix_ref_function(tolua_S,2,0));
+        
+        bool hasExtraData = false;
+        int  ref  = 0;
+        if (argc == 2)
+        {
+#if COCOS2D_DEBUG >= 1
+            if(!tolua_istable(tolua_S, 3, 0, &tolua_err))
+                goto tolua_lerror;
+#endif
+            lua_pushvalue(tolua_S, 3);
+            ref = luaL_ref(tolua_S, LUA_REGISTRYINDEX);
+            hasExtraData = true;
+        }
+        LuaCallFunc* tolua_ret = new LuaCallFunc();
+        tolua_ret->initWithFunction([=](void* self,Node* target){
+            int callbackHandler =  ScriptHandlerMgr::getInstance()->getObjectHandler((void*)tolua_ret, ScriptHandlerMgr::HandlerType::CALLFUNC);
+            
+            if (0 != callbackHandler)
+            {
+                LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+                int argNums = 1;
+                if (nullptr != target)
+                {
+                    stack->pushObject(target, "Node");
+                }
+                else
+                {
+                    stack->pushNil();
+                }
+                
+                if (hasExtraData)
+                {
+                    lua_rawgeti(tolua_S, LUA_REGISTRYINDEX,ref);
+                    if (lua_istable(tolua_S, -1))
+                    {
+                        argNums += 1;
+                    }
+                    else
+                    {
+                        lua_pop(tolua_S, 1);
+                    }
+                }
+                stack->executeFunctionByHandler(callbackHandler, argNums);
+                if (hasExtraData)
+                {
+                    luaL_unref(tolua_S, LUA_REGISTRYINDEX,ref);
+                }
+                stack->clean();
+            }
+        });
+        tolua_ret->autorelease();
+        ScriptHandlerMgr::getInstance()->addObjectHandler((void*)tolua_ret, handler, ScriptHandlerMgr::HandlerType::CALLFUNC);
+        
         int nID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
         int* pLuaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
         toluafix_pushusertype_ccobject(tolua_S, nID, pLuaID, (void*)tolua_ret,"CallFunc");

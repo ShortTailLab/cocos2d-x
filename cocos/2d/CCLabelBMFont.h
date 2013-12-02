@@ -140,10 +140,10 @@ public:
     const char * description() const;
 
     /** allocates a CCBMFontConfiguration with a FNT file */
-    static CCBMFontConfiguration * create(const char *FNTfile);
+    static CCBMFontConfiguration * create(const std::string& FNTfile);
 
     /** initializes a BitmapFontConfiguration with a FNT file */
-    bool initWithFNTfile(const char *FNTfile);
+    bool initWithFNTfile(const std::string& FNTfile);
     
     inline const std::string& getAtlasName(){ return _atlasName; }
     inline void setAtlasName(const std::string& atlasName) { _atlasName = atlasName; }
@@ -228,10 +228,10 @@ public:
     /** updates the font chars based on the string to render */
     void createFontChars();
     // super method
-    virtual void setString(const std::string& newString);
+    virtual void setString(const std::string& newString) override;
     virtual void setString(const std::string& newString, bool needUpdateLabel);
 
-    virtual const char* getString() const;
+    virtual const std::string& getString() const override;
     virtual void setCString(const char *label);
     virtual void setAnchorPoint(const Point& var);
     virtual void updateLabel();
@@ -258,8 +258,8 @@ public:
     virtual bool isCascadeColorEnabled() const;
     virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
 
-    void setFntFile(const char* fntFile);
-    const char* getFntFile();
+    void setFntFile(const std::string& fntFile);
+    const std::string& getFntFile() const;
 #if CC_LABELBMFONT_DEBUG_DRAW
     virtual void draw();
 #endif // CC_LABELBMFONT_DEBUG_DRAW
@@ -303,7 +303,7 @@ protected:
     bool _cascadeColorEnabled;
     bool _cascadeOpacityEnabled;
     /** conforms to RGBAProtocol protocol */
-    bool        _isOpacityModifyRGB;
+    bool _isOpacityModifyRGB;
 
 };
 

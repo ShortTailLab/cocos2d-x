@@ -71,21 +71,21 @@ typedef enum
 }PositionType;
 
 typedef void (cocos2d::Object::*SEL_TouchEvent)(cocos2d::Object*,TouchEventType);
-#define toucheventselector(_SELECTOR) (SEL_TouchEvent)(&_SELECTOR)
-/**
-*   @js NA
-*   @lua NA
-*/
+#define toucheventselector(_SELECTOR) (gui::SEL_TouchEvent)(&_SELECTOR)
+
 class UIWidget : public cocos2d::Object
 {
 public:    
     /**
      * Default constructor
+     * @js ctor
      */
     UIWidget(void);
     
     /**
      * Default destructor
+     * @js NA
+     * @lua NA
      */
     virtual ~UIWidget();
     
@@ -613,6 +613,10 @@ public:
     virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled);
     virtual bool isCascadeColorEnabled();
     virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
+    /**
+     *  @js NA
+     *  @lua NA
+     */
     void setBlendFunc(cocos2d::BlendFunc blendFunc);
     
     //cocos action
@@ -877,9 +881,42 @@ public:
     virtual const char* getDescription() const;
     
     UIWidget* clone();
-
+    /**
+     *  @js NA
+     *  @lua NA
+     */
     virtual void onEnter();
+    /**
+     *  @js NA
+     *  @lua NA
+     */
     virtual void onExit();
+    
+    void updateSizeAndPosition();
+    /**
+     * @js NA
+     * @lua NA
+     */
+    virtual Object* getUserObject() { return _userObject; }
+    /**
+     * @js NA
+     * @lua NA
+     */
+    virtual const Object* getUserObject() const { return _userObject; }
+    
+    /**
+     * Returns a user assigned Object
+     *
+     * Similar to UserData, but instead of holding a void* it holds an object.
+     * The UserObject will be retained once in this method,
+     * and the previous UserObject (if existed) will be relese.
+     * The UserObject will be released in Node's destructure.
+     *
+     * @param userObject    A user assigned Object
+     * @js NA
+     * @lua NA
+     */
+    virtual void setUserObject(Object *userObject);
     /*temp action*/
     void setActionTag(int tag);
 	int getActionTag();
@@ -907,13 +944,6 @@ protected:
     void cancelUpEvent();
     void longClickEvent();
     void updateAnchorPoint();
-    /**
-     * Release texture resoures of widget.
-     * Release renderer.
-     * If you override releaseResoures, you shall call its parent's one, e.g. UIWidget::releaseResoures().
-     */
-    virtual void releaseResoures();
-    void updateSizeAndPosition();
     void copyProperties(UIWidget* model);
     virtual UIWidget* createCloneInstance();
     virtual void copySpecialProperties(UIWidget* model);
@@ -958,6 +988,7 @@ protected:
     PositionType _positionType;
     cocos2d::Point _positionPercent;
     bool _isRunning;
+    cocos2d::Object* _userObject;
 };
 /**
 *   @js NA

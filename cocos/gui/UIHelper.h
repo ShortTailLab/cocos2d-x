@@ -27,10 +27,6 @@
 
 namespace gui {
 
-/**
-*   @js NA
-*   @lua NA
-*/
 class UIHelper
 {
 public:
@@ -72,7 +68,6 @@ public:
     /*temp action*/
     static UIWidget* seekActionWidgetByActionTag(UIWidget* root, int tag);
 };
-
 }
 
 #endif /* defined(__CocoGUI__UISystem__) */

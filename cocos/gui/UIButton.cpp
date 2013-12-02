@@ -33,10 +33,10 @@ namespace gui {
 #define TITLERENDERERZ (1)
     
 UIButton::UIButton():
-_buttonNormalRenderer(NULL),
-_buttonClickedRenderer(NULL),
-_buttonDisableRenderer(NULL),
-_titleRenderer(NULL),
+_buttonNormalRenderer(nullptr),
+_buttonClickedRenderer(nullptr),
+_buttonDisableRenderer(nullptr),
+_titleRenderer(nullptr),
 _normalFileName(""),
 _clickedFileName(""),
 _disabledFileName(""),
@@ -70,7 +70,7 @@ UIButton* UIButton::create()
         return widget;
     }
     CC_SAFE_DELETE(widget);
-    return NULL;
+    return nullptr;
 }
 
 bool UIButton::init()
@@ -109,9 +109,9 @@ void UIButton::setScale9Enabled(bool able)
     _renderer->removeChild(_buttonClickedRenderer, true);
     _renderer->removeChild(_buttonDisableRenderer, true);
     
-    _buttonNormalRenderer = NULL;
-    _buttonClickedRenderer = NULL;
-    _buttonDisableRenderer = NULL;
+    _buttonNormalRenderer = nullptr;
+    _buttonClickedRenderer = nullptr;
+    _buttonDisableRenderer = nullptr;
     if (_scale9Enabled)
     {
         _buttonNormalRenderer = cocos2d::extension::Scale9Sprite::create();
@@ -193,10 +193,10 @@ void UIButton::loadTextureNormal(const char* normal,TextureResType texType)
         switch (_normalTexType)
         {
             case UI_TEX_TYPE_LOCAL:
-                dynamic_cast<cocos2d::Sprite*>(_buttonNormalRenderer)->initWithFile(normal);
+                dynamic_cast<cocos2d::Sprite*>(_buttonNormalRenderer)->setTexture(normal);
                 break;
             case UI_TEX_TYPE_PLIST:
-                dynamic_cast<cocos2d::Sprite*>(_buttonNormalRenderer)->initWithSpriteFrameName(normal);
+                dynamic_cast<cocos2d::Sprite*>(_buttonNormalRenderer)->setSpriteFrame(normal);
                 break;
             default:
                 break;
@@ -239,10 +239,10 @@ void UIButton::loadTexturePressed(const char* selected,TextureResType texType)
         switch (_pressedTexType)
         {
             case UI_TEX_TYPE_LOCAL:
-                dynamic_cast<cocos2d::Sprite*>(_buttonClickedRenderer)->initWithFile(selected);
+                dynamic_cast<cocos2d::Sprite*>(_buttonClickedRenderer)->setTexture(selected);
                 break;
             case UI_TEX_TYPE_PLIST:
-                dynamic_cast<cocos2d::Sprite*>(_buttonClickedRenderer)->initWithSpriteFrameName(selected);
+                dynamic_cast<cocos2d::Sprite*>(_buttonClickedRenderer)->setSpriteFrame(selected);
                 break;
             default:
                 break;
@@ -285,10 +285,10 @@ void UIButton::loadTextureDisabled(const char* disabled,TextureResType texType)
         switch (_disabledTexType)
         {
             case UI_TEX_TYPE_LOCAL:
-                dynamic_cast<cocos2d::Sprite*>(_buttonDisableRenderer)->initWithFile(disabled);
+                dynamic_cast<cocos2d::Sprite*>(_buttonDisableRenderer)->setTexture(disabled);
                 break;
             case UI_TEX_TYPE_PLIST:
-                dynamic_cast<cocos2d::Sprite*>(_buttonDisableRenderer)->initWithSpriteFrameName(disabled);
+                dynamic_cast<cocos2d::Sprite*>(_buttonDisableRenderer)->setSpriteFrame(disabled);
                 break;
             default:
                 break;
@@ -457,7 +457,7 @@ cocos2d::Node* UIButton::getVirtualRenderer()
             case BRIGHT_HIGHLIGHT:
                 return _buttonClickedRenderer;
             default:
-                return NULL;
+                return nullptr;
         }
     }
     else
@@ -565,12 +565,12 @@ void UIButton::setPressedActionEnabled(bool enabled)
     _pressedActionEnabled = enabled;
 }
 
-void UIButton::setTitleText(const char* text)
+void UIButton::setTitleText(const std::string& text)
 {
     _titleRenderer->setString(text);
 }
 
-const char* UIButton::getTitleText() const
+const std::string& UIButton::getTitleText() const
 {
     return _titleRenderer->getString();
 }
@@ -603,7 +603,7 @@ void UIButton::setTitleFontName(const char* fontName)
 
 const char* UIButton::getTitleFontName() const
 {
-    return _titleRenderer->getFontName();
+    return _titleRenderer->getFontName().c_str();
 }
 
 void UIButton::setColor(const cocos2d::Color3B &color)

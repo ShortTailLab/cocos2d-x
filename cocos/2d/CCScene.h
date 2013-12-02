@@ -56,39 +56,35 @@ public:
     static Scene *createWithPhysics();
 #endif
 
-    Scene();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~Scene();
-    
-    bool init();
-    
+
 #ifdef CC_USE_PHYSICS
 public:
-    bool initWithPhysics();
-    
+
+    inline PhysicsWorld* getPhysicsWorld() { return _physicsWorld; }
+
     virtual void addChild(Node* child) override;
     virtual void addChild(Node* child, int zOrder) override;
     virtual void addChild(Node* child, int zOrder, int tag) override;
-    
-    /*
-     * Update method will be called automatically every frame if "scheduleUpdate" is called, and the node is "live"
-     */
-    virtual void update(float delta) override;
-    
-    inline PhysicsWorld* getPhysicsWorld() { return _physicsWorld; }
-    
+    virtual void update(float delta) override;    
+
 protected:
-    virtual void addChildToPhysicsWorld(Node* child);
-    
-protected:
+    bool initWithPhysics();
+    void addChildToPhysicsWorld(Node* child);
+
     PhysicsWorld* _physicsWorld;
 #endif // CC_USE_PHYSICS
-    
+
+
+protected:
+    Scene();
+    virtual ~Scene();
+    bool init();
+
     friend class Node;
     friend class SpriteBatchNode;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(Scene);
 };
 
 // end of scene group

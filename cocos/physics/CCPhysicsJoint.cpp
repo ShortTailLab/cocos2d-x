@@ -24,23 +24,15 @@
 
 #include "CCPhysicsJoint.h"
 #ifdef CC_USE_PHYSICS
-
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
 #include "chipmunk.h"
-#elif (CC_PHYSICS_ENGINE == CCPHYSICS_BOX2D)
-#include "Box2D.h"
-#endif
 
 #include "CCPhysicsBody.h"
+#include "CCPhysicsWorld.h"
 
 #include "chipmunk/CCPhysicsJointInfo_chipmunk.h"
-#include "box2d/CCPhysicsJointInfo_box2d.h"
 #include "chipmunk/CCPhysicsBodyInfo_chipmunk.h"
-#include "box2d/CCPhysicsBodyInfo_box2d.h"
 #include "chipmunk/CCPhysicsShapeInfo_chipmunk.h"
-#include "box2d/CCPhysicsShapeInfo_box2d.h"
 #include "chipmunk/CCPhysicsHelper_chipmunk.h"
-#include "box2d/CCPhysicsHelper_box2d.h"
 #include "CCNode.h"
 
 NS_CC_BEGIN
@@ -48,9 +40,11 @@ NS_CC_BEGIN
 PhysicsJoint::PhysicsJoint()
 : _bodyA(nullptr)
 , _bodyB(nullptr)
+, _world(nullptr)
 , _info(nullptr)
 , _enable(false)
 , _collisionEnable(true)
+, _destoryMark(false)
 , _tag(0)
 {
     
@@ -68,19 +62,15 @@ bool PhysicsJoint::init(cocos2d::PhysicsBody *a, cocos2d::PhysicsBody *b)
 {
     do
     {
+        CCASSERT(a != nullptr && b != nullptr, "the body passed in is nil");
+        CCASSERT(a != b, "the two bodies are equal");
+        
         CC_BREAK_IF(!(_info = new PhysicsJointInfo(this)));
         
-        if (a != nullptr)
-        {
-            _bodyA = a;
-            _bodyA->_joints.push_back(this);
-        }
-        
-        if (b != nullptr)
-        {
-            _bodyB = b;
-            _bodyB->_joints.push_back(this);
-        }
+        _bodyA = a;
+        _bodyA->_joints.push_back(this);
+        _bodyB = b;
+        _bodyB->_joints.push_back(this);
         
         return true;
     } while (false);
@@ -94,12 +84,15 @@ void PhysicsJoint::setEnable(bool enable)
     {
         _enable = enable;
         
-        if (enable)
+        if (_world != nullptr)
         {
-            
-        }else
-        {
-            
+            if (enable)
+            {
+                _world->addJointOrDelay(this);
+            }else
+            {
+                _world->removeJointOrDelay(this);
+            }
         }
     }
 }
@@ -124,16 +117,6 @@ PhysicsJointFixed::~PhysicsJointFixed()
     
 }
 
-PhysicsJointSliding::PhysicsJointSliding()
-{
-    
-}
-
-PhysicsJointSliding::~PhysicsJointSliding()
-{
-    
-}
-
 PhysicsJointLimit::PhysicsJointLimit()
 {
     
@@ -154,7 +137,6 @@ PhysicsJointDistance::~PhysicsJointDistance()
     
 }
 
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
 PhysicsBodyInfo* PhysicsJoint::getBodyInfo(PhysicsBody* body) const
 {
     return body->_info;
@@ -174,7 +156,41 @@ void PhysicsJoint::setCollisionEnable(bool enable)
     }
 }
 
-PhysicsJointFixed* PhysicsJointFixed::create(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
+void PhysicsJoint::removeFormWorld()
+{
+    if (_world)
+    {
+        _world->removeJoint(this, false);
+    }
+}
+
+void PhysicsJoint::destroy(PhysicsJoint* joint)
+{
+    if (joint!= nullptr)
+    {
+        // remove the joint and delete it.
+        if (joint->_world != nullptr)
+        {
+            joint->_world->removeJoint(joint, true);
+        }
+        else
+        {
+            if (joint->_bodyA != nullptr)
+            {
+                joint->_bodyA->removeJoint(joint);
+            }
+            
+            if (joint->_bodyB != nullptr)
+            {
+                joint->_bodyB->removeJoint(joint);
+            }
+            
+            delete joint;
+        }
+    }
+}
+
+PhysicsJointFixed* PhysicsJointFixed::construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
 {
     PhysicsJointFixed* joint = new PhysicsJointFixed();
     
@@ -197,13 +213,13 @@ bool PhysicsJointFixed::init(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
         getBodyNode(b)->setPosition(anchr);
         
         // add a pivot joint to fixed two body together
-        cpConstraint* joint = cpPivotJointNew(getBodyInfo(a)->body, getBodyInfo(b)->body,
+        cpConstraint* joint = cpPivotJointNew(getBodyInfo(a)->getBody(), getBodyInfo(b)->getBody(),
                                         PhysicsHelper::point2cpv(anchr));
         CC_BREAK_IF(joint == nullptr);
         _info->add(joint);
         
         // add a gear joint to make two body have the same rotation.
-        joint = cpGearJointNew(getBodyInfo(a)->body, getBodyInfo(b)->body, 0, 1);
+        joint = cpGearJointNew(getBodyInfo(a)->getBody(), getBodyInfo(b)->getBody(), 0, 1);
         CC_BREAK_IF(joint == nullptr);
         _info->add(joint);
         
@@ -215,7 +231,7 @@ bool PhysicsJointFixed::init(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
     return false;
 }
 
-PhysicsJointPin* PhysicsJointPin::create(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
+PhysicsJointPin* PhysicsJointPin::construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr)
 {
     PhysicsJointPin* joint = new PhysicsJointPin();
     
@@ -233,7 +249,7 @@ bool PhysicsJointPin::init(PhysicsBody *a, PhysicsBody *b, const Point& anchr)
     do
     {
         CC_BREAK_IF(!PhysicsJoint::init(a, b));
-        cpConstraint* joint = cpPivotJointNew(getBodyInfo(a)->body, getBodyInfo(b)->body,
+        cpConstraint* joint = cpPivotJointNew(getBodyInfo(a)->getBody(), getBodyInfo(b)->getBody(),
                                        PhysicsHelper::point2cpv(anchr));
         
         CC_BREAK_IF(joint == nullptr);
@@ -248,50 +264,15 @@ bool PhysicsJointPin::init(PhysicsBody *a, PhysicsBody *b, const Point& anchr)
 
 void PhysicsJointPin::setMaxForce(float force)
 {
-    _info->joints.front()->maxForce = PhysicsHelper::float2cpfloat(force);
+    _info->getJoints().front()->maxForce = PhysicsHelper::float2cpfloat(force);
 }
 
 float PhysicsJointPin::getMaxForce() const
 {
-    return PhysicsHelper::cpfloat2float(_info->joints.front()->maxForce);
+    return PhysicsHelper::cpfloat2float(_info->getJoints().front()->maxForce);
 }
 
-PhysicsJointSliding* PhysicsJointSliding::create(PhysicsBody* a, PhysicsBody* b, const Point& grooveA, const Point& grooveB, const Point& anchr)
-{
-    PhysicsJointSliding* joint = new PhysicsJointSliding();
-    
-    if (joint && joint->init(a, b, grooveA, grooveB, anchr))
-    {
-        return joint;
-    }
-    
-    CC_SAFE_DELETE(joint);
-    return nullptr;
-}
-
-bool PhysicsJointSliding::init(PhysicsBody* a, PhysicsBody* b, const Point& grooveA, const Point& grooveB, const Point& anchr)
-{
-    do
-    {
-        CC_BREAK_IF(!PhysicsJoint::init(a, b));
-        
-        cpConstraint* joint = cpGrooveJointNew(getBodyInfo(a)->body, getBodyInfo(b)->body,
-                                       PhysicsHelper::point2cpv(grooveA),
-                                       PhysicsHelper::point2cpv(grooveB),
-                                       PhysicsHelper::point2cpv(anchr));
-        
-        CC_BREAK_IF(joint == nullptr);
-        
-        _info->add(joint);
-        
-        return true;
-    } while (false);
-    
-    return false;
-}
-
-
-PhysicsJointLimit* PhysicsJointLimit::create(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2)
+PhysicsJointLimit* PhysicsJointLimit::construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2)
 {
     PhysicsJointLimit* joint = new PhysicsJointLimit();
     
@@ -310,11 +291,11 @@ bool PhysicsJointLimit::init(PhysicsBody* a, PhysicsBody* b, const Point& anchr1
     {
         CC_BREAK_IF(!PhysicsJoint::init(a, b));
         
-        cpConstraint* joint = cpSlideJointNew(getBodyInfo(a)->body, getBodyInfo(b)->body,
+        cpConstraint* joint = cpSlideJointNew(getBodyInfo(a)->getBody(), getBodyInfo(b)->getBody(),
                                        PhysicsHelper::point2cpv(anchr1),
                                        PhysicsHelper::point2cpv(anchr2),
                                        0,
-                                       PhysicsHelper::float2cpfloat(anchr1.getDistance(anchr2)));
+                                       PhysicsHelper::float2cpfloat(_bodyA->local2World(anchr1).getDistance(_bodyB->local2World(anchr2))));
         
         CC_BREAK_IF(joint == nullptr);
         
@@ -328,25 +309,25 @@ bool PhysicsJointLimit::init(PhysicsBody* a, PhysicsBody* b, const Point& anchr1
 
 float PhysicsJointLimit::getMin() const
 {
-    return PhysicsHelper::cpfloat2float(cpSlideJointGetMin(_info->joints.front()));
+    return PhysicsHelper::cpfloat2float(cpSlideJointGetMin(_info->getJoints().front()));
 }
 
 void PhysicsJointLimit::setMin(float min)
 {
-    cpSlideJointSetMin(_info->joints.front(), PhysicsHelper::float2cpfloat(min));
+    cpSlideJointSetMin(_info->getJoints().front(), PhysicsHelper::float2cpfloat(min));
 }
 
 float PhysicsJointLimit::getMax() const
 {
-    return PhysicsHelper::cpfloat2float(cpSlideJointGetMax(_info->joints.front()));
+    return PhysicsHelper::cpfloat2float(cpSlideJointGetMax(_info->getJoints().front()));
 }
 
 void PhysicsJointLimit::setMax(float max)
 {
-    cpSlideJointSetMax(_info->joints.front(), PhysicsHelper::float2cpfloat(max));
+    cpSlideJointSetMax(_info->getJoints().front(), PhysicsHelper::float2cpfloat(max));
 }
 
-PhysicsJointDistance* PhysicsJointDistance::create(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2)
+PhysicsJointDistance* PhysicsJointDistance::construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2)
 {
     PhysicsJointDistance* joint = new PhysicsJointDistance();
     
@@ -365,9 +346,10 @@ bool PhysicsJointDistance::init(PhysicsBody* a, PhysicsBody* b, const Point& anc
     {
         CC_BREAK_IF(!PhysicsJoint::init(a, b));
         
-        cpConstraint* joint = cpPinJointNew(getBodyInfo(a)->body,
-                                            getBodyInfo(b)->body,
-                                            PhysicsHelper::point2cpv(anchr1), PhysicsHelper::point2cpv(anchr2));
+        cpConstraint* joint = cpPinJointNew(getBodyInfo(a)->getBody(),
+                                            getBodyInfo(b)->getBody(),
+                                            PhysicsHelper::point2cpv(anchr1),
+                                            PhysicsHelper::point2cpv(anchr2));
         
         CC_BREAK_IF(joint == nullptr);
         
@@ -378,10 +360,6 @@ bool PhysicsJointDistance::init(PhysicsBody* a, PhysicsBody* b, const Point& anc
     
     return false;
 }
-
-#elif (CC_PHYSICS_ENGINE == CC_PHYSICS_BOX2D)
-
-#endif
 
 NS_CC_END
 #endif // CC_USE_PHYSICS

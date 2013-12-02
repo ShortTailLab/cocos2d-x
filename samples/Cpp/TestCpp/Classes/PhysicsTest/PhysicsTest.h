@@ -11,21 +11,30 @@
 class PhysicsTestScene : public TestScene
 {
 public:
-    virtual bool initTest() override;
+    PhysicsTestScene();
+    
+public:
     virtual void runThisTest();
     
     void toggleDebug();
     
 private:
-    static bool _debugDraw;
+    bool _debugDraw;
 };
+
+#ifndef CC_USE_PHYSICS
+class PhysicsDemoDisabled : public BaseTest
+{
+public:
+    virtual void onEnter() override;
+};
+#else
 
 class PhysicsDemo : public BaseTest
 {
-protected:
-    PhysicsTestScene* _scene;
-    
 public:
+    CREATE_FUNC(PhysicsDemo);
+
     PhysicsDemo();
     virtual ~PhysicsDemo();
     
@@ -48,14 +57,18 @@ public:
     void onTouchEnded(Touch* touch, Event* event);
     
 protected:
+    PhysicsTestScene* _scene;
     Texture2D* _spriteTexture;    // weak ref
     SpriteBatchNode* _ball;
-    std::map<int, Node*> _mouses;
+    std::unordered_map<int, Node*> _mouses;
 };
 
 class PhysicsDemoClickAdd : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoClickAdd);
+
+    virtual ~PhysicsDemoClickAdd();
     void onEnter() override;
     std::string subtitle() override;
     
@@ -66,6 +79,8 @@ public:
 class PhysicsDemoLogoSmash : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoLogoSmash);
+
     void onEnter() override;
     std::string title() override;
 };
@@ -73,13 +88,8 @@ public:
 class PhysicsDemoPyramidStack : public PhysicsDemo
 {
 public:
-    void onEnter() override;
-    std::string title() override;
-};
+    CREATE_FUNC(PhysicsDemoPyramidStack);
 
-class PhysicsDemoPlink : public PhysicsDemo
-{
-public:
     void onEnter() override;
     std::string title() override;
 };
@@ -87,8 +97,10 @@ public:
 class PhysicsDemoRayCast : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoRayCast);
+
     PhysicsDemoRayCast();
-public:
+
     void onEnter() override;
     std::string title() override;
     void update(float delta) override;
@@ -96,7 +108,7 @@ public:
     
     void changeModeCallback(Object* sender);
     
-    static bool anyRay(PhysicsWorld& world, PhysicsShape& shape, Point point, Point normal, float fraction, void* data);
+    bool anyRay(PhysicsWorld& world, const PhysicsRayCastInfo& info, void* data);
     
 private:
     float _angle;
@@ -107,6 +119,8 @@ private:
 class PhysicsDemoJoints : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoJoints);
+
     void onEnter() override;
     std::string title() override;
 };
@@ -114,6 +128,8 @@ public:
 class PhysicsDemoActions : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoActions);
+
     void onEnter() override;
     std::string title() override;
 };
@@ -121,9 +137,12 @@ public:
 class PhysicsDemoPump : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoPump);
+
     void onEnter() override;
-    std::string title() override;
     void update(float delta) override;
+    std::string title() override;
+    std::string subtitle() override;
     
     bool onTouchBegan(Touch* touch, Event* event);
     void onTouchMoved(Touch* touch, Event* event);
@@ -137,10 +156,31 @@ private:
 class PhysicsDemoOneWayPlatform : public PhysicsDemo
 {
 public:
+    CREATE_FUNC(PhysicsDemoOneWayPlatform);
+
     void onEnter() override;
     std::string title() override;
     
-    bool onPreSolve(EventCustom* event, const PhysicsContact& contact, const PhysicsContactPreSolve& solve);
+    bool onContactBegin(EventCustom* event, const PhysicsContact& contact);
 };
 
+class PhysicsDemoSlice : public PhysicsDemo
+{
+public:
+    CREATE_FUNC(PhysicsDemoSlice);
+
+    void onEnter() override;
+    std::string title() override;
+    std::string subtitle() override;
+    
+    bool slice(PhysicsWorld& world, const PhysicsRayCastInfo& info, void* data);
+    void clipPoly(PhysicsShapePolygon* shape, Point normal, float distance);
+    
+    void onTouchEnded(Touch *touch, Event *event);
+    
+private:
+    int _sliceTag;
+};
+
+#endif
 #endif

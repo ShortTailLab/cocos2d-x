@@ -54,6 +54,7 @@ class Node;
 class Scheduler;
 class ActionManager;
 class EventDispatcher;
+class TextureCache;
 
 /**
 @brief Class that creates and handles the main Window and manages how
@@ -120,7 +121,7 @@ public:
     /** Get the FPS value */
     inline double getAnimationInterval() { return _animationInterval; }
     /** Set the FPS value. */
-    virtual void setAnimationInterval(double dValue) = 0;
+    virtual void setAnimationInterval(double interval) = 0;
 
     /** Whether or not to display the FPS on the bottom-left corner */
     inline bool isDisplayStats() { return _displayStats; }
@@ -135,7 +136,9 @@ public:
     * @lua NA
     */
     inline EGLView* getOpenGLView() { return _openGLView; }
-    void setOpenGLView(EGLView *pobOpenGLView);
+    void setOpenGLView(EGLView *openGLView);
+
+    TextureCache* getTextureCache() const;
 
     inline bool isNextDeltaTimeZero() { return _nextDeltaTimeZero; }
     void setNextDeltaTimeZero(bool nextDeltaTimeZero);
@@ -381,6 +384,10 @@ protected:
     /** calculates delta time since last time it was called */    
     void calculateDeltaTime();
 
+    //textureCache creation or release
+    void initTextureCache();
+    void destroyTextureCache();
+
 protected:
     /** Scheduler associated with this director
      @since v2.0
@@ -402,6 +409,9 @@ protected:
     
     /* The EGLView, where everything is rendered */
     EGLView    *_openGLView;
+
+    //texture cache belongs to this director
+    TextureCache *_textureCache;
 
     double _animationInterval;
     double _oldAnimationInterval;

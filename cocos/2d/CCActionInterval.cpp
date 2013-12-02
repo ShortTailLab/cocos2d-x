@@ -149,13 +149,13 @@ void ActionInterval::startWithTarget(Node *target)
 // Sequence
 //
 
-Sequence* Sequence::createWithTwoActions(FiniteTimeAction *pActionOne, FiniteTimeAction *pActionTwo)
+Sequence* Sequence::createWithTwoActions(FiniteTimeAction *actionOne, FiniteTimeAction *actionTwo)
 {
-    Sequence *pSequence = new Sequence();
-    pSequence->initWithTwoActions(pActionOne, pActionTwo);
-    pSequence->autorelease();
+    Sequence *sequence = new Sequence();
+    sequence->initWithTwoActions(actionOne, actionTwo);
+    sequence->autorelease();
 
-    return pSequence;
+    return sequence;
 }
 
 Sequence* Sequence::create(FiniteTimeAction *pAction1, ...)
@@ -203,14 +203,14 @@ Sequence* Sequence::create(Array* arrayOfActions)
     Sequence* pRet = NULL;
     do 
     {
-        unsigned  int count = arrayOfActions->count();
+        long count = arrayOfActions->count();
         CC_BREAK_IF(count == 0);
 
         FiniteTimeAction* prev = static_cast<FiniteTimeAction*>(arrayOfActions->getObjectAtIndex(0));
 
         if (count > 1)
         {
-            for (unsigned int i = 1; i < count; ++i)
+            for (long i = 1; i < count; ++i)
             {
                 prev = createWithTwoActions(prev, static_cast<FiniteTimeAction*>(arrayOfActions->getObjectAtIndex(i)));
             }
@@ -220,7 +220,7 @@ Sequence* Sequence::create(Array* arrayOfActions)
             // If only one action is added to Sequence, make up a Sequence by adding a simplest finite time action.
             prev = createWithTwoActions(prev, ExtraAction::create());
         }
-        pRet = (Sequence*)prev;
+        pRet = static_cast<Sequence*>(prev);
     }while (0);
     return pRet;
 }
@@ -576,7 +576,7 @@ Spawn* Spawn::create(Array *arrayOfActions)
     Spawn* pRet = NULL;
     do 
     {
-        unsigned  int count = arrayOfActions->count();
+        long count = arrayOfActions->count();
         CC_BREAK_IF(count == 0);
         FiniteTimeAction* prev = static_cast<FiniteTimeAction*>(arrayOfActions->getObjectAtIndex(0));
         if (count > 1)
@@ -597,13 +597,13 @@ Spawn* Spawn::create(Array *arrayOfActions)
     return pRet;
 }
 
-Spawn* Spawn::createWithTwoActions(FiniteTimeAction *pAction1, FiniteTimeAction *pAction2)
+Spawn* Spawn::createWithTwoActions(FiniteTimeAction *action1, FiniteTimeAction *action2)
 {
-    Spawn *pSpawn = new Spawn();
-    pSpawn->initWithTwoActions(pAction1, pAction2);
-    pSpawn->autorelease();
+    Spawn *spawn = new Spawn();
+    spawn->initWithTwoActions(action1, action2);
+    spawn->autorelease();
 
-    return pSpawn;
+    return spawn;
 }
 
 bool Spawn:: initWithTwoActions(FiniteTimeAction *pAction1, FiniteTimeAction *pAction2)
@@ -2100,7 +2100,7 @@ void Animate::update(float t)
     }
 
     Array* frames = _animation->getFrames();
-    int numberOfFrames = frames->count();
+    long numberOfFrames = frames->count();
     SpriteFrame *frameToDisplay = NULL;
 
     for( int i=_nextFrame; i < numberOfFrames; i++ ) {

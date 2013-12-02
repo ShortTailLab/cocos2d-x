@@ -93,12 +93,13 @@ Label* Label::createWithAtlas(FontAtlas *atlas, TextHAlignment alignment, int li
 }
 
 Label::Label(FontAtlas *atlas, TextHAlignment alignment)
-: _currentUTF16String(0)
-, _originalUTF16String(0)
-, _fontAtlas(atlas)
-, _alignment(alignment)
+: _reusedLetter(nullptr)
 , _lineBreakWithoutSpaces(false)
+, _alignment(alignment)
+, _currentUTF16String(0)
+, _originalUTF16String(0)
 , _advances(0)
+, _fontAtlas(atlas)
 , _displayedColor(Color3B::WHITE)
 , _realColor(Color3B::WHITE)
 , _cascadeColorEnabled(true)
@@ -106,7 +107,6 @@ Label::Label(FontAtlas *atlas, TextHAlignment alignment)
 , _displayedOpacity(255)
 , _realOpacity(255)
 , _isOpacityModifyRGB(true)
-,_reusedLetter(nullptr)
 {
 }
 
@@ -119,16 +119,16 @@ Label::~Label()
     if (_fontAtlas)
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
 
-    delete _reusedLetter;
+    _reusedLetter->release();
 }
 
 bool Label::init()
 { 
     if(_fontAtlas)
     {
-        _reusedLetter = new Sprite;
-        _reusedLetter->initWithTexture(&_fontAtlas->getTexture(0));
+        _reusedLetter = Sprite::createWithTexture(&_fontAtlas->getTexture(0));
         _reusedLetter->setOpacityModifyRGB(_isOpacityModifyRGB);
+        _reusedLetter->retain();
         return SpriteBatchNode::initWithTexture(&_fontAtlas->getTexture(0), 30);
     }
 
@@ -386,7 +386,7 @@ Sprite * Label::updateSpriteWithLetterDefinition(Sprite *spriteToUpdate, const F
 
 bool Label::recordLetterInfo(const cocos2d::Point& point,unsigned short int theChar, int spriteIndex)
 {
-    if (spriteIndex >= _lettersInfo.size())
+    if (static_cast<std::size_t>(spriteIndex) >= _lettersInfo.size())
     {
         LetterInfo tmpInfo;
         _lettersInfo.push_back(tmpInfo);
@@ -402,7 +402,7 @@ bool Label::recordLetterInfo(const cocos2d::Point& point,unsigned short int theC
 
 bool Label::recordPlaceholderInfo(int spriteIndex)
 {
-   if (spriteIndex >= _lettersInfo.size())
+    if (static_cast<std::size_t>(spriteIndex) >= _lettersInfo.size())
     {
         LetterInfo tmpInfo;
         _lettersInfo.push_back(tmpInfo);
@@ -437,15 +437,13 @@ Sprite * Label::getLetter(int ID)
             uvRect.origin.x    = _lettersInfo[ID].def.U;
             uvRect.origin.y    = _lettersInfo[ID].def.V;
 
-            sp = new Sprite();
-            sp->initWithTexture(&_fontAtlas->getTexture(_lettersInfo[ID].def.textureID),uvRect);
+            sp = Sprite::createWithTexture(&_fontAtlas->getTexture(_lettersInfo[ID].def.textureID), uvRect);
             sp->setBatchNode(this);
             sp->setAnchorPoint(Point(_lettersInfo[ID].def.anchorX, _lettersInfo[ID].def.anchorY));                    
             sp->setPosition(_lettersInfo[ID].position);
             sp->setOpacity(_realOpacity);
          
             this->addSpriteWithoutQuad(sp, ID, ID);
-            sp->release();
         }
         return sp;
     }

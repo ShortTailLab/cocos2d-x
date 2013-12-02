@@ -22,32 +22,34 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifdef CC_USE_PHYSICS
 #include "CCPhysicsShapeInfo_chipmunk.h"
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
 #include <algorithm>
+#include <unordered_map>
+
 NS_CC_BEGIN
 
-std::map<cpShape*, PhysicsShapeInfo*> PhysicsShapeInfo::map;
-cpBody* PhysicsShapeInfo::shareBody = nullptr;
+std::unordered_map<cpShape*, PhysicsShapeInfo*> PhysicsShapeInfo::_map;
+cpBody* PhysicsShapeInfo::_sharedBody = nullptr;
 
 PhysicsShapeInfo::PhysicsShapeInfo(PhysicsShape* shape)
-: shape(shape)
-, group(CP_NO_GROUP)
+: _shape(shape)
+, _group(CP_NO_GROUP)
 {
-    if (shareBody == nullptr)
+    if (_sharedBody == nullptr)
     {
-        shareBody = cpBodyNewStatic();
+        _sharedBody = cpBodyNewStatic();
     }
     
-    body = shareBody;
+    _body = _sharedBody;
 }
 
 PhysicsShapeInfo::~PhysicsShapeInfo()
 {
-    for (auto shape : shapes)
+    for (auto shape : _shapes)
     {
-        auto it = map.find(shape);
-        if (it != map.end()) map.erase(shape);
+        auto it = _map.find(shape);
+        if (it != _map.end()) _map.erase(shape);
         
         cpShapeFree(shape);
     }
@@ -55,9 +57,9 @@ PhysicsShapeInfo::~PhysicsShapeInfo()
 
 void PhysicsShapeInfo::setGroup(cpGroup group)
 {
-    this->group = group;
+    this->_group = group;
     
-    for (cpShape* shape : shapes)
+    for (cpShape* shape : _shapes)
     {
         cpShapeSetGroup(shape, group);
     }
@@ -65,12 +67,12 @@ void PhysicsShapeInfo::setGroup(cpGroup group)
 
 void PhysicsShapeInfo::setBody(cpBody* body)
 {
-    if (this->body != body)
+    if (this->_body != body)
     {
-        this->body = body;
-        for (cpShape* shape : shapes)
+        this->_body = body;
+        for (cpShape* shape : _shapes)
         {
-            cpShapeSetBody(shape, body == nullptr ? shareBody : body);
+            cpShapeSetBody(shape, body == nullptr ? _sharedBody : body);
         }
     }
 }
@@ -79,22 +81,22 @@ void PhysicsShapeInfo::add(cpShape* shape)
 {
     if (shape == nullptr) return;
     
-    cpShapeSetGroup(shape, group);
-    shapes.push_back(shape);
-    map.insert(std::pair<cpShape*, PhysicsShapeInfo*>(shape, this));
+    cpShapeSetGroup(shape, _group);
+    _shapes.push_back(shape);
+    _map.insert(std::pair<cpShape*, PhysicsShapeInfo*>(shape, this));
 }
 
 void PhysicsShapeInfo::remove(cpShape* shape)
 {
     if (shape == nullptr) return;
     
-    auto it = std::find(shapes.begin(), shapes.end(), shape);
-    if (it != shapes.end())
+    auto it = std::find(_shapes.begin(), _shapes.end(), shape);
+    if (it != _shapes.end())
     {
-        shapes.erase(it);
+        _shapes.erase(it);
         
-        auto mit = map.find(shape);
-        if (mit != map.end()) map.erase(mit);
+        auto mit = _map.find(shape);
+        if (mit != _map.end()) _map.erase(mit);
         
         cpShapeFree(shape);
     }
@@ -102,15 +104,15 @@ void PhysicsShapeInfo::remove(cpShape* shape)
 
 void PhysicsShapeInfo::removeAll()
 {
-    for (cpShape* shape : shapes)
+    for (cpShape* shape : _shapes)
     {
-        auto mit = map.find(shape);
-        if (mit != map.end()) map.erase(mit);
+        auto mit = _map.find(shape);
+        if (mit != _map.end()) _map.erase(mit);
         cpShapeFree(shape);
     }
     
-    shapes.clear();
+    _shapes.clear();
 }
 
 NS_CC_END
-#endif // CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK
+#endif // CC_USE_PHYSICS

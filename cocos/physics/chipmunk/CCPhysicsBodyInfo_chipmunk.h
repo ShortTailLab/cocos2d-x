@@ -22,11 +22,10 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "../CCPhysicsSetting.h"
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
+#ifndef __CCPHYSICS_BODY_INFO_CHIPMUNK_H__
+#define __CCPHYSICS_BODY_INFO_CHIPMUNK_H__
 
-#ifndef __CCPHYSICS_BODY_INFO_H__
-#define __CCPHYSICS_BODY_INFO_H__
+#ifdef CC_USE_PHYSICS
 
 #include "chipmunk.h"
 #include "CCPlatformMacros.h"
@@ -34,21 +33,23 @@
 
 NS_CC_BEGIN
 
-class PhysicsBodyInfo : public Clonable
+class PhysicsBodyInfo
 {
 public:
-    cpBody* body;
+    inline cpBody* getBody() const { return _body; }
+    inline void setBody(cpBody* body) { _body = body; }
     
 private:
     PhysicsBodyInfo();
     ~PhysicsBodyInfo();
     
-    Clonable* clone() const override;
+private:
+    cpBody* _body;
     
     friend class PhysicsBody;
 };
 
 NS_CC_END
-#endif // __CCPHYSICS_BODY_INFO_H__
 
-#endif // CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK
+#endif // CC_USE_PHYSICS
+#endif // __CCPHYSICS_BODY_INFO_CHIPMUNK_H__

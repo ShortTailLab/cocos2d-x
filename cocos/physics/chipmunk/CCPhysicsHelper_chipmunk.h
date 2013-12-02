@@ -22,11 +22,10 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "../CCPhysicsSetting.h"
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
+#ifndef __CCPHYSICS_HELPER_CHIPMUNK_H__
+#define __CCPHYSICS_HELPER_CHIPMUNK_H__
 
-#ifndef __CCPHYSICS_HELPER_H__
-#define __CCPHYSICS_HELPER_H__
+#ifdef CC_USE_PHYSICS
 
 #include "chipmunk.h"
 #include "CCPlatformMacros.h"
@@ -44,30 +43,30 @@ public:
     static float cpfloat2float(cpFloat f) { return f; }
     static cpFloat float2cpfloat(float f) { return f; }
     static cpBB rect2cpbb(const Rect& rect) { return cpBBNew(rect.origin.x, rect.origin.y, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height); }
-    static Rect cpbb2rect(const cpBB& bb) { return Rect(bb.l, bb.b, bb.r, bb.t); }
+    static Rect cpbb2rect(const cpBB& bb) { return Rect(bb.l, bb.b, bb.r -  bb.l, bb.t - bb.b); }
     
-    static Point* cpvs2points(const cpVect* cpvs, Point* points, int count)
+    static Point* cpvs2points(const cpVect* cpvs, Point* out, int count)
     {
         for (int i = 0; i < count; ++i)
         {
-            points[i] = cpv2point(cpvs[i]);
+            out[i] = cpv2point(cpvs[i]);
         }
         
-        return points;
+        return out;
     }
     
-    static cpVect* points2cpvs(const Point* points, cpVect* cpvs, int count)
+    static cpVect* points2cpvs(const Point* points, cpVect* out, int count)
     {
         for (int i = 0; i < count; ++i)
         {
-            cpvs[i] = point2cpv(points[i]);
+            out[i] = point2cpv(points[i]);
         }
         
-        return cpvs;
+        return out;
     }
 };
 
 NS_CC_END
-#endif // __CCPHYSICS_HELPER_H__
 
-#endif // CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK
+#endif // CC_USE_PHYSICS
+#endif // __CCPHYSICS_HELPER_CHIPMUNK_H__

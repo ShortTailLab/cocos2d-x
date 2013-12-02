@@ -28,14 +28,14 @@ namespace gui {
 
 
 UICheckBox::UICheckBox():
-_backGroundBoxRenderer(NULL),
-_backGroundSelectedBoxRenderer(NULL),
-_frontCrossRenderer(NULL),
-_backGroundBoxDisabledRenderer(NULL),
-_frontCrossDisabledRenderer(NULL),
+_backGroundBoxRenderer(nullptr),
+_backGroundSelectedBoxRenderer(nullptr),
+_frontCrossRenderer(nullptr),
+_backGroundBoxDisabledRenderer(nullptr),
+_frontCrossDisabledRenderer(nullptr),
 _isSelected(true),
-_selectedStateEventListener(NULL),
-_selectedStateEventSelector(NULL),
+_checkBoxEventListener(nullptr),
+_checkBoxEventSelector(nullptr),
 _backGroundTexType(UI_TEX_TYPE_LOCAL),
 _backGroundSelectedTexType(UI_TEX_TYPE_LOCAL),
 _frontCrossTexType(UI_TEX_TYPE_LOCAL),
@@ -51,7 +51,8 @@ _frontCrossDisabledFileName("")
 
 UICheckBox::~UICheckBox()
 {
-    
+    _checkBoxEventListener = nullptr;
+    _checkBoxEventSelector = nullptr;
 }
 
 UICheckBox* UICheckBox::create()
@@ -63,7 +64,7 @@ UICheckBox* UICheckBox::create()
         return widget;
     }
     CC_SAFE_DELETE(widget);
-    return NULL;
+    return nullptr;
 }
 
 bool UICheckBox::init()
@@ -111,10 +112,10 @@ void UICheckBox::loadTextureBackGround(const char *backGround,TextureResType tex
     switch (_backGroundTexType)
     {
         case UI_TEX_TYPE_LOCAL:
-            _backGroundBoxRenderer->initWithFile(backGround);
+            _backGroundBoxRenderer->setTexture(backGround);
             break;
         case UI_TEX_TYPE_PLIST:
-            _backGroundBoxRenderer->initWithSpriteFrameName(backGround);
+            _backGroundBoxRenderer->setSpriteFrame(backGround);
             break;
         default:
             break;
@@ -135,10 +136,10 @@ void UICheckBox::loadTextureBackGroundSelected(const char *backGroundSelected,Te
     switch (_backGroundSelectedTexType)
     {
         case UI_TEX_TYPE_LOCAL:
-            _backGroundSelectedBoxRenderer->initWithFile(backGroundSelected);
+            _backGroundSelectedBoxRenderer->setTexture(backGroundSelected);
             break;
         case UI_TEX_TYPE_PLIST:
-            _backGroundSelectedBoxRenderer->initWithSpriteFrameName(backGroundSelected);
+            _backGroundSelectedBoxRenderer->setSpriteFrame(backGroundSelected);
             break;
         default:
             break;
@@ -159,10 +160,10 @@ void UICheckBox::loadTextureFrontCross(const char *cross,TextureResType texType)
     switch (_frontCrossTexType)
     {
         case UI_TEX_TYPE_LOCAL:
-            _frontCrossRenderer->initWithFile(cross);
+            _frontCrossRenderer->setTexture(cross);
             break;
         case UI_TEX_TYPE_PLIST:
-            _frontCrossRenderer->initWithSpriteFrameName(cross);
+            _frontCrossRenderer->setSpriteFrame(cross);
             break;
         default:
             break;
@@ -183,10 +184,10 @@ void UICheckBox::loadTextureBackGroundDisabled(const char *backGroundDisabled,Te
     switch (_backGroundDisabledTexType)
     {
         case UI_TEX_TYPE_LOCAL:
-            _backGroundBoxDisabledRenderer->initWithFile(backGroundDisabled);
+            _backGroundBoxDisabledRenderer->setTexture(backGroundDisabled);
             break;
         case UI_TEX_TYPE_PLIST:
-            _backGroundBoxDisabledRenderer->initWithSpriteFrameName(backGroundDisabled);
+            _backGroundBoxDisabledRenderer->setSpriteFrame(backGroundDisabled);
             break;
         default:
             break;
@@ -207,10 +208,10 @@ void UICheckBox::loadTextureFrontCrossDisabled(const char *frontCrossDisabled,Te
     switch (_frontCrossDisabledTexType)
     {
         case UI_TEX_TYPE_LOCAL:
-            _frontCrossDisabledRenderer->initWithFile(frontCrossDisabled);
+            _frontCrossDisabledRenderer->setTexture(frontCrossDisabled);
             break;
         case UI_TEX_TYPE_PLIST:
-            _frontCrossDisabledRenderer->initWithSpriteFrameName(frontCrossDisabled);
+            _frontCrossDisabledRenderer->setSpriteFrame(frontCrossDisabled);
             break;
         default:
             break;
@@ -284,24 +285,24 @@ bool UICheckBox::getSelectedState()
 
 void UICheckBox::selectedEvent()
 {
-    if (_selectedStateEventListener && _selectedStateEventSelector)
+    if (_checkBoxEventListener && _checkBoxEventSelector)
     {
-        (_selectedStateEventListener->*_selectedStateEventSelector)(this,CHECKBOX_STATE_EVENT_SELECTED);
+        (_checkBoxEventListener->*_checkBoxEventSelector)(this,CHECKBOX_STATE_EVENT_SELECTED);
     }
 }
 
 void UICheckBox::unSelectedEvent()
 {
-    if (_selectedStateEventListener && _selectedStateEventSelector)
+    if (_checkBoxEventListener && _checkBoxEventSelector)
     {
-        (_selectedStateEventListener->*_selectedStateEventSelector)(this,CHECKBOX_STATE_EVENT_UNSELECTED);
+        (_checkBoxEventListener->*_checkBoxEventSelector)(this,CHECKBOX_STATE_EVENT_UNSELECTED);
     }
 }
 
-void UICheckBox::addEventListener(cocos2d::Object *target, SEL_SelectedStateEvent selector)
+void UICheckBox::addEventListenerCheckBox(cocos2d::Object *target, SEL_SelectedStateEvent selector)
 {
-    _selectedStateEventListener = target;
-    _selectedStateEventSelector = selector;
+    _checkBoxEventListener = target;
+    _checkBoxEventSelector = selector;
 }
 
 void UICheckBox::setFlipX(bool flipX)

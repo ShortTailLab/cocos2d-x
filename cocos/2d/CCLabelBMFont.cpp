@@ -64,7 +64,7 @@ static Dictionary* s_pConfigurations = NULL;
 
 CCBMFontConfiguration* FNTConfigLoadFile(const std::string& fntFile)
 {
-    CCBMFontConfiguration* pRet = NULL;
+    CCBMFontConfiguration* ret = NULL;
 
     if( s_pConfigurations == NULL )
     {
@@ -72,17 +72,17 @@ CCBMFontConfiguration* FNTConfigLoadFile(const std::string& fntFile)
         s_pConfigurations->init();
     }
 
-    pRet = static_cast<CCBMFontConfiguration*>( s_pConfigurations->objectForKey(fntFile) );
-    if( pRet == NULL )
+    ret = static_cast<CCBMFontConfiguration*>( s_pConfigurations->objectForKey(fntFile) );
+    if( ret == NULL )
     {
-        pRet = CCBMFontConfiguration::create(fntFile.c_str());
-        if (pRet)
+        ret = CCBMFontConfiguration::create(fntFile.c_str());
+        if (ret)
         {
-            s_pConfigurations->setObject(pRet, fntFile);
+            s_pConfigurations->setObject(ret, fntFile);
         }        
     }
 
-    return pRet;
+    return ret;
 }
 
 void FNTConfigRemoveCache( void )
@@ -98,19 +98,19 @@ void FNTConfigRemoveCache( void )
 //BitmapFontConfiguration
 //
 
-CCBMFontConfiguration * CCBMFontConfiguration::create(const char *FNTfile)
+CCBMFontConfiguration * CCBMFontConfiguration::create(const std::string& FNTfile)
 {
-    CCBMFontConfiguration * pRet = new CCBMFontConfiguration();
-    if (pRet->initWithFNTfile(FNTfile))
+    CCBMFontConfiguration * ret = new CCBMFontConfiguration();
+    if (ret->initWithFNTfile(FNTfile))
     {
-        pRet->autorelease();
-        return pRet;
+        ret->autorelease();
+        return ret;
     }
-    CC_SAFE_DELETE(pRet);
+    CC_SAFE_DELETE(ret);
     return NULL;
 }
 
-bool CCBMFontConfiguration::initWithFNTfile(const char *FNTfile)
+bool CCBMFontConfiguration::initWithFNTfile(const std::string& FNTfile)
 {
     _kerningDictionary = NULL;
     _fontDefDictionary = NULL;
@@ -202,7 +202,7 @@ std::set<unsigned int>* CCBMFontConfiguration::parseConfigFile(const std::string
     {
         size_t pos = strLeft.find('\n');
 
-        if (pos != (int)std::string::npos)
+        if (pos != std::string::npos)
         {
             // the data is more than a line.get one line
             line = strLeft.substr(0, pos);
@@ -486,7 +486,7 @@ bool LabelBMFont::initWithString(const std::string& theString, const std::string
         
         _fntFile = fntFile;
         
-        texture = TextureCache::getInstance()->addImage(_configuration->getAtlasName());
+        texture = Director::getInstance()->getTextureCache()->addImage(_configuration->getAtlasName());
     }
     else 
     {
@@ -511,8 +511,8 @@ bool LabelBMFont::initWithString(const std::string& theString, const std::string
         
         _imageOffset = imageOffset;
         
-        _reusedChar = new Sprite();
-        _reusedChar->initWithTexture(_textureAtlas->getTexture(), Rect(0, 0, 0, 0), false);
+        _reusedChar = Sprite::createWithTexture(_textureAtlas->getTexture(), Rect(0, 0, 0, 0));
+        _reusedChar->retain();
         _reusedChar->setBatchNode(this);
         
         this->setString(theString, true);
@@ -663,10 +663,8 @@ void LabelBMFont::createFontChars()
 			}
             else
             {
-                fontChar = new Sprite();
-                fontChar->initWithTexture(_textureAtlas->getTexture(), rect);
+                fontChar = Sprite::createWithTexture(_textureAtlas->getTexture(), rect);
                 addChild(fontChar, i, i);
-                fontChar->release();
 			}
             
             // Apply label properties
@@ -767,9 +765,9 @@ void LabelBMFont::setString(unsigned short *newString, bool needUpdateLabel)
     }
 }
 
-const char* LabelBMFont::getString(void) const
+const std::string& LabelBMFont::getString() const
 {
-    return _initialStringUTF8.c_str();
+    return _initialStringUTF8;
 }
 
 void LabelBMFont::setCString(const char *label)
@@ -1073,9 +1071,9 @@ void LabelBMFont::updateLabel()
         int size = multiline_string.size();
         unsigned short* str_new = new unsigned short[size + 1];
 
-        for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
         {
-            str_new[i] = multiline_string[i];
+            str_new[j] = multiline_string[j];
         }
 
         str_new[size] = '\0';
@@ -1199,9 +1197,9 @@ float LabelBMFont::getLetterPosXRight( Sprite* sp )
 }
 
 // LabelBMFont - FntFile
-void LabelBMFont::setFntFile(const char* fntFile)
+void LabelBMFont::setFntFile(const std::string& fntFile)
 {
-    if (fntFile != NULL && strcmp(fntFile, _fntFile.c_str()) != 0 )
+    if (_fntFile.compare(fntFile) != 0)
     {
         CCBMFontConfiguration *newConf = FNTConfigLoadFile(fntFile);
 
@@ -1213,14 +1211,14 @@ void LabelBMFont::setFntFile(const char* fntFile)
         CC_SAFE_RELEASE(_configuration);
         _configuration = newConf;
 
-        this->setTexture(TextureCache::getInstance()->addImage(_configuration->getAtlasName()));
+        this->setTexture(Director::getInstance()->getTextureCache()->addImage(_configuration->getAtlasName()));
         this->createFontChars();
     }
 }
 
-const char* LabelBMFont::getFntFile()
+const std::string& LabelBMFont::getFntFile() const
 {
-    return _fntFile.c_str();
+    return _fntFile;
 }
 
 

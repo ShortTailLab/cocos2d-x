@@ -74,8 +74,6 @@ Layer* nextAtlasActionNew()
     sceneIdx = sceneIdx % MAX_LAYER;
 
     auto layer = (createFunctions[sceneIdx])();
-    layer->autorelease();
-
     return layer;
 }
 
@@ -87,16 +85,12 @@ Layer* backAtlasActionNew()
         sceneIdx += total;    
     
     auto layer = (createFunctions[sceneIdx])();
-    layer->autorelease();
-
     return layer;
 }
 
 Layer* restartAtlasActionNew()
 {
     auto layer = (createFunctions[sceneIdx])();
-    layer->autorelease();
-
     return layer;
 }
 
@@ -1096,7 +1090,7 @@ LabelTTFFontsTestNew::LabelTTFFontsTestNew()
 
     auto size = Director::getInstance()->getWinSize();
 
-    for(int i=0;i < arraysize(ttfpaths); ++i) {
+    for(size_t i=0;i < arraysize(ttfpaths); ++i) {
         auto label = Label::createWithTTF( ttfpaths[i], ttfpaths[i], 40, 0, TextHAlignment::CENTER, GlyphCollection::NEHE);
         if( label ) {
             

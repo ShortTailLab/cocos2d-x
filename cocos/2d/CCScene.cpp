@@ -102,7 +102,7 @@ bool Scene::initWithPhysics()
         Director * pDirector;
         CC_BREAK_IF( ! (pDirector = Director::getInstance()) );
         this->setContentSize(pDirector->getWinSize());
-        CC_BREAK_IF(! (_physicsWorld = PhysicsWorld::create(*this)));
+        CC_BREAK_IF(! (_physicsWorld = PhysicsWorld::construct(*this)));
         
         this->scheduleUpdate();
         // success
@@ -133,12 +133,12 @@ void Scene::addChildToPhysicsWorld(Node* child)
     if (_physicsWorld)
     {
         std::function<void(Object*)> addToPhysicsWorldFunc = nullptr;
-        addToPhysicsWorldFunc = [this, &addToPhysicsWorldFunc](Object* child) -> void
+        addToPhysicsWorldFunc = [this, &addToPhysicsWorldFunc](Object* obj) -> void
         {
             
-            if (dynamic_cast<Node*>(child) != nullptr)
+            if (dynamic_cast<Node*>(obj) != nullptr)
             {
-                Node* node = dynamic_cast<Node*>(child);
+                Node* node = dynamic_cast<Node*>(obj);
                 
                 if (node->getPhysicsBody())
                 {
@@ -161,7 +161,11 @@ void Scene::update(float delta)
 {
     Node::update(delta);
     
-    _physicsWorld->update(delta);
+    if (nullptr != _physicsWorld)
+    {
+        _physicsWorld->update(delta);
+    }
+    
 }
 #endif
 

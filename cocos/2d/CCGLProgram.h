@@ -198,6 +198,12 @@ public:
     /** calls glUniform4fv only if the values are different than the previous call for this same shader program. */
     void setUniformLocationWith4fv(GLint location, GLfloat* floats, unsigned int numberOfArrays);
 
+    /** calls glUniformMatrix2fv only if the values are different than the previous call for this same shader program. */
+    void setUniformLocationWithMatrix2fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
+    
+    /** calls glUniformMatrix3fv only if the values are different than the previous call for this same shader program. */
+    void setUniformLocationWithMatrix3fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
+    
     /** calls glUniformMatrix4fv only if the values are different than the previous call for this same shader program. */
     void setUniformLocationWithMatrix4fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
     
@@ -245,7 +251,7 @@ private:
     GLint             _uniforms[UNIFORM_MAX];
     struct _hashUniformEntry* _hashForUniforms;
 
-	struct flag_struct {
+    struct flag_struct {
         unsigned int usesTime:1;
         unsigned int usesMVP:1;
         unsigned int usesMV:1;

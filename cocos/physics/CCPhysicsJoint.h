@@ -22,11 +22,10 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCPhysicsSetting.h"
-#ifdef CC_USE_PHYSICS
-
 #ifndef __CCPHYSICS_JOINT_H__
 #define __CCPHYSICS_JOINT_H__
+
+#ifdef CC_USE_PHYSICS
 
 #include "CCObject.h"
 #include "CCGeometry.h"
@@ -34,6 +33,7 @@
 NS_CC_BEGIN
 
 class PhysicsBody;
+class PhysicsWorld;
 class PhysicsJointInfo;
 class PhysicsBodyInfo;
 
@@ -47,14 +47,17 @@ protected:
     virtual ~PhysicsJoint() = 0;
 
 public:
-    PhysicsBody* getBodyA() const { return _bodyA; }
-    PhysicsBody* getBodyB() const { return _bodyB; }
+    inline PhysicsBody* getBodyA() const { return _bodyA; }
+    inline PhysicsBody* getBodyB() const { return _bodyB; }
+    inline PhysicsWorld* getWorld() const { return _world; }
     inline int getTag() const { return _tag; }
     inline void setTag(int tag) { _tag = tag; }
-    inline bool isEnable() const { return _enable; }
+    inline bool isEnabled() const { return _enable; }
     void setEnable(bool enable);
-    inline bool isCollisionEnable() const { return _collisionEnable; }
+    inline bool isCollisionEnabled() const { return _collisionEnable; }
     void setCollisionEnable(bool enable);
+    void removeFormWorld();
+    static void destroy(PhysicsJoint* joint);
     
 protected:
     bool init(PhysicsBody* a, PhysicsBody* b);
@@ -68,13 +71,16 @@ protected:
 protected:
     PhysicsBody* _bodyA;
     PhysicsBody* _bodyB;
+    PhysicsWorld* _world;
     PhysicsJointInfo* _info;
     bool _enable;
     bool _collisionEnable;
+    bool _destoryMark;
     int _tag;
     
     friend class PhysicsBody;
     friend class PhysicsWorld;
+    friend class PhysicsDebugDraw;
 };
 
 /*
@@ -83,7 +89,7 @@ protected:
 class PhysicsJointFixed : public PhysicsJoint
 {
 public:
-    static PhysicsJointFixed* create(PhysicsBody* a, PhysicsBody* b, const Point& anchr);
+    static PhysicsJointFixed* construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr);
     
 protected:
     bool init(PhysicsBody* a, PhysicsBody* b, const Point& anchr);
@@ -94,44 +100,12 @@ protected:
 };
 
 /*
- * @brief A sliding joint allows the two bodies to slide along a chosen axis.
- */
-class PhysicsJointSliding : public PhysicsJoint
-{
-public:
-    static PhysicsJointSliding* create(PhysicsBody* a, PhysicsBody* b, const Point& grooveA, const Point& grooveB, const Point& anchr);
-    
-protected:
-    bool init(PhysicsBody* a, PhysicsBody* b, const Point& grooveA, const Point& grooveB, const Point& anchr);
-    
-protected:
-    PhysicsJointSliding();
-    virtual ~PhysicsJointSliding();
-};
-
-/*
- * @brief A spring joint connects the two bodies with a spring whose length is the initial distance between the two bodies.
- */
-class PhysicsJointSpring : public PhysicsJoint
-{
-public:
-    PhysicsJointSpring* create();
-    
-protected:
-    bool init();
-    
-protected:
-    PhysicsJointSpring();
-    virtual ~PhysicsJointSpring();
-};
-
-/*
  * @brief A limit joint imposes a maximum distance between the two bodies, as if they were connected by a rope.
  */
 class PhysicsJointLimit : public PhysicsJoint
 {
 public:
-    PhysicsJointLimit* create(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2);
+    static PhysicsJointLimit* construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2);
     
     float getMin() const;
     void setMin(float min);
@@ -152,7 +126,7 @@ protected:
 class PhysicsJointPin : public PhysicsJoint
 {
 public:
-    static PhysicsJointPin* create(PhysicsBody* a, PhysicsBody* b, const Point& anchr);
+    static PhysicsJointPin* construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr);
     
     void setMaxForce(float force);
     float getMaxForce() const;
@@ -167,9 +141,8 @@ protected:
 
 class PhysicsJointDistance : public PhysicsJoint
 {
-    
 public:
-    static PhysicsJointDistance* create(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2);
+    static PhysicsJointDistance* construct(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2);
     
 protected:
     bool init(PhysicsBody* a, PhysicsBody* b, const Point& anchr1, const Point& anchr2);
@@ -181,6 +154,5 @@ protected:
 
 NS_CC_END
 
-#endif // __CCPHYSICS_JOINT_H__
-
 #endif // CC_USE_PHYSICS
+#endif // __CCPHYSICS_JOINT_H__

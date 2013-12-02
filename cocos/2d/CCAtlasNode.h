@@ -52,24 +52,8 @@ class CC_DLL AtlasNode : public NodeRGBA, public TextureProtocol
 {    
 public:
 	/** creates a AtlasNode  with an Atlas file the width and height of each item and the quantity of items to render*/
-	static AtlasNode * create(const char* tile,unsigned int tileWidth, unsigned int tileHeight,
-                              unsigned int itemsToRender);
-    /**
-     * @js ctor
-     */
-    AtlasNode();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~AtlasNode();
+	static AtlasNode * create(const std::string& filename, long tileWidth, long tileHeight, long itemsToRender);
 
-    /** initializes an AtlasNode  with an Atlas file the width and height of each item and the quantity of items to render*/
-    bool initWithTileFile(const char* tile, unsigned int tileWidth, unsigned int tileHeight, unsigned int itemsToRender);
-
-    /** initializes an AtlasNode  with a texture the width and height of each item measured in points and the quantity of items to render*/
-    bool initWithTexture(Texture2D* texture, unsigned int tileWidth, unsigned int tileHeight, unsigned int itemsToRender);
-    
     /** updates the Atlas (indexed vertex array).
     * Shall be overridden in subclasses
     */
@@ -78,8 +62,8 @@ public:
     void setTextureAtlas(TextureAtlas* textureAtlas);
     TextureAtlas* getTextureAtlas() const;
     
-    void setQuadsToDraw(unsigned int quadsToDraw);
-    unsigned int getQuadsToDraw() const;
+    void setQuadsToDraw(long quadsToDraw);
+    long getQuadsToDraw() const;
 
     
     // Overrides
@@ -105,24 +89,33 @@ public:
     */
     virtual const BlendFunc& getBlendFunc() const override;
 
-private :
+
+protected:
+    AtlasNode();
+    virtual ~AtlasNode();
+
+    /** initializes an AtlasNode  with an Atlas file the width and height of each item and the quantity of items to render*/
+    bool initWithTileFile(const std::string& tile, long tileWidth, long tileHeight, long itemsToRender);
+
+    /** initializes an AtlasNode  with a texture the width and height of each item measured in points and the quantity of items to render*/
+    bool initWithTexture(Texture2D* texture, long tileWidth, long tileHeight, long itemsToRender);
+
     void calculateMaxItems();
     void updateBlendFunc();
     void updateOpacityModifyRGB();
-    
+
     friend class Director;
     void setIgnoreContentScaleFactor(bool bIgnoreContentScaleFactor);
 
-protected:
     //! chars per row
-    unsigned int _itemsPerRow;
+    long    _itemsPerRow;
     //! chars per column
-    unsigned int _itemsPerColumn;
+    long    _itemsPerColumn;
 
     //! width of each char
-    unsigned int    _itemWidth;
+    long    _itemWidth;
     //! height of each char
-    unsigned int    _itemHeight;
+    long    _itemHeight;
     
     Color3B    _colorUnmodified;
     
@@ -132,11 +125,15 @@ protected:
     BlendFunc _blendFunc;
 
     // quads to draw
-    unsigned int _quadsToDraw;
+    long _quadsToDraw;
     // color uniform
     GLint    _uniformColor;
     // This varible is only used for LabelAtlas FPS display. So plz don't modify its value.
     bool _ignoreContentScaleFactor;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(AtlasNode);
+
 };
 
 // end of base_node group

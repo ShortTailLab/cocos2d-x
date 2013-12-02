@@ -109,30 +109,14 @@ object->getProperty(name_of_the_property);
 class CC_DLL TMXTiledMap : public Node
 {
 public:
-    /**
-     * @js ctor
-     */
-    TMXTiledMap();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~TMXTiledMap();
-
     /** creates a TMX Tiled Map with a TMX file.*/
-    static TMXTiledMap* create(const char *tmxFile);
+    static TMXTiledMap* create(const std::string& tmxFile);
 
     /** initializes a TMX Tiled Map with a TMX formatted XML string and a path to TMX resources */
-    static TMXTiledMap* createWithXML(const char* tmxString, const char* resourcePath);
-
-    /** initializes a TMX Tiled Map with a TMX file */
-    bool initWithTMXFile(const char *tmxFile);
-
-    /** initializes a TMX Tiled Map with a TMX formatted XML string and a path to TMX resources */
-    bool initWithXML(const char* tmxString, const char* resourcePath);
+    static TMXTiledMap* createWithXML(const std::string& tmxString, const std::string& resourcePath);
 
     /** return the TMXLayer for the specific layer */
-    TMXLayer* getLayer(const char *layerName) const;
+    TMXLayer* getLayer(const std::string& layerName) const;
     /**
      * @js NA
      * @lua NA
@@ -140,7 +124,7 @@ public:
     CC_DEPRECATED_ATTRIBUTE TMXLayer* layerNamed(const char *layerName) const { return getLayer(layerName); };
 
     /** return the TMXObjectGroup for the specific group */
-    TMXObjectGroup* getObjectGroup(const char *groupName) const;
+    TMXObjectGroup* getObjectGroup(const std::string& groupName) const;
     /**
      * @js NA
      * @lua NA
@@ -148,7 +132,7 @@ public:
     CC_DEPRECATED_ATTRIBUTE TMXObjectGroup* objectGroupNamed(const char *groupName) const { return getObjectGroup(groupName); };
 
     /** return the value for the specific property name */
-    String *getProperty(const char *propertyName) const;
+    String *getProperty(const std::string& propertyName) const;
     /**
      * @js NA
      * @lua NA
@@ -187,11 +171,27 @@ public:
         _properties = properties;
     };
     
-private:
+protected:
+    /**
+     * @js ctor
+     */
+    TMXTiledMap();
+    /**
+     * @js NA
+     * @lua NA
+     */
+    virtual ~TMXTiledMap();
+
+    /** initializes a TMX Tiled Map with a TMX file */
+    bool initWithTMXFile(const std::string& tmxFile);
+
+    /** initializes a TMX Tiled Map with a TMX formatted XML string and a path to TMX resources */
+    bool initWithXML(const std::string& tmxString, const std::string& resourcePath);
+    
     TMXLayer * parseLayer(TMXLayerInfo *layerInfo, TMXMapInfo *mapInfo);
     TMXTilesetInfo * tilesetForLayer(TMXLayerInfo *layerInfo, TMXMapInfo *mapInfo);
     void buildWithMapInfo(TMXMapInfo* mapInfo);
-protected:
+
     /** the map's size property measured in tiles */
     Size _mapSize;
     /** the tiles's size property measured in pixels */
@@ -205,6 +205,9 @@ protected:
     
     //! tile properties
     Dictionary* _tileProperties;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(TMXTiledMap);
 
 };
 

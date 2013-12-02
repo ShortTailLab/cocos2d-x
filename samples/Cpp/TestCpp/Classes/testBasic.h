@@ -11,22 +11,14 @@ using namespace std;
 class TestScene : public Scene
 {
 public: 
-    TestScene(bool bPortrait = false);
-    virtual bool initTest();
+    TestScene(bool bPortrait = false, bool physics = false);
     virtual void onEnter();
 
     virtual void runThisTest() = 0;
 };
 
-typedef Layer* (*NEWTESTFUNC)();
-#define TESTLAYER_CREATE_FUNC(className) \
-static Layer* create##className() \
-{ return new className(); }
-
-#define CF(className) create##className
-
 // C++ 11
 
-#define CL(__className__) [](){ return new __className__();}
+#define CL(__className__) [](){ return __className__::create();}
 
 #endif
