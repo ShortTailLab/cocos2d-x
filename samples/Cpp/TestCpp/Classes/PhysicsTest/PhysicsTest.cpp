@@ -360,14 +360,14 @@ Sprite* PhysicsDemo::makeTriangle(Point point, Size size, PhysicsMaterial materi
 bool PhysicsDemo::onTouchBegan(Touch* touch, Event* event)
 {
     auto location = touch->getLocation();
-    Array* arr = _scene->getPhysicsWorld()->getShapes(location);
+    auto arr = _scene->getPhysicsWorld()->getShapes(location);
     
     PhysicsBody* body = nullptr;
-    for (Object* obj : *arr)
+    for (auto& obj : arr)
     {
-        if ((dynamic_cast<PhysicsShape*>(obj)->getBody()->getTag() & DRAG_BODYS_TAG) != 0)
+        if ((obj->getBody()->getTag() & DRAG_BODYS_TAG) != 0)
         {
-            body = dynamic_cast<PhysicsShape*>(obj)->getBody();
+            body = obj->getBody();
             break;
         }
     }
@@ -686,7 +686,6 @@ void PhysicsDemoJoints::onEnter()
     node->setPhysicsBody(box);
     box->setDynamic(false);
     node->setPosition(Point::ZERO);
-    
     this->addChild(node);
     
     for (int i = 0; i < 4; ++i)
@@ -749,9 +748,115 @@ void PhysicsDemoJoints::onEnter()
                     auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
                     sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
                     
-                    PhysicsJointLimit* joint = PhysicsJointLimit::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), Point::ZERO, Point::ZERO);
-                    joint->setMin(30.0f);
-                    joint->setMax(60.0f);
+                    PhysicsJointLimit* joint = PhysicsJointLimit::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), Point::ZERO, Point::ZERO, 30.0f, 60.0f);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 4:
+                {
+                    auto sp1 = makeBall(offset - Point(30, 0), 10);
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    PhysicsJointSpring* joint = PhysicsJointSpring::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), Point::ZERO, Point::ZERO, 500.0f, 0.3f);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 5:
+                {
+                    auto sp1 = makeBall(offset - Point(30, 0), 10);
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    PhysicsJointGroove* joint = PhysicsJointGroove::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), Point(30, 15), Point(30, -15), Point(-30, 0));
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 6:
+                {
+                    auto sp1 = makeBox(offset - Point(30, 0), Size(30, 10));
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp1->getPhysicsBody(), box, sp1->getPosition()));
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp2->getPhysicsBody(), box, sp2->getPosition()));
+                    PhysicsJointRotarySpring* joint = PhysicsJointRotarySpring::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), 3000.0f, 60.0f);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 7:
+                {
+                    auto sp1 = makeBox(offset - Point(30, 0), Size(30, 10));
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp1->getPhysicsBody(), box, sp1->getPosition()));
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp2->getPhysicsBody(), box, sp2->getPosition()));
+                    PhysicsJointRotaryLimit* joint = PhysicsJointRotaryLimit::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), 0.0f, M_PI_2);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 8:
+                {
+                    auto sp1 = makeBox(offset - Point(30, 0), Size(30, 10));
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp1->getPhysicsBody(), box, sp1->getPosition()));
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp2->getPhysicsBody(), box, sp2->getPosition()));
+                    PhysicsJointRatchet* joint = PhysicsJointRatchet::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), 0.0f, M_PI_2);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 9:
+                {
+                    auto sp1 = makeBox(offset - Point(30, 0), Size(30, 10));
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp1->getPhysicsBody(), box, sp1->getPosition()));
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp2->getPhysicsBody(), box, sp2->getPosition()));
+                    PhysicsJointGear* joint = PhysicsJointGear::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), 0.0f, 2.0f);
+                    _scene->getPhysicsWorld()->addJoint(joint);
+                    
+                    this->addChild(sp1);
+                    this->addChild(sp2);
+                    break;
+                }
+                case 10:
+                {
+                    auto sp1 = makeBox(offset - Point(30, 0), Size(30, 10));
+                    sp1->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    auto sp2 = makeBox(offset + Point(30, 0), Size(30, 10));
+                    sp2->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+                    
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp1->getPhysicsBody(), box, sp1->getPosition()));
+                    _scene->getPhysicsWorld()->addJoint(PhysicsJointPin::construct(sp2->getPhysicsBody(), box, sp2->getPosition()));
+                    PhysicsJointMotor* joint = PhysicsJointMotor::construct(sp1->getPhysicsBody(), sp2->getPhysicsBody(), M_PI_2);
                     _scene->getPhysicsWorld()->addJoint(joint);
                     
                     this->addChild(sp1);
@@ -912,9 +1017,8 @@ void PhysicsDemoPump::onEnter()
 
 void PhysicsDemoPump::update(float delta)
 {
-    for (auto obj : *_scene->getPhysicsWorld()->getAllBodies())
+    for (const auto& body : _scene->getPhysicsWorld()->getAllBodies())
     {
-        PhysicsBody* body = dynamic_cast<PhysicsBody*>(obj);
         if (body->getTag() == DRAG_BODYS_TAG && body->getPosition().y < 0.0f)
         {
             body->getNode()->setPosition(VisibleRect::leftTop() + Point(75 + CCRANDOM_0_1() * 90, 0));
