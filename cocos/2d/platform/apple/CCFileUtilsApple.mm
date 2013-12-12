@@ -280,6 +280,9 @@ bool FileUtilsApple::moveFile(const std::string &srcPath, const std::string &dst
     }
     return false;
 }
+std::string FileUtilsApple::getFileMD5FromZip(const std::string& path) {
+    return path;
+}
 
 
 std::string FileUtilsApple::getWritablePath() const
