@@ -3,7 +3,7 @@
 //  cocos2dx
 //
 //  Created by YangWenXin on 13-12-9.
-//  Copyright (c) 2013 cocos2d-x. All rights reserved.
+//  Copyright (c) 2013年 cocos2d-x. All rights reserved.
 //
 
 #include "EffectCamera.h"
@@ -36,8 +36,10 @@ bool EffectCamera::init() {
     _targetScaleX = 1;
     _targetScaleY = 1;
     
+    _cameraCenterX = -1;
+    _cameraCenterY = -1;
+    _dirtyCameraCenter = false;
     _checkOffset = false;
-    
     _isShaking = false;
     
     kmMat4Identity(&_transformMatrix);
@@ -45,7 +47,7 @@ bool EffectCamera::init() {
     kmMat4Identity(&_mScale);
     kmMat4Identity(&_mRotation);
     kmMat4Identity(&_mTemp);
-
+    
     return true;
 }
 
@@ -70,8 +72,8 @@ void EffectCamera::visit() {
     if (_isShaking) {
         if (_duration > 0) {
             srand((unsigned)time(NULL));
-            _currentOffsetX = _targetOffsetX + rand()%((int)_peak+1);
-            _currentOffsetY = _targetOffsetY + rand()%((int)_peak+1);
+            _currentOffsetX = _targetOffsetX + rand()%((int)_peak+1) - _peak/2;
+            _currentOffsetY = _targetOffsetY + rand()%((int)_peak+1) - _peak/2;
             _peak -= _peakReduceGap;
             _duration--;
         }
@@ -83,14 +85,14 @@ void EffectCamera::visit() {
         _dirtyT = true;
     }
     else {
-        // translate
-        adjustGap(_currentOffsetX, _targetOffsetX, GAP_TRANSLATE, _dirtyT);
-        adjustGap(_currentOffsetY, _targetOffsetY, GAP_TRANSLATE, _dirtyT);
         // scale
-        adjustGap(_currentScaleX, _targetScaleX, GAP_SCALE, _dirtyS);
-        adjustGap(_currentScaleY, _targetScaleY, GAP_SCALE, _dirtyS);
+        adjustGap(_currentScaleX, _targetScaleX, _gapScale, _dirtyS);
+        adjustGap(_currentScaleY, _targetScaleY, _gapScale, _dirtyS);
+        // translate
+        adjustGap(_currentOffsetX, _targetOffsetX, _gapTranslateX, _dirtyT);
+        adjustGap(_currentOffsetY, _targetOffsetY, _gapTranslateY, _dirtyT);
         // rotation
-        adjustGap(_currrentRotation, _targetRotation, GAP_ROTATION, _dirtyR);
+        adjustGap(_currrentRotation, _targetRotation, _gapRotation, _dirtyR);
     }
     if (_dirtyT || _dirtyR || _dirtyS) {
         kmMat4Translation(&_mTranslate, _currentOffsetX, _currentOffsetY, 0);
@@ -105,6 +107,29 @@ void EffectCamera::visit() {
         }
     }
     kmGLMultMatrix(&_transformMatrix);
+}
+
+void EffectCamera::calculateCameraCenter(float touchInScreenX, float touchInScreenY) {
+    float leftBottomX, leftBottomY, rightTopX, rightTopY;
+    leftBottomX = _originalX + _currentOffsetX - _currentScaleX*_originalWidth*_originalAnchorPointX;
+    leftBottomY = _originalY + _currentOffsetY - _currentScaleY*_originalHeight*_originalAnchorPointY;
+    rightTopX = _originalX + _currentOffsetX + _currentScaleX*_originalWidth*(1-_originalAnchorPointX);
+    rightTopY = _originalY + _currentOffsetY + _currentScaleY*_originalHeight*(1-_originalAnchorPointY);
+    if (touchInScreenX < leftBottomX) {
+        touchInScreenX = leftBottomX;
+    }
+    else if (touchInScreenX > rightTopX) {
+        touchInScreenX = rightTopX;
+    }
+    if (touchInScreenY < leftBottomY) {
+        touchInScreenY = leftBottomY;
+    }
+    else if (touchInScreenY > rightTopY) {
+        touchInScreenY = rightTopY;
+    }
+    _cameraCenterX = (touchInScreenX - leftBottomX)/(_currentScaleX*_originalWidth);
+    _cameraCenterY = (touchInScreenY - leftBottomY)/(_currentScaleY*_originalHeight);
+    _dirtyCameraCenter = true;
 }
 
 void EffectCamera::adjustGap(float &src, float &dst, const float &gap, bool &dirty) {
@@ -122,32 +147,70 @@ void EffectCamera::adjustGap(float &src, float &dst, const float &gap, bool &dir
     }
 }
 
-void EffectCamera::scrollTo(float offsetX, float offsetY) {
+void EffectCamera::scrollTo(float offsetX, float offsetY, int scrollDuration) {
+    _gapTranslateX = fabsf(offsetX-_targetOffsetX)/scrollDuration;
+    _gapTranslateY = fabsf(offsetY-_targetOffsetY)/scrollDuration;
     _targetOffsetX = offsetX;
     _targetOffsetY = offsetY;
 }
 
-void EffectCamera::scrollToInc(float incOffsetX, float incOffsetY) {
+void EffectCamera::scrollToInc(float incOffsetX, float incOffsetY, int scrollDuration) {
+    _gapTranslateX = fabsf(incOffsetX)/scrollDuration;
+    _gapTranslateY = fabsf(incOffsetY)/scrollDuration;
     _targetOffsetX += incOffsetX;
     _targetOffsetY += incOffsetY;
 }
 
 void EffectCamera::scaleTo(float scaleX, float scaleY) {
+    _gapScale = fabsf(scaleX-_targetScaleX);
+    if (_dirtyCameraCenter) {
+        scrollToInc(-(scaleX-_targetScaleX)*(_cameraCenterX-_originalAnchorPointX)*_originalWidth,
+                    -(scaleY-_targetScaleY)*(_cameraCenterY-_originalAnchorPointY)*_originalHeight, 1);
+        _dirtyCameraCenter = false;
+    }
     _targetScaleX = scaleX;
     _targetScaleY = scaleY;
 }
 
 void EffectCamera::scaleToInc(float incScaleX, float incScaleY) {
+    _gapScale = fabsf(incScaleX);
     _targetScaleX += incScaleX;
     _targetScaleY += incScaleY;
+    if (_dirtyCameraCenter) {
+        scrollToInc(-incScaleX*(_cameraCenterX-_originalAnchorPointX)*_originalWidth,
+                    -incScaleY*(_cameraCenterY-_originalAnchorPointY)*_originalHeight, 1);
+        _dirtyCameraCenter = false;
+    }
 }
 
 void EffectCamera::rotateTo(float rotation) {
+    _gapRotation = fabsf(rotation-_targetRotation);
+    if (_dirtyCameraCenter) {
+        float lengthX = (_cameraCenterX-_originalAnchorPointX)*_originalWidth*_targetScaleX;
+        float lengthY = (_cameraCenterY-_originalAnchorPointY)*_originalHeight*_targetScaleY;
+        float length = sqrtf(lengthX*lengthX + lengthY*lengthY);
+        float angle1 = _targetRotation - rotation;
+        float angle2 = atan2f((_originalAnchorPointY-_cameraCenterY)*_originalHeight*_targetScaleY, (_originalAnchorPointX-_cameraCenterX)*_originalWidth*_targetScaleX);
+        scrollToInc(length*(cosf(angle1+angle2)-cosf(angle2)),
+                    length*(sinf(angle1+angle2)-sinf(angle2)), 1);
+        _dirtyCameraCenter = false;
+    }
     _targetRotation = rotation;
 }
 
 void EffectCamera::rotateToInc(float incRotation) {
+    _gapRotation = fabsf(incRotation);
     _targetRotation += incRotation;
+    if (_dirtyCameraCenter) {
+        float lengthX = (_cameraCenterX-_originalAnchorPointX)*_originalWidth*_targetScaleX;
+        float lengthY = (_cameraCenterY-_originalAnchorPointY)*_originalHeight*_targetScaleY;
+        float length = sqrtf(lengthX*lengthX + lengthY*lengthY);
+        float angle1 = incRotation;
+        float angle2 = atan2f((_originalAnchorPointY-_cameraCenterY)*_originalHeight*_targetScaleY, (_originalAnchorPointX-_cameraCenterX)*_originalWidth*_targetScaleX);
+        scrollToInc(length*(cosf(angle1+angle2)-cosf(angle2)),
+                    length*(sinf(angle1+angle2)-sinf(angle2)), 1);
+        _dirtyCameraCenter = false;
+    }
 }
 
 void EffectCamera::shake(float peak, int duration) {

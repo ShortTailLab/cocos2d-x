@@ -3,7 +3,7 @@
 //  cocos2dx
 //
 //  Created by YangWenXin on 13-12-9.
-//  Copyright (c) 2013 cocos2d-x. All rights reserved.
+//  Copyright (c) 2013年 cocos2d-x. All rights reserved.
 //
 
 #ifndef cocos2dx_EffectCamera_h
@@ -15,7 +15,7 @@
 NS_CC_BEGIN
 
 class EffectCamera : public Object {
-private:
+    private:
     float _originalX;
     float _originalY;
     float _originalAnchorPointX;
@@ -35,6 +35,14 @@ private:
     float _targetScaleY;
     float _targetRotation;
     
+    float _cameraCenterX;
+    float _cameraCenterY;
+    
+    float _gapTranslateX;
+    float _gapTranslateY;
+    float _gapScale;
+    float _gapRotation;
+    
     /** checks position in case leaving blank area in sreen, like COC */
     bool _checkOffset;
     
@@ -53,11 +61,12 @@ private:
     bool _dirtyT;
     bool _dirtyS;
     bool _dirtyR;
+    bool _dirtyCameraCenter;
     
     bool init();
     void adjustGap(float &src, float &dst, const float &gap, bool &dirty);
     
-public:
+    public:
     EffectCamera();
     
     /** init effect camera, if you don't enable checkOffset feature, this function must not be called
@@ -72,41 +81,28 @@ public:
      */
     void initWithParams(float originalX, float originalY, float originalAnchorPointX, float originalAnchorPointY, float originalWidth, float originalHeight, bool checkOffset);
     
-    /** visit every frame */
     void visit();
     
     ~EffectCamera();
     
-    /** scroll the camera to specified offset from anchor point */
-    void scrollTo(float offsetX, float offsetY);
+    void calculateCameraCenter(float touchInScreenX, float touchInScreenY);
     
-    /** increase camera offset */
-    void scrollToInc(float incOffsetX, float incOffsetY);
+    void scrollTo(float offsetX, float offsetY, int scrollDuration=5);
     
-    /** scale camera from anchor point */
+    void scrollToInc(float incOffsetX, float incOffsetY, int scrollDuration=10);
+    
     void scaleTo(float scaleX, float scaleY);
     
-    /** increase camera scale */
     void scaleToInc(float incScaleX, float incScaleY);
     
-    /** rotate camera by anchor point */
     void rotateTo(float rotation);
     
-    /** increase rotation */
     void rotateToInc(float incRotation);
     
-    /** shake camera
-     * @param peak  shaking peak, the bigger the stronger shaking effect
-     * @param duration  shaking duration by frames
-     */
     void shake(float peak, int duration);
     
     void reset();
 };
-
-static const float GAP_TRANSLATE = 5.0f;
-static const float GAP_SCALE = 0.05f;
-static const float GAP_ROTATION = 0.05f;
 
 NS_CC_END
 

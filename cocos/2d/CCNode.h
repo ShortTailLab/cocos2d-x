@@ -46,6 +46,7 @@
 NS_CC_BEGIN
 
 class Camera;
+class EffectCamera;
 class GridBase;
 class Point;
 class Touch;
