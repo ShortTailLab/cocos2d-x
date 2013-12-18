@@ -77,7 +77,7 @@ bool FileUtilsAndroid::init()
 }
 
 // swen
-std::string CCFileUtilsAndroid::getApplicationSupportPath() {
+std::string FileUtilsAndroid::getApplicationSupportPath() {
     string dir("");
     string tmp = getCachePathJNI();
     
@@ -89,40 +89,40 @@ std::string CCFileUtilsAndroid::getApplicationSupportPath() {
         return "";
     }
 }
-bool CCFileUtilsAndroid::isDirectoryExist(const std::string& path) {
+bool FileUtilsAndroid::isDirectoryExist(const std::string& path) {
     return isFileExist(path);
 }
-bool CCFileUtilsAndroid::createDirecotory(const std::string& path) {
+bool FileUtilsAndroid::createDirecotory(const std::string& path) {
     if (createDirectoryJNI(path.c_str())) {
         return true;
     }
     return false;
 }
-bool CCFileUtilsAndroid::createFile(const std::string& path, const std::string& fileName) {
+bool FileUtilsAndroid::createFile(const std::string& path, const std::string& fileName) {
     if (createFileJNI(path.c_str(), fileName.c_str())) {
         return true;
     }
     return false;
 }
-bool CCFileUtilsAndroid::removeDirectory(const std::string& path) {
+bool FileUtilsAndroid::removeDirectory(const std::string& path) {
     if (removeDirectoryJNI(path.c_str())) {
         return true;
     }
     return false;
 }
-bool CCFileUtilsAndroid::removeFile(const std::string& path, const std::string& fileName) {
+bool FileUtilsAndroid::removeFile(const std::string& path, const std::string& fileName) {
     if (removeFileJNI(path.c_str(), fileName.c_str())) {
         return true;
     }
     return false;
 }
-bool CCFileUtilsAndroid::moveFile(const std::string& srcPath, const std::string& dstPath) {
+bool FileUtilsAndroid::moveFile(const std::string& srcPath, const std::string& dstPath) {
     if (moveFileJNI(srcPath.c_str(), dstPath.c_str())) {
         return true;
     }
     return false;
 }
-std::string CCFileUtilsAndroid::getFileMD5FromZip(const std::string& path) {
+std::string FileUtilsAndroid::getFileMD5FromZip(const std::string& path) {
     return getFileMD5FromZipJNI(path.c_str());
 }
 
