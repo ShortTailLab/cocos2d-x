@@ -25,7 +25,7 @@ THE SOFTWARE.
 #ifndef __CC_FRAMEWORK_COMCONTAINER_H__
 #define __CC_FRAMEWORK_COMCONTAINER_H__
 
-#include "CCDictionary.h"
+#include "CCMap.h"
 
 NS_CC_BEGIN
 
@@ -46,11 +46,11 @@ public:
      * @lua NA
      */
     virtual ~ComponentContainer(void);
-    virtual Component* get(const char *pName) const;
-    virtual bool add(Component *pCom);
-    virtual bool remove(const char *pName);
+    virtual Component* get(const char *name) const;
+    virtual bool add(Component *com);
+    virtual bool remove(const char *name);
     virtual void removeAll();
-    virtual void visit(float fDelta);
+    virtual void visit(float delta);
 public:
     bool isEmpty() const;
     
@@ -58,7 +58,7 @@ private:
     void alloc(void);
     
 private:
-    Dictionary *_components;        ///< Dictionary of components
+    Map<std::string, Component*>* _components;
     Node *_owner;
     
     friend class Node;

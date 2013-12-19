@@ -39,6 +39,7 @@
 #include "CCProtocols.h"
 #include "CCEventDispatcher.h"
 #include "CCVector.h"
+#include "kazmath/kazmath.h"
 
 NS_CC_BEGIN
 
@@ -47,12 +48,10 @@ class GridBase;
 class Point;
 class Touch;
 class Action;
-class RGBAProtocol;
 class LabelProtocol;
 class Scheduler;
 class ActionManager;
 class Component;
-class Dictionary;
 class ComponentContainer;
 class EventDispatcher;
 #ifdef CC_USE_PHYSICS
@@ -152,11 +151,11 @@ public:
 
     /**
      * Gets the description string. It makes debugging easier.
-     * @return A string terminated with '\0'
+     * @return A string
      * @js NA
      * @lua NA
      */
-    const char* description(void) const;
+    virtual std::string getDescription() const;
 
     /// @} end of initializers
 
@@ -603,7 +602,7 @@ public:
      * Composing a "tree" structure is a very important feature of Node
      * Here's a sample code of traversing children array:
      @code
-     Node* node = NULL;
+     Node* node = nullptr;
      CCARRAY_FOREACH(parent->getChildren(), node)
      {
         node->setPosition(0,0);
@@ -621,7 +620,7 @@ public:
      *
      * @return The amount of children.
      */
-    int getChildrenCount() const;
+    ssize_t getChildrenCount() const;
 
     /**
      * Sets the parent node
@@ -750,7 +749,7 @@ public:
      parent->addChild(node2);
      parent->addChild(node3);
      // identify by tags
-     Node* node = NULL;
+     Node* node = nullptr;
      CCARRAY_FOREACH(parent->getChildren(), node)
      {
          switch(node->getTag())
@@ -1042,10 +1041,10 @@ public:
      *
      * @return The number of actions that are running plus the ones that are schedule to run
      */
-    int getNumberOfRunningActions() const;
+    ssize_t getNumberOfRunningActions() const;
 
     /** @deprecated Use getNumberOfRunningActions() instead */
-    CC_DEPRECATED_ATTRIBUTE int numberOfRunningActions() const { return getNumberOfRunningActions(); };
+    CC_DEPRECATED_ATTRIBUTE ssize_t numberOfRunningActions() const { return getNumberOfRunningActions(); };
 
     /// @} end of Actions
 
@@ -1227,35 +1226,40 @@ public:
      * Returns the matrix that transform the node's (local) space coordinates into the parent's space coordinates.
      * The matrix is in Pixels.
      */
-    virtual const AffineTransform& getNodeToParentTransform() const;
+    virtual const kmMat4& getNodeToParentTransform() const;
+    virtual AffineTransform getNodeToParentAffineTransform() const;
 
     /** @deprecated use getNodeToParentTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToParentTransform() const { return getNodeToParentTransform(); }
+    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
 
     /**
      * Returns the matrix that transform parent's space coordinates to the node's (local) space coordinates.
      * The matrix is in Pixels.
      */
-    virtual const AffineTransform& getParentToNodeTransform() const;
+    virtual const kmMat4& getParentToNodeTransform() const;
+    virtual AffineTransform getParentToNodeAffineTransform() const;
 
     /** @deprecated Use getParentToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform parentToNodeTransform() const { return getParentToNodeTransform(); }
+    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform parentToNodeTransform() const { return getParentToNodeAffineTransform(); }
 
     /**
      * Returns the world affine transform matrix. The matrix is in Pixels.
      */
-    virtual AffineTransform getNodeToWorldTransform() const;
+    virtual kmMat4 getNodeToWorldTransform() const;
+    virtual AffineTransform getNodeToWorldAffineTransform() const;
 
     /** @deprecated Use getNodeToWorldTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldTransform(); }
+    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldAffineTransform(); }
 
     /**
      * Returns the inverse world affine transform matrix. The matrix is in Pixels.
      */
-    virtual AffineTransform getWorldToNodeTransform() const;
+    virtual kmMat4 getWorldToNodeTransform() const;
+    virtual AffineTransform getWorldToNodeAffineTransform() const;
+
 
     /** @deprecated Use worldToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeTransform(); }
+    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeAffineTransform(); }
 
     /// @} end of Transformations
 
@@ -1344,6 +1348,7 @@ public:
      @endcode
      */
     void setAdditionalTransform(const AffineTransform& additionalTransform);
+    void setAdditionalTransform(const kmMat4& additionalTransform);
 
     /// @} end of Coordinate Converters
 
@@ -1388,6 +1393,24 @@ public:
     virtual bool updatePhysicsTransform();
 
 #endif
+    
+    // overrides
+    virtual GLubyte getOpacity() const;
+    virtual GLubyte getDisplayedOpacity() const;
+    virtual void setOpacity(GLubyte opacity);
+    virtual void updateDisplayedOpacity(GLubyte parentOpacity);
+    virtual bool isCascadeOpacityEnabled() const;
+    virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled);
+    
+    virtual const Color3B& getColor(void) const;
+    virtual const Color3B& getDisplayedColor() const;
+    virtual void setColor(const Color3B& color);
+    virtual void updateDisplayedColor(const Color3B& parentColor);
+    virtual bool isCascadeColorEnabled() const;
+    virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
+    
+    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB() const { return false; };
 
 protected:
     // Nodes should be created using create();
@@ -1402,10 +1425,16 @@ protected:
     void insertChild(Node* child, int z);
 
     /// Removes a child, call child->onExit(), do cleanup, remove it from children array.
-    void detachChild(Node *child, int index, bool doCleanup);
+    void detachChild(Node *child, ssize_t index, bool doCleanup);
 
     /// Convert cocos2d coordinates to UI windows coordinate.
     Point convertToWindowSpace(const Point& nodePoint) const;
+    
+    virtual void updateCascadeOpacity();
+    virtual void disableCascadeOpacity();
+    virtual void updateCascadeColor();
+    virtual void disableCascadeColor();
+    virtual void updateColor() {}
 
 
     float _rotationX;                 ///< rotation angle on x-axis
@@ -1427,9 +1456,10 @@ protected:
     Size _contentSize;             ///< untransformed size of the node
 
     // "cache" variables are allowed to be mutable
-    mutable AffineTransform _additionalTransform; ///< transform
-    mutable AffineTransform _transform;     ///< transform
-    mutable AffineTransform _inverse;       ///< inverse transform
+    mutable kmMat4 _additionalTransform; ///< transform
+    mutable kmMat4 _transform;     ///< transform
+    mutable kmMat4 _inverse;       ///< inverse transform
+    kmMat4  _modelViewTransform;    ///< ModelView transform of the Node.
     mutable bool _additionalTransformDirty;   ///< The flag to check whether the additional transform is dirty
     mutable bool _transformDirty;             ///< transform dirty flag
     mutable bool _inverseDirty;               ///< inverse transform dirty flag
@@ -1477,6 +1507,14 @@ protected:
 #ifdef CC_USE_PHYSICS
     PhysicsBody* _physicsBody;        ///< the physicsBody the node have
 #endif
+    
+    // opacity controls
+    GLubyte		_displayedOpacity;
+    GLubyte     _realOpacity;
+    Color3B	    _displayedColor;
+    Color3B     _realColor;
+    bool		_cascadeColorEnabled;
+    bool        _cascadeOpacityEnabled;
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Node);
@@ -1485,49 +1523,41 @@ private:
 //#pragma mark - NodeRGBA
 
 /** NodeRGBA is a subclass of Node that implements the RGBAProtocol protocol.
-
+ 
  All features from Node are valid, plus the following new features:
  - opacity
  - RGB colors
-
+ 
  Opacity/Color propagates into children that conform to the RGBAProtocol if cascadeOpacity/cascadeColor is enabled.
  @since v2.1
  */
-class CC_DLL NodeRGBA : public Node, public RGBAProtocol
+class CC_DLL __NodeRGBA : public Node, public __RGBAProtocol
 {
 public:
     // overrides
-    virtual GLubyte getOpacity() const override;
-    virtual GLubyte getDisplayedOpacity() const  override;
-    virtual void setOpacity(GLubyte opacity) override;
-    virtual void updateDisplayedOpacity(GLubyte parentOpacity) override;
-    virtual bool isCascadeOpacityEnabled() const  override;
-    virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled) override;
+    virtual GLubyte getOpacity() const override { return Node::getOpacity(); }
+    virtual GLubyte getDisplayedOpacity() const  override { return Node::getDisplayedOpacity(); }
+    virtual void setOpacity(GLubyte opacity) override { return Node::setOpacity(opacity); }
+    virtual void updateDisplayedOpacity(GLubyte parentOpacity) override { return Node::updateDisplayedOpacity(parentOpacity); }
+    virtual bool isCascadeOpacityEnabled() const  override { return Node::isCascadeOpacityEnabled(); }
+    virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled) override { return Node::setCascadeOpacityEnabled(cascadeOpacityEnabled); }
 
-    virtual const Color3B& getColor(void) const override;
-    virtual const Color3B& getDisplayedColor() const override;
-    virtual void setColor(const Color3B& color) override;
-    virtual void updateDisplayedColor(const Color3B& parentColor) override;
-    virtual bool isCascadeColorEnabled() const override;
-    virtual void setCascadeColorEnabled(bool cascadeColorEnabled) override;
+    virtual const Color3B& getColor(void) const override { return Node::getColor(); }
+    virtual const Color3B& getDisplayedColor() const override { return Node::getDisplayedColor(); }
+    virtual void setColor(const Color3B& color) override { return Node::setColor(color); }
+    virtual void updateDisplayedColor(const Color3B& parentColor) override { return Node::updateDisplayedColor(parentColor); }
+    virtual bool isCascadeColorEnabled() const override { return Node::isCascadeColorEnabled(); }
+    virtual void setCascadeColorEnabled(bool cascadeColorEnabled) override { return Node::setCascadeColorEnabled(cascadeColorEnabled); }
 
-    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);};
-    virtual bool isOpacityModifyRGB() const override { return false; };
+    virtual void setOpacityModifyRGB(bool bValue) override { return Node::setOpacityModifyRGB(bValue); }
+    virtual bool isOpacityModifyRGB() const override { return Node::isOpacityModifyRGB(); }
 
 protected:
-    NodeRGBA();
-    virtual ~NodeRGBA();
-    virtual bool init();
-
-	GLubyte		_displayedOpacity;
-    GLubyte     _realOpacity;
-	Color3B	    _displayedColor;
-    Color3B     _realColor;
-	bool		_cascadeColorEnabled;
-    bool        _cascadeOpacityEnabled;
+    __NodeRGBA();
+    virtual ~__NodeRGBA() {}
 
 private:
-    CC_DISALLOW_COPY_AND_ASSIGN(NodeRGBA);
+    CC_DISALLOW_COPY_AND_ASSIGN(__NodeRGBA);
 };
 
 // end of base_node group
