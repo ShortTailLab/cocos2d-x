@@ -68,7 +68,8 @@ static bool pollCurlEvents();
 // Callback function used by libcurl for collect response data
 static size_t writeData(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    std::vector<char> *recvBuffer = (std::vector<char>*)stream;
+    HttpResponse* resp = (HttpResponse*)stream;
+    std::vector<char>* recvBuffer = resp->getResponseData();
     size_t sizes = size * nmemb;
     
     // add data to the end of recvBuffer
@@ -90,7 +91,8 @@ size_t writeDataToFile(void *ptr, size_t size, size_t nmemb, void *stream)
 // Callback function used by libcurl for collect header data
 static size_t writeHeaderData(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    std::vector<char> *recvBuffer = (std::vector<char>*)stream;
+    HttpResponse* resp = (HttpResponse*)stream;
+    std::vector<char>* recvBuffer = resp->getResponseHeader();
     size_t sizes = size * nmemb;
     
     // add data to the end of recvBuffer
