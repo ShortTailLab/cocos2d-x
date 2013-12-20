@@ -454,7 +454,7 @@ bool pollCurlEvents()
     
     if (runningHandles)
     {
-//        curl_multi_wait(curlMultiHandle, NULL, 0, 50, NULL);
+        curl_multi_wait(curlMultiHandle, NULL, 0, 50, NULL);
         return true;
     }
     else
