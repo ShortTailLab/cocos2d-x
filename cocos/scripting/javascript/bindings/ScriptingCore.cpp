@@ -471,7 +471,7 @@ void ScriptingCore::createGlobalContext() {
     
     this->_cx = JS_NewContext(_rt, 8192);
     
-    JS_SetOptions(this->_cx, JSOPTION_TYPE_INFERENCE);
+//    JS_SetOptions(this->_cx, JSOPTION_TYPE_INFERENCE);
     
 //    JS_SetVersion(this->_cx, JSVERSION_LATEST);
     
@@ -485,6 +485,7 @@ void ScriptingCore::createGlobalContext() {
 #if defined(JS_GC_ZEAL) && defined(DEBUG)
     //JS_SetGCZeal(this->_cx, 2, JS_DEFAULT_ZEAL_FREQ);
 #endif
+    JS_BeginRequest(_cx);
     this->_global = NewGlobalObject(_cx);
 
     JSAutoCompartment ac(_cx, _global);
@@ -494,6 +495,7 @@ void ScriptingCore::createGlobalContext() {
         sc_register_sth callback = *it;
         callback(this->_cx, this->_global);
     }
+    JS_EndRequest(_cx);
 }
 
 static std::string RemoveFileExt(const std::string& filePath) {
@@ -522,17 +524,18 @@ JSBool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* c
         cx = _cx;
     }
     
-    JSAutoCompartment ac(cx, global);
-    
-    js::RootedScript script(cx);
-    js::RootedObject obj(cx, global);
-    
     // a) check jsc file first
     std::string byteCodePath = RemoveFileExt(std::string(path)) + BYTE_CODE_FILE_EXT;
     long length = 0;
     unsigned char* data = futil->getFileData(byteCodePath.c_str(),
                                     "rb",
                                     &length);
+    
+    JSAutoCompartment ac(cx, global);
+    JS_BeginRequest(_cx);
+    
+    js::RootedScript script(cx);
+    js::RootedObject obj(cx, global);
     
     if (data) {
         script = JS_DecodeScript(cx, data, length, NULL, NULL);
@@ -572,6 +575,7 @@ JSBool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* c
             JS_ReportPendingException(cx);
         }
     }
+    JS_EndRequest(_cx);
     return evaluatedOK;
 }
 
@@ -936,6 +940,8 @@ bool ScriptingCore::executeFunctionWithObjectData(Node *self, const char *name, 
 
 JSBool ScriptingCore::executeFunctionWithOwner(jsval owner, const char *name, uint32_t argc /* = 0 */, jsval *vp /* = NULL */, jsval* retVal /* = NULL */)
 {
+    JS_BeginRequest(_cx);
+    
     JSBool bRet = JS_FALSE;
     JSBool hasAction;
     JSContext* cx = this->_cx;
@@ -963,6 +969,8 @@ JSBool ScriptingCore::executeFunctionWithOwner(jsval owner, const char *name, ui
             }
         }
     }while(0);
+    
+    JS_EndRequest(_cx);
     return bRet;
 }
 
@@ -1396,6 +1404,8 @@ void ScriptingCore::enableDebugger()
         
         JS_SetDebugMode(_cx, JS_TRUE);
         
+        JS_BeginRequest(_cx);
+        
         _debugGlobal = NewGlobalObject(_cx, true);
         JS_WrapObject(_cx, &_debugGlobal);
         JSAutoCompartment ac(_cx, _debugGlobal);
@@ -1416,6 +1426,7 @@ void ScriptingCore::enableDebugger()
         if (!ok) {
             JS_ReportPendingException(_cx);
         }
+        JS_EndRequest(_cx);
         
         // start bg thread
         auto t = std::thread(&serverEntryPoint);

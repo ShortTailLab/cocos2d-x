@@ -1914,6 +1914,7 @@
 		B37510861823ACA100B3BA6A /* CCPhysicsWorldInfo_chipmunk.h in Headers */ = {isa = PBXBuildFile; fileRef = B375104F1823AC7B00B3BA6A /* CCPhysicsWorldInfo_chipmunk.h */; };
 		B3B12A5A17E7F44000026B4A /* libchipmunk Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A03F2CB81780BD04006731B9 /* libchipmunk Mac.a */; };
 		B3B12A5B17E7F45C00026B4A /* libchipmunk iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A07A4F3B178387670073F6A7 /* libchipmunk iOS.a */; };
+		E43876601869762600E245FD /* libnspr4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4AC8EC11869651A00D1B7A0 /* libnspr4.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3042,6 +3043,7 @@
 		B37510581823AC9200B3BA6A /* CCPhysicsShapeInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsShapeInfo_box2d.h; path = ../box2d/CCPhysicsShapeInfo_box2d.h; sourceTree = "<group>"; };
 		B37510591823AC9200B3BA6A /* CCPhysicsWorldInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsWorldInfo_box2d.cpp; path = ../box2d/CCPhysicsWorldInfo_box2d.cpp; sourceTree = "<group>"; };
 		B375105A1823AC9200B3BA6A /* CCPhysicsWorldInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsWorldInfo_box2d.h; path = ../box2d/CCPhysicsWorldInfo_box2d.h; sourceTree = "<group>"; };
+		E4AC8EC11869651A00D1B7A0 /* libnspr4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnspr4.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3162,6 +3164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A9DCA4E180E6E42007A3AD4 /* libjs_static.a in Frameworks */,
+				E43876601869762600E245FD /* libnspr4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4365,6 +4368,7 @@
 		1AAF5423180E405B000584C8 /* ios */ = {
 			isa = PBXGroup;
 			children = (
+				E4AC8EC11869651A00D1B7A0 /* libnspr4.a */,
 				1AAF5424180E405B000584C8 /* libjs_static.a */,
 			);
 			name = ios;
@@ -7747,7 +7751,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
