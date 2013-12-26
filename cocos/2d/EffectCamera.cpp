@@ -3,7 +3,7 @@
 //  cocos2dx
 //
 //  Created by YangWenXin on 13-12-9.
-//  Copyright (c) 2013年 cocos2d-x. All rights reserved.
+//  Copyright (c) 2013 cocos2d-x. All rights reserved.
 //
 
 #include "EffectCamera.h"
@@ -55,14 +55,24 @@ EffectCamera::~EffectCamera() {
     
 }
 
-void EffectCamera::initWithParams(float originalX, float originalY, float originalAnchorPointX, float originalAnchorPointY, float originalWidth, float originalHeight, bool checkOffset) {
+void EffectCamera::initWithParams(float originalX, float originalY,
+                                  float originalAnchorPointX, float originalAnchorPointY,
+                                  float originalWidth, float originalHeight,
+                                  float minScaleX, float maxScaleX,
+                                  float minScaleY, float maxScaleY,
+                                  bool checkOffset, Rect boundingArea) {
     _originalX = originalX;
     _originalY = originalY;
-    _originalAnchorPointX = originalAnchorPointX;
-    _originalAnchorPointY = originalAnchorPointY;
+    _cameraCenterX = _originalAnchorPointX = originalAnchorPointX;
+    _cameraCenterY = _originalAnchorPointY = originalAnchorPointY;
     _originalWidth = originalWidth;
     _originalHeight = originalHeight;
     _checkOffset = checkOffset;
+    _minScaleX = minScaleX;
+    _maxScaleX = maxScaleX;
+    _minScaleY = minScaleY;
+    _maxScaleY = maxScaleY;
+    _boundingArea = boundingArea;
 }
 
 void EffectCamera::visit() {
@@ -86,8 +96,8 @@ void EffectCamera::visit() {
     }
     else {
         // scale
-        adjustGap(_currentScaleX, _targetScaleX, _gapScale, _dirtyS);
-        adjustGap(_currentScaleY, _targetScaleY, _gapScale, _dirtyS);
+        adjustGap(_currentScaleX, _targetScaleX, _gapScaleX, _dirtyS);
+        adjustGap(_currentScaleY, _targetScaleY, _gapScaleY, _dirtyS);
         // translate
         adjustGap(_currentOffsetX, _targetOffsetX, _gapTranslateX, _dirtyT);
         adjustGap(_currentOffsetY, _targetOffsetY, _gapTranslateY, _dirtyT);
@@ -148,21 +158,24 @@ void EffectCamera::adjustGap(float &src, float &dst, const float &gap, bool &dir
 }
 
 void EffectCamera::scrollTo(float offsetX, float offsetY, int scrollDuration) {
-    _gapTranslateX = fabsf(offsetX-_targetOffsetX)/scrollDuration;
-    _gapTranslateY = fabsf(offsetY-_targetOffsetY)/scrollDuration;
+    if (_checkOffset) {
+        adjustTargetOffset(offsetX, offsetY);
+    }
+    _gapTranslateX = fabsf(offsetX-_currentOffsetX)/scrollDuration;
+    _gapTranslateY = fabsf(offsetY-_currentOffsetY)/scrollDuration;
     _targetOffsetX = offsetX;
     _targetOffsetY = offsetY;
 }
 
 void EffectCamera::scrollToInc(float incOffsetX, float incOffsetY, int scrollDuration) {
-    _gapTranslateX = fabsf(incOffsetX)/scrollDuration;
-    _gapTranslateY = fabsf(incOffsetY)/scrollDuration;
-    _targetOffsetX += incOffsetX;
-    _targetOffsetY += incOffsetY;
+    scrollTo(_targetOffsetX+incOffsetX, _targetOffsetY+incOffsetY, scrollDuration);
 }
 
 void EffectCamera::scaleTo(float scaleX, float scaleY) {
-    _gapScale = fabsf(scaleX-_targetScaleX);
+    adjustValue(scaleX, _minScaleX, _maxScaleX);
+    adjustValue(scaleY, _minScaleY, _maxScaleY);
+    _gapScaleX = fabsf(scaleX-_currentScaleX);
+    _gapScaleY = fabsf(scaleY-_currentScaleY);
     if (_dirtyCameraCenter) {
         scrollToInc(-(scaleX-_targetScaleX)*(_cameraCenterX-_originalAnchorPointX)*_originalWidth,
                     -(scaleY-_targetScaleY)*(_cameraCenterY-_originalAnchorPointY)*_originalHeight, 1);
@@ -173,14 +186,7 @@ void EffectCamera::scaleTo(float scaleX, float scaleY) {
 }
 
 void EffectCamera::scaleToInc(float incScaleX, float incScaleY) {
-    _gapScale = fabsf(incScaleX);
-    _targetScaleX += incScaleX;
-    _targetScaleY += incScaleY;
-    if (_dirtyCameraCenter) {
-        scrollToInc(-incScaleX*(_cameraCenterX-_originalAnchorPointX)*_originalWidth,
-                    -incScaleY*(_cameraCenterY-_originalAnchorPointY)*_originalHeight, 1);
-        _dirtyCameraCenter = false;
-    }
+    scaleTo(_targetScaleX+incScaleX, _targetScaleY+incScaleY);
 }
 
 void EffectCamera::rotateTo(float rotation) {
@@ -199,18 +205,7 @@ void EffectCamera::rotateTo(float rotation) {
 }
 
 void EffectCamera::rotateToInc(float incRotation) {
-    _gapRotation = fabsf(incRotation);
-    _targetRotation += incRotation;
-    if (_dirtyCameraCenter) {
-        float lengthX = (_cameraCenterX-_originalAnchorPointX)*_originalWidth*_targetScaleX;
-        float lengthY = (_cameraCenterY-_originalAnchorPointY)*_originalHeight*_targetScaleY;
-        float length = sqrtf(lengthX*lengthX + lengthY*lengthY);
-        float angle1 = incRotation;
-        float angle2 = atan2f((_originalAnchorPointY-_cameraCenterY)*_originalHeight*_targetScaleY, (_originalAnchorPointX-_cameraCenterX)*_originalWidth*_targetScaleX);
-        scrollToInc(length*(cosf(angle1+angle2)-cosf(angle2)),
-                    length*(sinf(angle1+angle2)-sinf(angle2)), 1);
-        _dirtyCameraCenter = false;
-    }
+    rotateTo(_targetRotation+incRotation);
 }
 
 void EffectCamera::shake(float peak, int duration) {
@@ -224,6 +219,44 @@ void EffectCamera::reset() {
     _peak = 0;
     _duration = 0;
     _isShaking = false;
+}
+
+void EffectCamera::adjustValue(float &value, const float &min, const float &max) {
+    if (value < min) {
+        value = min;
+    }
+    else if (value > max) {
+        value = max;
+    }
+}
+
+void EffectCamera::adjustIncValue(float &inc, const float &value, const float &min, const float &max) {
+    if (value+inc < min) {
+        inc = min - value;
+    }
+    else if (value+inc > max) {
+        inc = max - value;
+    }
+}
+
+void EffectCamera::adjustTargetOffset(float &targetOffsetX, float &targetOffsetY) {
+    float leftBottomX, leftBottomY, rightTopX, rightTopY;
+    leftBottomX = _originalX + targetOffsetX - _currentScaleX*_originalWidth*_originalAnchorPointX;
+    leftBottomY = _originalY + targetOffsetY - _currentScaleY*_originalHeight*_originalAnchorPointY;
+    rightTopX = _originalX + targetOffsetX + _currentScaleX*_originalWidth*(1-_originalAnchorPointX);
+    rightTopY = _originalY + targetOffsetY + _currentScaleY*_originalHeight*(1-_originalAnchorPointY);
+    if (leftBottomX > _boundingArea.getMinX()) {
+        targetOffsetX = _boundingArea.getMinX() - (_originalX - _currentScaleX*_originalWidth*_originalAnchorPointX);
+    }
+    else if (rightTopX < _boundingArea.getMaxX()) {
+        targetOffsetX = _boundingArea.getMaxX() - (_originalX + _currentScaleX*_originalWidth*(1-_originalAnchorPointX));
+    }
+    if (leftBottomY > _boundingArea.getMinY()) {
+        targetOffsetY = _boundingArea.getMinY() - (_originalY - _currentScaleY*_originalHeight*_originalAnchorPointY);
+    }
+    else if (rightTopY < _boundingArea.getMaxY()) {
+        targetOffsetY = _boundingArea.getMaxY() - (_originalY + _currentScaleY*_originalHeight*(1-_originalAnchorPointY));
+    }
 }
 
 NS_CC_END
