@@ -446,6 +446,11 @@ static JSSecurityCallbacks securityCallbacks = {
     NULL
 };
 
+static void customGCCallback(JSRuntime *rt, JSGCStatus status, void *data)
+{
+    LOGD("GC status %d\n", status);
+}
+
 void ScriptingCore::createGlobalContext() {
     if (this->_cx && this->_rt) {
         ScriptingCore::removeAllRoots(this->_cx);
@@ -461,8 +466,13 @@ void ScriptingCore::createGlobalContext() {
     
     // Removed from Spidermonkey 19.
     //JS_SetCStringsAreUTF8();
-    this->_rt = JS_NewRuntime(8L * 1024L * 1024L, JS_USE_HELPER_THREADS);
+    
+    // default is 8M
+    const long HACK_GC_BASELINE = 16L * 1024L * 1024L;
+    this->_rt = JS_NewRuntime(HACK_GC_BASELINE, JS_USE_HELPER_THREADS);
     JS_SetGCParameter(_rt, JSGC_MAX_BYTES, 0xffffffff);
+    
+    JS_SetGCCallback(_rt, &customGCCallback, NULL);
 	
     JS_SetTrustedPrincipals(_rt, &shellTrustedPrincipals);
     JS_SetSecurityCallbacks(_rt, &securityCallbacks);
@@ -471,6 +481,7 @@ void ScriptingCore::createGlobalContext() {
     this->_cx = JS_NewContext(_rt, 8192);
     
 //    JS_SetOptions(this->_cx, JSOPTION_TYPE_INFERENCE);
+     JS_SetOptions(this->_cx, JSOPTION_EXTRA_WARNINGS);
     
 //    JS_SetVersion(this->_cx, JSVERSION_LATEST);
     
