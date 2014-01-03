@@ -195,6 +195,7 @@ private:
     Point getPositionForIsoAt(const Point& pos);
     Point getPositionForOrthoAt(const Point& pos);
     Point getPositionForHexAt(const Point& pos);
+    Point getPositionForStagAt(const Point& pos);
 
     Point calculateLayerOffset(const Point& offset);
 

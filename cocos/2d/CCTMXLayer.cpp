@@ -627,6 +627,7 @@ Point TMXLayer::calculateLayerOffset(const Point& pos)
     case TMXOrientationOrtho:
         ret = Point( pos.x * _mapTileSize.width, -pos.y *_mapTileSize.height);
         break;
+    case TMXOrientationStaggered:
     case TMXOrientationIso:
         ret = Point((_mapTileSize.width /2) * (pos.x - pos.y),
                   (_mapTileSize.height /2 ) * (-pos.x - pos.y));
@@ -651,6 +652,9 @@ Point TMXLayer::getPositionAt(const Point& pos)
         break;
     case TMXOrientationHex:
         ret = getPositionForHexAt(pos);
+        break;
+    case TMXOrientationStaggered:
+        ret = getPositionForStagAt(pos);
         break;
     }
     ret = CC_POINT_PIXELS_TO_POINTS( ret );
@@ -682,6 +686,12 @@ Point TMXLayer::getPositionForHexAt(const Point& pos)
     return xy;
 }
 
+Point TMXLayer::getPositionForStagAt(const Point &pos)
+{
+    return Point(((pos.x*_mapTileSize.width)+_mapTileSize.width/2) + ((int)pos.y & 1)*_mapTileSize.width/2,
+                     (_layerSize.height-pos.y)*_mapTileSize.height/2);
+}
+
 int TMXLayer::getVertexZForPos(const Point& pos)
 {
     int ret = 0;
@@ -690,6 +700,7 @@ int TMXLayer::getVertexZForPos(const Point& pos)
     {
         switch (_layerOrientation) 
         {
+        case TMXOrientationStaggered:
         case TMXOrientationIso:
             maxVal = (unsigned int)(_layerSize.width + _layerSize.height);
             ret = (int)(-(maxVal - (pos.x + pos.y)));

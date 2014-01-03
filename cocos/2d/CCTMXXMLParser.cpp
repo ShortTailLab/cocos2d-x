@@ -268,6 +268,8 @@ void TMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
             pTMXMapInfo->setOrientation(TMXOrientationIso);
         else if(orientationStr == "hexagonal")
             pTMXMapInfo->setOrientation(TMXOrientationHex);
+        else if (orientationStr == "staggered")
+            pTMXMapInfo->setOrientation(TMXOrientationStaggered);
         else
             CCLOG("cocos2d: TMXFomat: Unsupported orientation: %d", pTMXMapInfo->getOrientation());
 
