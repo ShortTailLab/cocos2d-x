@@ -53,6 +53,9 @@ enum
 
     /** Isometric orientation */
     TMXOrientationIso,
+    
+    /** Staggered(Rectangular isometric) orientation */
+    TMXOrientationStaggered,
 };
 
 /** @brief TMXTiledMap knows how to parse and render a TMX map.
