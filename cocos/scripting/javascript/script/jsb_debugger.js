@@ -1,9 +1,9 @@
-require('debugger/DevToolsUtils.js', "debug");
-require('debugger/core/promise.js', "debug");
-require('debugger/transport.js', "debug");
-require('debugger/actors/root.js', "debug");
-require('debugger/actors/script.js', "debug");
-require('debugger/main.js', "debug");
+executeScript('debugger/DevToolsUtils.js', "debug");
+executeScript('debugger/core/promise.js', "debug");
+executeScript('debugger/transport.js', "debug");
+executeScript('debugger/actors/root.js', "debug");
+executeScript('debugger/actors/script.js', "debug");
+executeScript('debugger/main.js', "debug");
 
 var globalDebuggee = null;
 

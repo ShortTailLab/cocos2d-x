@@ -510,10 +510,13 @@ unsigned char* FileUtils::getFileData(const char* filename, const char* mode, lo
     
     if (! buffer)
     {
-        std::string msg = "Get data from file(";
-        msg.append(filename).append(") failed!");
-        
-        CCLOG("%s", msg.c_str());
+        if(std::string(filename).rfind(".jsc") == string::npos)
+        {
+            std::string msg = "Get data from file(";
+            msg.append(filename).append(") failed!");
+            
+            CCLOG("%s", msg.c_str());
+        }
     }
     return buffer;
 }
@@ -630,7 +633,8 @@ std::string FileUtils::fullPathForFilename(const std::string &filename)
         }
     }
     
-    CCLOG("cocos2d: fullPathForFilename: No file found at %s. Possible missing file.", filename.c_str());
+    if(filename.rfind(".jsc") == string::npos)
+        CCLOG("cocos2d: fullPathForFilename: No file found at %s. Possible missing file.", filename.c_str());
 
     // XXX: Should it return nullptr ? or an empty string ?
     // The file wasn't found, return the file name passed in.
