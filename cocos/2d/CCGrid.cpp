@@ -1,7 +1,8 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2009      On-Core
-
+Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (C) 2013-2014 Chukong Technologies Inc. 
+ 
 http://www.cocos2d-x.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -216,17 +217,17 @@ void GridBase::afterDraw(cocos2d::Node *target)
     Director *director = Director::getInstance();
     director->setProjection(_directorProjection);
 
-    if (target->getCamera()->isDirty())
-    {
-        Point offset = target->getAnchorPointInPoints();
-
-        //
-        // XXX: Camera should be applied in the AnchorPoint
-        //
-        kmGLTranslatef(offset.x, offset.y, 0);
-        target->getCamera()->locate();
-        kmGLTranslatef(-offset.x, -offset.y, 0);
-    }
+//    if (target->getCamera()->isDirty())
+//    {
+//        Point offset = target->getAnchorPointInPoints();
+//
+//        //
+//        // XXX: Camera should be applied in the AnchorPoint
+//        //
+//        kmGLTranslatef(offset.x, offset.y, 0);
+//        target->getCamera()->locate();
+//        kmGLTranslatef(-offset.x, -offset.y, 0);
+//    }
 
     GL::bindTexture2D(_texture->getName());
 

@@ -1,8 +1,9 @@
 /****************************************************************************
-Copyright 2012 cocos2d-x.org
 Copyright 2011 Jeff Lamarche
 Copyright 2012 Goffredo Marocchi
 Copyright 2012 Ricardo Quesada
+Copyright 2012 cocos2d-x.org
+Copyright 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
  
@@ -49,6 +50,7 @@ const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR = "ShaderPositionTextu
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP = "ShaderPositionTextureColor_noMVP";
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_ALPHA_TEST = "ShaderPositionTextureColorAlphaTest";
 const char* GLProgram::SHADER_NAME_POSITION_COLOR = "ShaderPositionColor";
+const char* GLProgram::SHADER_NAME_POSITION_COLOR_NO_MVP = "ShaderPositionColor_noMVP";
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE = "ShaderPositionTexture";
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_U_COLOR = "ShaderPositionTexture_uColor";
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_A8_COLOR = "ShaderPositionTextureA8Color";
@@ -154,18 +156,18 @@ bool GLProgram::initWithVertexShaderByteArray(const GLchar* vShaderByteArray, co
 
 bool GLProgram::initWithVertexShaderFilename(const char* vShaderFilename, const char* fShaderFilename)
 {
-    const GLchar * vertexSource = (GLchar*) String::createWithContentsOfFile(FileUtils::getInstance()->fullPathForFilename(vShaderFilename).c_str())->getCString();
-    const GLchar * fragmentSource = (GLchar*) String::createWithContentsOfFile(FileUtils::getInstance()->fullPathForFilename(fShaderFilename).c_str())->getCString();
+    std::string vertexSource = FileUtils::getInstance()->getStringFromFile(FileUtils::getInstance()->fullPathForFilename(vShaderFilename).c_str());
+    std::string fragmentSource = FileUtils::getInstance()->getStringFromFile(FileUtils::getInstance()->fullPathForFilename(fShaderFilename).c_str());
 
-    return initWithVertexShaderByteArray(vertexSource, fragmentSource);
+    return initWithVertexShaderByteArray(vertexSource.c_str(), fragmentSource.c_str());
 }
 
 std::string GLProgram::getDescription() const
 {
-    return String::createWithFormat("<GLProgram = "
+    return StringUtils::format("<GLProgram = "
                                       CC_FORMAT_PRINTF_SIZE_T
                                       " | Program = %i, VertexShader = %i, FragmentShader = %i>",
-                                      (size_t)this, _program, _vertShader, _fragShader)->getCString();
+                                      (size_t)this, _program, _vertShader, _fragShader);
 }
 
 bool GLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* source)

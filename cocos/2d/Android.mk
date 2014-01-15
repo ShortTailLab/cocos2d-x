@@ -24,7 +24,6 @@ CCActionTween.cpp \
 CCAnimation.cpp \
 CCAnimationCache.cpp \
 CCAtlasNode.cpp \
-CCCamera.cpp \
 ccCArray.cpp \
 CCClippingNode.cpp \
 CCComponent.cpp \
@@ -118,15 +117,10 @@ platform/CCEGLViewProtocol.cpp \
 platform/CCFileUtils.cpp \
 platform/CCSAXParser.cpp \
 platform/CCThread.cpp \
-renderer/CCNewRenderTexture.cpp \
-renderer/CCNewSprite.cpp \
-renderer/CCNewSpriteBatchNode.cpp \
-renderer/CCNewTextureAtlas.cpp \
 renderer/CCCustomCommand.cpp \
 renderer/CCFrustum.cpp \
 renderer/CCGroupCommand.cpp \
 renderer/CCMaterialManager.cpp \
-renderer/CCNewClippingNode.cpp \
 renderer/CCQuadCommand.cpp \
 renderer/CCRenderCommand.cpp \
 renderer/CCRenderer.cpp \

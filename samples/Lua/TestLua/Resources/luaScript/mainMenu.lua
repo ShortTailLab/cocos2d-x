@@ -1,10 +1,9 @@
-
-
 require "Cocos2d"
 require "Cocos2dConstants"
 require "Opengl"
 require "OpenglConstants"
 require "StudioConstants"
+require "GuiConstants"
 require "luaScript/helper"
 require "luaScript/testResource"
 require "luaScript/VisibleRect"
@@ -32,6 +31,7 @@ require "luaScript/LabelTestNew/LabelTestNew"
 require "luaScript/LayerTest/LayerTest"
 require "luaScript/MenuTest/MenuTest"
 require "luaScript/MotionStreakTest/MotionStreakTest"
+require "luaScript/NewEventDispatcherTest/NewEventDispatcherTest"
 require "luaScript/NodeTest/NodeTest"
 require "luaScript/OpenGLTest/OpenGLTest"
 require "luaScript/ParallaxTest/ParallaxTest"
@@ -41,6 +41,7 @@ require "luaScript/RenderTextureTest/RenderTextureTest"
 require "luaScript/RotateWorldTest/RotateWorldTest"
 require "luaScript/SpriteTest/SpriteTest"
 require "luaScript/SceneTest/SceneTest"
+require "luaScript/SpineTest/SpineTest"
 require "luaScript/Texture2dTest/Texture2dTest"
 require "luaScript/TileMapTest/TileMapTest"
 require "luaScript/TouchesTest/TouchesTest"
@@ -49,6 +50,7 @@ require "luaScript/UserDefaultTest/UserDefaultTest"
 require "luaScript/ZwoptexTest/ZwoptexTest"
 require "luaScript/LuaBridgeTest/LuaBridgeTest"
 require "luaScript/XMLHttpRequestTest/XMLHttpRequestTest"
+require "luaScript/PhysicsTest/PhysicsTest"
 
 
 local LINE_SPACE = 40
@@ -87,14 +89,17 @@ local _allTests = {
     { isSupported = true,  name = "MenuTest"               , create_func   =                  MenuTestMain  }, 
     { isSupported = true,  name = "MotionStreakTest"       , create_func   =          MotionStreakTest      },
     { isSupported = false,  name = "MutiTouchTest"          , create_func=          MutiTouchTestMain     },
+    { isSupported = true,  name = "NewEventDispatcherTest"  , create_func   =       NewEventDispatcherTest },
     { isSupported = true,  name = "NodeTest"               , create_func   =                  CocosNodeTest },
     { isSupported = true,   name = "OpenGLTest"             , create_func=          OpenGLTestMain     },
     { isSupported = true,  name = "ParallaxTest"           , create_func   =              ParallaxTestMain  },
     { isSupported = true,  name = "ParticleTest"           , create_func   =              ParticleTest      }, 
     { isSupported = true,  name = "PerformanceTest"        , create_func=           PerformanceTestMain  },
+	{ isSupported = true,  name = "PhysicsTest"            , create_func =          PhysicsTest  },
     { isSupported = true,  name = "RenderTextureTest"      , create_func   =         RenderTextureTestMain  },
     { isSupported = true,  name = "RotateWorldTest"        , create_func   =           RotateWorldTest      },
     { isSupported = true,  name = "SceneTest"              , create_func   =                 SceneTestMain  },
+    { isSupported = true,  name = "SpineTest"              , create_func   =                 SpineTestMain  },
     { isSupported = false,  name = "SchdulerTest"           , create_func=              SchdulerTestMain  },
     { isSupported = false,  name = "ShaderTest"             , create_func=            ShaderTestMain      },
     { isSupported = true,  name = "SpriteTest"             , create_func   =                SpriteTest      },

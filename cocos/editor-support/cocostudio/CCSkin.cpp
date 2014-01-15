@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -51,7 +51,7 @@ Skin *Skin::create()
     return nullptr;
 }
 
-Skin *Skin::createWithSpriteFrameName(const char *pszSpriteFrameName)
+Skin *Skin::createWithSpriteFrameName(const std::string& pszSpriteFrameName)
 {
     Skin *skin = new Skin();
     if(skin && skin->initWithSpriteFrameName(pszSpriteFrameName))
@@ -63,7 +63,7 @@ Skin *Skin::createWithSpriteFrameName(const char *pszSpriteFrameName)
     return nullptr;
 }
 
-Skin *Skin::create(const char *pszFileName)
+Skin *Skin::create(const std::string& pszFileName)
 {
     Skin *skin = new Skin();
     if(skin && skin->initWithFile(pszFileName))
@@ -219,9 +219,8 @@ void Skin::draw()
     kmGLGetMatrix(KM_GL_MODELVIEW, &mv);
 
     //TODO implement z order
-    QuadCommand* renderCommand = QuadCommand::getCommandPool().generateCommand();
-    renderCommand->init(0, _vertexZ, _texture->getName(), _shaderProgram, _blendFunc, &_quad, 1, mv);
-    Director::getInstance()->getRenderer()->addCommand(renderCommand);
+    _quadCommand.init(0, _vertexZ, _texture->getName(), _shaderProgram, _blendFunc, &_quad, 1, mv);
+    Director::getInstance()->getRenderer()->addCommand(&_quadCommand);
 }
 
 void Skin::setBone(Bone *bone)

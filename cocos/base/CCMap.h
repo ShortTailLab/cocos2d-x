@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2012 - 2013 cocos2d-x.org
+ Copyright (c) 2013-2014 Chukong Technologies
  
  http://www.cocos2d-x.org
  
@@ -26,7 +26,7 @@
 #define __CCMAP_H__
 
 #include "ccMacros.h"
-
+#include "CCObject.h"
 #include <vector>
 #include <unordered_map>
 
@@ -62,6 +62,7 @@ public:
     Map<K, V>()
     : _data()
     {
+        static_assert(std::is_convertible<V, Object*>::value, "Invalid Type for cocos2d::Map<K, V>!");
         CCLOGINFO("In the default constructor of Map!");
     }
     
@@ -69,6 +70,7 @@ public:
     explicit Map<K, V>(ssize_t capacity)
     : _data()
     {
+        static_assert(std::is_convertible<V, Object*>::value, "Invalid Type for cocos2d::Map<K, V>!");
         CCLOGINFO("In the constructor with capacity of Map!");
         _data.reserve(capacity);
     }
@@ -76,6 +78,7 @@ public:
     /** Copy constructor */
     Map<K, V>(const Map<K, V>& other)
     {
+        static_assert(std::is_convertible<V, Object*>::value, "Invalid Type for cocos2d::Map<K, V>!");
         CCLOGINFO("In the copy constructor of Map!");
         _data = other._data;
         addRefForAllObjects();
@@ -84,6 +87,7 @@ public:
     /** Move constructor */
     Map<K, V>(Map<K, V>&& other)
     {
+        static_assert(std::is_convertible<V, Object*>::value, "Invalid Type for cocos2d::Map<K, V>!");
         CCLOGINFO("In the move constructor of Map!");
         _data = std::move(other._data);
     }
@@ -103,10 +107,22 @@ public:
         _data.reserve(capacity);
     }
     
-    /** Returns capacity of the map */
-    ssize_t capacity() const
+    /** Returns the number of buckets in the Map container. */
+    ssize_t bucketCount() const
     {
-        return _data.capacity();
+        return _data.bucket_count();
+    }
+    
+    /** Returns the number of elements in bucket n. */
+    ssize_t bucketSize(ssize_t n) const
+    {
+        return _data.bucket_size(n);
+    }
+    
+    /** Returns the bucket number where the element with key k is located. */
+    ssize_t bucket(const K& k) const
+    {
+        return _data.bucket(k);
     }
     
     /** The number of elements in the map. */
@@ -267,7 +283,9 @@ public:
         if (!_data.empty())
         {
             ssize_t randIdx = rand() % _data.size();
-            return (_data.begin() + randIdx)->second;
+            const_iterator randIter = _data.begin();
+            std::advance(randIter , randIdx);
+            return randIter->second;
         }
         return nullptr;
     }
@@ -300,18 +318,23 @@ public:
     /** Copy assignment operator */
     Map<K, V>& operator= ( const Map<K, V>& other )
     {
-        CCLOGINFO("In the copy assignment operator of Map!");
-        clear();
-        _data = other._data;
-        addRefForAllObjects();
+        if (this != &other) {
+            CCLOGINFO("In the copy assignment operator of Map!");
+            clear();
+            _data = other._data;
+            addRefForAllObjects();
+        }
         return *this;
     }
     
     /** Move assignment operator */
     Map<K, V>& operator= ( Map<K, V>&& other )
     {
-        CCLOGINFO("In the move assignment operator of Map!");
-        _data = std::move(other._data);
+        if (this != &other) {
+            CCLOGINFO("In the move assignment operator of Map!");
+            clear();
+            _data = std::move(other._data);
+        }
         return *this;
     }
     

@@ -1,6 +1,7 @@
 /****************************************************************************
- Copyright (c) 2010 cocos2d-x.org
- 
+ Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
+
  http://www.cocos2d-x.org
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +27,7 @@
 #include <stdlib.h>
 
 #include "ZipUtils.h"
+#include "CCData.h"
 #include "ccMacros.h"
 #include "platform/CCFileUtils.h"
 #include "unzip.h"
@@ -304,21 +306,15 @@ int ZipUtils::inflateGZipFile(const char *path, unsigned char **out)
 bool ZipUtils::isCCZFile(const char *path)
 {
     // load file into memory
-    unsigned char* compressed = nullptr;
+    Data compressedData = FileUtils::getInstance()->getDataFromFile(path);
 
-    ssize_t fileLen = 0;
-    compressed = FileUtils::getInstance()->getFileData(path, "rb", &fileLen);
-
-    if(compressed == nullptr || fileLen == 0)
+    if (compressedData.isNull())
     {
         CCLOG("cocos2d: ZipUtils: loading file failed");
         return false;
     }
 
-    bool ret = isCCZBuffer(compressed, fileLen);
-    free(compressed);
-
-    return ret;
+    return isCCZBuffer(compressedData.getBytes(), compressedData.getSize());
 }
 
 bool ZipUtils::isCCZBuffer(const unsigned char *buffer, ssize_t len)
@@ -336,20 +332,15 @@ bool ZipUtils::isCCZBuffer(const unsigned char *buffer, ssize_t len)
 bool ZipUtils::isGZipFile(const char *path)
 {
     // load file into memory
-    unsigned char* compressed = nullptr;
+    Data compressedData = FileUtils::getInstance()->getDataFromFile(path);
 
-    ssize_t fileLen = 0;
-    compressed = FileUtils::getInstance()->getFileData(path, "rb", &fileLen);
-
-    if(nullptr == compressed || 0 == fileLen)
+    if (compressedData.isNull())
     {
         CCLOG("cocos2d: ZipUtils: loading file failed");
         return false;
     }
 
-    bool ret = isGZipBuffer(compressed, fileLen);
-    free(compressed);
-    return ret;
+    return isGZipBuffer(compressedData.getBytes(), compressedData.getSize());
 }
 
 bool ZipUtils::isGZipBuffer(const unsigned char *buffer, ssize_t len)
@@ -455,24 +446,18 @@ int ZipUtils::inflateCCZBuffer(const unsigned char *buffer, ssize_t bufferLen, u
 
 int ZipUtils::inflateCCZFile(const char *path, unsigned char **out)
 {
-    CCAssert(out, "");
-    CCAssert(&*out, "");
+    CCASSERT(out, "Invalid pointer for buffer!");
     
     // load file into memory
-    unsigned char* compressed = nullptr;
+    Data compressedData = FileUtils::getInstance()->getDataFromFile(path);
     
-    ssize_t fileLen = 0;
-    compressed = FileUtils::getInstance()->getFileData(path, "rb", &fileLen);
-    
-    if(nullptr == compressed || 0 == fileLen)
+    if (compressedData.isNull())
     {
         CCLOG("cocos2d: Error loading CCZ compressed file");
         return -1;
     }
     
-    int ret = inflateCCZBuffer(compressed, fileLen, out);
-    free(compressed);
-    return ret;
+    return inflateCCZBuffer(compressedData.getBytes(), compressedData.getSize(), out);
 }
 
 void ZipUtils::setPvrEncryptionKeyPart(int index, unsigned int value)

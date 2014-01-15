@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -57,17 +58,16 @@ static tinyxml2::XMLElement* getXMLNodeForKey(const char* pKey, tinyxml2::XMLEle
     {
  		tinyxml2::XMLDocument* xmlDoc = new tinyxml2::XMLDocument();
 		*doc = xmlDoc;
-		//CCFileData data(UserDefault::getInstance()->getXMLFilePath().c_str(),"rt");
-		ssize_t nSize;
-		char* pXmlBuffer = (char*)FileUtils::getInstance()->getFileData(UserDefault::getInstance()->getXMLFilePath().c_str(), "rb", &nSize);
-		//const char* pXmlBuffer = (const char*)data.getBuffer();
-		if(nullptr == pXmlBuffer)
+
+        std::string xmlBuffer = FileUtils::getInstance()->getStringFromFile(UserDefault::getInstance()->getXMLFilePath());
+
+		if (xmlBuffer.empty())
 		{
 			CCLOG("can not read xml file");
 			break;
 		}
-		xmlDoc->Parse(pXmlBuffer, nSize);
-        free(pXmlBuffer);
+		xmlDoc->Parse(xmlBuffer.c_str(), xmlBuffer.size());
+
 		// get root node
 		*rootNode = xmlDoc->RootElement();
 		if (nullptr == *rootNode)
@@ -288,12 +288,12 @@ string UserDefault::getStringForKey(const char* pKey, const std::string & defaul
 	return ret;
 }
 
-Data* UserDefault::getDataForKey(const char* pKey)
+Data UserDefault::getDataForKey(const char* pKey)
 {
-    return getDataForKey(pKey, nullptr);
+    return getDataForKey(pKey, Data::Null);
 }
 
-Data* UserDefault::getDataForKey(const char* pKey, Data* defaultValue)
+Data UserDefault::getDataForKey(const char* pKey, const Data& defaultValue)
 {
     const char* encodedData = nullptr;
 	tinyxml2::XMLElement* rootNode;
@@ -306,7 +306,7 @@ Data* UserDefault::getDataForKey(const char* pKey, Data* defaultValue)
         encodedData = (const char*)(node->FirstChild()->Value());
 	}
     
-	Data* ret = defaultValue;
+	Data ret = defaultValue;
     
 	if (encodedData)
 	{
@@ -314,9 +314,7 @@ Data* UserDefault::getDataForKey(const char* pKey, Data* defaultValue)
         int decodedDataLen = base64Decode((unsigned char*)encodedData, (unsigned int)strlen(encodedData), &decodedData);
         
         if (decodedData) {
-            ret = Data::create(decodedData, decodedDataLen);
-        
-            free(decodedData);
+            ret.fastSet(decodedData, decodedDataLen);
         }
 	}
     

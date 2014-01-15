@@ -1,8 +1,9 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2009      Valentin Milea
+Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -32,7 +33,6 @@ THE SOFTWARE.
 #include "CCString.h"
 #include "ccCArray.h"
 #include "TransformUtils.h"
-#include "CCCamera.h"
 #include "CCGrid.h"
 #include "CCDirector.h"
 #include "CCScheduler.h"
@@ -45,7 +45,7 @@ THE SOFTWARE.
 #include "CCEventTouch.h"
 #include "CCScene.h"
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
 #include "CCPhysicsBody.h"
 #endif
 
@@ -103,10 +103,9 @@ Node::Node(void)
 , _anchorPointInPoints(Point::ZERO)
 , _anchorPoint(Point::ZERO)
 , _contentSize(Size::ZERO)
-, _additionalTransformDirty(false)
+, _useAdditionalTransform(false)
 , _transformDirty(true)
 , _inverseDirty(true)
-, _camera(nullptr)
 // children (lazy allocs)
 // lazy alloc
 , _ZOrder(0)
@@ -125,7 +124,7 @@ Node::Node(void)
 , _isTransitionFinished(false)
 , _updateScriptHandler(0)
 , _componentContainer(nullptr)
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
 , _physicsBody(nullptr)
 #endif
 , _displayedOpacity(255)
@@ -168,8 +167,6 @@ Node::~Node()
     CC_SAFE_RELEASE(_eventDispatcher);
     
     // attributes
-    CC_SAFE_RELEASE(_camera);
-
     CC_SAFE_RELEASE(_shaderProgram);
     CC_SAFE_RELEASE(_userObject);
 
@@ -182,7 +179,7 @@ Node::~Node()
     
     CC_SAFE_DELETE(_componentContainer);
     
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     CC_SAFE_RELEASE(_physicsBody);
 #endif
 }
@@ -268,7 +265,7 @@ void Node::setRotation(float newRotation)
     _rotationX = _rotationY = newRotation;
     _transformDirty = _inverseDirty = true;
     
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     if (_physicsBody)
     {
         _physicsBody->setRotation(newRotation);
@@ -358,7 +355,7 @@ void Node::setPosition(const Point& newPosition)
     _position = newPosition;
     _transformDirty = _inverseDirty = true;
     
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     if (_physicsBody)
     {
         _physicsBody->setPosition(newPosition);
@@ -400,17 +397,6 @@ void Node::setPositionY(float y)
 ssize_t Node::getChildrenCount() const
 {
     return _children.size();
-}
-
-/// camera getter: lazy alloc
-Camera* Node::getCamera()
-{
-    if (!_camera)
-    {
-        _camera = new Camera();
-    }
-    
-    return _camera;
 }
 
 /// isVisible getter
@@ -533,6 +519,13 @@ void Node::setShaderProgram(GLProgram *pShaderProgram)
     _shaderProgram = pShaderProgram;
 }
 
+Scene* Node::getScene()
+{
+    if(!_parent)
+        return nullptr;
+    return _parent->getScene();
+}
+
 Rect Node::getBoundingBox() const
 {
     Rect rect = Rect(0, 0, _contentSize.width, _contentSize.height);
@@ -612,7 +605,7 @@ void Node::addChild(Node *child, int zOrder, int tag)
 
     this->insertChild(child, zOrder);
     
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     for (Node* node = this->getParent(); node != nullptr; node = node->getParent())
     {
         if (dynamic_cast<Scene*>(node) != nullptr)
@@ -747,7 +740,7 @@ void Node::detachChild(Node *child, ssize_t childIndex, bool doCleanup)
         child->onExit();
     }
     
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     if (child->_physicsBody != nullptr)
     {
         child->_physicsBody->removeFromWorld();
@@ -856,33 +849,21 @@ void Node::transformAncestors()
 
 void Node::transform()
 {
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     updatePhysicsTransform();
 #endif
 
     kmMat4 transfrom4x4 = this->getNodeToParentTransform();
 
-    // Update Z vertex manually
-    transfrom4x4.mat[14] = _vertexZ;
-
-
     kmGLMultMatrix( &transfrom4x4 );
+
     // saves the MV matrix
     kmGLGetMatrix(KM_GL_MODELVIEW, &_modelViewTransform);
-
 }
-
 
 void Node::onEnter()
 {
     _isTransitionFinished = false;
-
-    for( const auto &child: _children)
-        child->onEnter();
-
-    this->resume();
-    
-    _running = true;
 
     if (_scriptType != kScriptTypeNone)
     {
@@ -891,14 +872,18 @@ void Node::onEnter()
         ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
         ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
     }
+    
+    for( const auto &child: _children)
+        child->onEnter();
+
+    this->resume();
+    
+    _running = true;
 }
 
 void Node::onEnterTransitionDidFinish()
 {
     _isTransitionFinished = true;
-
-    for( const auto &child: _children)
-        child->onEnterTransitionDidFinish();
 
     if (_scriptType != kScriptTypeNone)
     {
@@ -907,6 +892,9 @@ void Node::onEnterTransitionDidFinish()
         ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
         ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
     }
+    
+    for( const auto &child: _children)
+        child->onEnterTransitionDidFinish();
 }
 
 void Node::onExitTransitionDidStart()
@@ -928,6 +916,10 @@ void Node::onExit()
     this->pause();
 
     _running = false;
+
+    for( const auto &child: _children)
+        child->onExit();
+    
     if (_scriptType != kScriptTypeNone)
     {
         int action = kNodeOnExit;
@@ -935,9 +927,6 @@ void Node::onExit()
         ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
         ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
     }
-
-    for( const auto &child: _children)
-        child->onExit();
 }
 
 void Node::setEventDispatcher(EventDispatcher* dispatcher)
@@ -1180,8 +1169,8 @@ const kmMat4& Node::getNodeToParentTransform() const
         // If skew is needed, apply skew and then anchor point
         if (needsSkewMatrix)
         {
-            kmMat4 skewMatrix = { 1, tanf(CC_DEGREES_TO_RADIANS(_skewY)), 0, 0,
-                                  tanf(CC_DEGREES_TO_RADIANS(_skewX)), 1, 0, 0,
+            kmMat4 skewMatrix = { 1, (float)tanf(CC_DEGREES_TO_RADIANS(_skewY)), 0, 0,
+                                  (float)tanf(CC_DEGREES_TO_RADIANS(_skewX)), 1, 0, 0,
                                   0,  0,  1, 0,
                                   0,  0,  0, 1};
 
@@ -1197,30 +1186,38 @@ const kmMat4& Node::getNodeToParentTransform() const
             }
         }
 
-        if (_additionalTransformDirty)
+        // vertex Z
+        _transform.mat[14] = _vertexZ;
+
+        if (_useAdditionalTransform)
         {
             kmMat4Multiply(&_transform, &_transform, &_additionalTransform);
-            _additionalTransformDirty = false;
         }
-        
+
         _transformDirty = false;
     }
-    
+
     return _transform;
+}
+
+void Node::setNodeToParentTransform(const kmMat4& transform)
+{
+    _transform = transform;
+    _transformDirty = false;
 }
 
 void Node::setAdditionalTransform(const AffineTransform& additionalTransform)
 {
     CGAffineToGL(additionalTransform, _additionalTransform.mat);
     _transformDirty = true;
-    _additionalTransformDirty = true;
+    _useAdditionalTransform = true;
 }
 
 void Node::setAdditionalTransform(const kmMat4& additionalTransform)
 {
     _additionalTransform = additionalTransform;
     _transformDirty = true;
-    _additionalTransformDirty = true;
+    _useAdditionalTransform = true;
 }
 
 
@@ -1259,7 +1256,7 @@ kmMat4 Node::getNodeToWorldTransform() const
     kmMat4 t = this->getNodeToParentTransform();
 
     for (Node *p = _parent; p != nullptr; p = p->getParent())
-        kmMat4Multiply(&t, &t, &p->getNodeToParentTransform());
+        kmMat4Multiply(&t, &p->getNodeToParentTransform(), &t);
 
     return t;
 }
@@ -1328,7 +1325,7 @@ Point Node::convertTouchToNodeSpaceAR(Touch *touch) const
     return this->convertToNodeSpaceAR(point);
 }
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
 bool Node::updatePhysicsTransform()
 {
     if (_physicsBody != nullptr && _physicsBody->getWorld() != nullptr && !_physicsBody->isResting())
@@ -1350,7 +1347,7 @@ void Node::updateTransform()
         child->updateTransform();
 }
 
-Component* Node::getComponent(const char *pName)
+Component* Node::getComponent(const std::string& pName)
 {
     if( _componentContainer )
         return _componentContainer->get(pName);
@@ -1365,7 +1362,7 @@ bool Node::addComponent(Component *pComponent)
     return _componentContainer->add(pComponent);
 }
 
-bool Node::removeComponent(const char *pName)
+bool Node::removeComponent(const std::string& pName)
 {
     if( _componentContainer )
         return _componentContainer->remove(pName);
@@ -1378,7 +1375,7 @@ void Node::removeAllComponents()
         _componentContainer->removeAll();
 }
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
 void Node::setPhysicsBody(PhysicsBody* body)
 {
     if (_physicsBody != nullptr)

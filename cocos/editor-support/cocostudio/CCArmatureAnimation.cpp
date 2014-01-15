@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -164,11 +164,11 @@ float ArmatureAnimation::getSpeedScale() const
 }
 
 
-void ArmatureAnimation::play(const char *animationName, int durationTo,  int loop)
+void ArmatureAnimation::play(const std::string& animationName, int durationTo,  int loop)
 {
     CCASSERT(_animationData, "_animationData can not be null");
 
-    _movementData = _animationData->getMovement(animationName);
+    _movementData = _animationData->getMovement(animationName.c_str());
     CCASSERT(_movementData, "_movementData can not be null");
 
     //! Get key frame count
@@ -236,7 +236,7 @@ void ArmatureAnimation::play(const char *animationName, int durationTo,  int loo
             if(!bone->isIgnoreMovementBoneData())
             {
                 //! this bone is not include in this movement, so hide it
-                bone->getDisplayManager()->changeDisplayByIndex(-1, false);
+                bone->getDisplayManager()->changeDisplayWithIndex(-1, false);
                 tween->stop();
             }
 
@@ -246,8 +246,12 @@ void ArmatureAnimation::play(const char *animationName, int durationTo,  int loo
     _armature->update(0);
 }
 
-
 void ArmatureAnimation::playByIndex(int animationIndex, int durationTo, int loop)
+{
+    playWithIndex(animationIndex, durationTo, loop);
+}
+
+void ArmatureAnimation::playWithIndex(int animationIndex, int durationTo, int loop)
 {
     std::vector<std::string> &movName = _animationData->movementNames;
     CC_ASSERT((animationIndex > -1) && ((unsigned int)animationIndex < movName.size()));
@@ -257,7 +261,7 @@ void ArmatureAnimation::playByIndex(int animationIndex, int durationTo, int loop
 }
 
 
-void ArmatureAnimation::play(const std::vector<std::string>& movementNames, int durationTo, bool loop)
+void ArmatureAnimation::playWithNames(const std::vector<std::string>& movementNames, int durationTo, bool loop)
 {
     _movementList.clear();
     _movementListLoop = loop;
@@ -270,7 +274,7 @@ void ArmatureAnimation::play(const std::vector<std::string>& movementNames, int 
     updateMovementList();
 }
 
-void ArmatureAnimation::playByIndex(const std::vector<int>& movementIndexes, int durationTo, bool loop)
+void ArmatureAnimation::playWithIndexes(const std::vector<int>& movementIndexes, int durationTo, bool loop)
 {
     _movementList.clear();
     _movementListLoop = loop;
@@ -324,7 +328,7 @@ void ArmatureAnimation::gotoAndPause(int frameIndex)
     pause();
 }
 
-long ArmatureAnimation::getMovementCount() const
+ssize_t ArmatureAnimation::getMovementCount() const
 {
     return _animationData->getMovementCount();
 }
@@ -461,11 +465,11 @@ void ArmatureAnimation::setFrameEventCallFunc(Object *target, SEL_FrameEventCall
     _frameEventCallFunc = callFunc;
 }
 
-void ArmatureAnimation::setMovementEventCallFunc(std::function<void(Armature *armature, MovementEventType movementType, const char *movementID)> listener)
+void ArmatureAnimation::setMovementEventCallFunc(std::function<void(Armature *armature, MovementEventType movementType, const std::string& movementID)> listener)
 {
     _movementEventListener = listener;
 }
-void ArmatureAnimation::setFrameEventCallFunc(std::function<void(Bone *bone, const char *frameEventName, int originFrameIndex, int currentFrameIndex)> listener)
+void ArmatureAnimation::setFrameEventCallFunc(std::function<void(Bone *bone, const std::string& frameEventName, int originFrameIndex, int currentFrameIndex)> listener)
 {
     _frameEventListener = listener;
 }
@@ -477,7 +481,7 @@ void ArmatureAnimation::setUserObject(Object *pUserObject)
     _userObject = pUserObject;
 }
 
-void ArmatureAnimation::frameEvent(Bone *bone, const char *frameEventName, int originFrameIndex, int currentFrameIndex)
+void ArmatureAnimation::frameEvent(Bone *bone, const std::string& frameEventName, int originFrameIndex, int currentFrameIndex)
 {
     if ((_frameEventTarget && _frameEventCallFunc) || _frameEventListener)
     {
@@ -492,7 +496,7 @@ void ArmatureAnimation::frameEvent(Bone *bone, const char *frameEventName, int o
 }
 
 
-void ArmatureAnimation::movementEvent(Armature *armature, MovementEventType movementType, const char *movementID)
+void ArmatureAnimation::movementEvent(Armature *armature, MovementEventType movementType, const std::string& movementID)
 {
     if ((_movementEventTarget && _movementEventCallFunc) || _movementEventListener)
     {

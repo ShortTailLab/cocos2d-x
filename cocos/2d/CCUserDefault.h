@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -104,12 +105,12 @@ public:
      * @js NA
      * @lua NA
      */
-    Data* getDataForKey(const char* pKey);
+    Data getDataForKey(const char* pKey);
     /**
      * @js NA
      * @lua NA
      */
-    Data* getDataForKey(const char* pKey, Data* defaultValue);
+    Data getDataForKey(const char* pKey, const Data& defaultValue);
 
     // set value methods
 

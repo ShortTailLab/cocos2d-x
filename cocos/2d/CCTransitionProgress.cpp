@@ -1,7 +1,8 @@
 /****************************************************************************
+Copyright (c) 2009      Lam Pham
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2009 Lam Pham
-Copyright (c) 2012 Ricardo Quesada
+Copyright (c) 2012      Ricardo Quesada
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -32,7 +33,6 @@ THE SOFTWARE.
 #include "CCLayer.h"
 #include "CCActionInstant.h"
 #include "CCActionProgressTimer.h"
-#include "CCNewRenderTexture.h"
 
 NS_CC_BEGIN
 
@@ -72,7 +72,7 @@ void TransitionProgress::onEnter()
     Size size = Director::getInstance()->getWinSize();
 
     // create the second render texture for outScene
-    RenderTexture *texture = NewRenderTexture::create((int)size.width, (int)size.height);
+    RenderTexture *texture = RenderTexture::create((int)size.width, (int)size.height);
     texture->getSprite()->setAnchorPoint(Point(0.5f,0.5f));
     texture->setPosition(Point(size.width/2, size.height/2));
     texture->setAnchorPoint(Point(0.5f,0.5f));

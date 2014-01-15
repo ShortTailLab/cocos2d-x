@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #include "cocostudio/CCArmatureDefine.h"
 #include "cocostudio/CCBone.h"
+#include "renderer/CCQuadCommand.h"
 
 namespace cocostudio {
 
@@ -34,8 +35,8 @@ class Skin : public cocos2d::Sprite
 {
 public:
     static Skin *create();
-    static Skin *createWithSpriteFrameName(const char *pszSpriteFrameName);
-    static Skin *create(const char *pszFileName);
+    static Skin *createWithSpriteFrameName(const std::string& pszSpriteFrameName);
+    static Skin *create(const std::string& pszFileName);
 public:
     /**
      *  @js ctor
@@ -74,6 +75,7 @@ protected:
     Armature *_armature;
     kmMat4 _skinTransform;
     std::string _displayName;
+    cocos2d::QuadCommand _quadCommand;     // quad command
 };
 
 }

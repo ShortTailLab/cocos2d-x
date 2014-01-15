@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2010 cocos2d-x.org  http://cocos2d-x.org
+ Copyright (c) 2010 cocos2d-x.org
  Copyright (c) 2010 Максим Аксенов
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,7 @@
 
 #include "CCPlatformConfig.h"
 #include "platform/CCCommon.h"
-#include "string.h"  // for size_t
+#include <string>
 
 NS_CC_BEGIN
 
@@ -87,7 +87,7 @@ public:
      * @js NA
      * @lua NA
      */
-    bool parse(const char *file);
+    bool parse(const std::string& filename);
     /**
      * @js NA
      * @lua NA

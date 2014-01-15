@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -47,7 +47,7 @@ Bone *Bone::create()
 
 }
 
-Bone *Bone::create(const char *name)
+Bone *Bone::create(const std::string& name)
 {
 
     Bone *pBone = new Bone();
@@ -101,16 +101,13 @@ bool Bone::init()
 }
 
 
-bool Bone::init(const char *name)
+bool Bone::init(const std::string& name)
 {
     bool bRet = false;
     do
     {
 
-        if(nullptr != name)
-        {
-            _name = name;
-        }
+        _name = name;
 
         CC_SAFE_DELETE(_tweenData);
         _tweenData = new FrameData();
@@ -421,13 +418,22 @@ void Bone::removeDisplay(int index)
 
 void Bone::changeDisplayByIndex(int index, bool force)
 {
-    _displayManager->changeDisplayByIndex(index, force);
+    changeDisplayWithIndex(index, force);
 }
 
-
-void Bone::changeDisplayByName(const char *name, bool force)
+void Bone::changeDisplayByName(const std::string &name, bool force)
 {
-    _displayManager->changeDisplayByName(name, force);
+    changeDisplayWithName(name, force);
+}
+
+void Bone::changeDisplayWithIndex(int index, bool force)
+{
+    _displayManager->changeDisplayWithIndex(index, force);
+}
+
+void Bone::changeDisplayWithName(const std::string& name, bool force)
+{
+    _displayManager->changeDisplayWithName(name, force);
 }
 
 ColliderDetector* Bone::getColliderDetector() const

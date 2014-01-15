@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "../testBasic.h"
 #include "../BaseTest.h"
-#include "renderer/CCNewRenderTexture.h"
+#include "renderer/CCCustomCommand.h"
 
 class RenderTextureTest : public BaseTest
 {
@@ -31,8 +31,8 @@ public:
     void saveImage(Object *pSender);
 
 private:
-    NewRenderTexture *_target;
-    Sprite *_brush;
+    RenderTexture *_target;
+    Vector<Sprite*> _brushs;
 };
 
 class RenderTextureIssue937 : public RenderTextureTest
@@ -83,8 +83,21 @@ class RenderTextureTestDepthStencil : public RenderTextureTest
 public:
     CREATE_FUNC(RenderTextureTestDepthStencil);
     RenderTextureTestDepthStencil();
+    virtual ~RenderTextureTestDepthStencil();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
+    virtual void draw() override;
+private:
+    CustomCommand _renderCmds[4];
+    void onBeforeClear();
+    void onBeforeStencil();
+    void onBeforDraw();
+    void onAfterDraw();
+    
+private:
+    RenderTexture* _rend;
+    Sprite* _spriteDS;
+    Sprite* _spriteDraw;
 };
 
 class RenderTextureTargetNode : public RenderTextureTest
@@ -114,9 +127,12 @@ public:
         SimpleSprite();
         virtual void draw();
         
-
+    protected:
+        void onBeforeDraw();
     public:
         RenderTexture *_rt;
+    protected:
+        CustomCommand _customCommand;
     };
         
 public:

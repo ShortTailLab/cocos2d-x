@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013      Zynga Inc.
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -102,16 +103,20 @@ Label* Label::createWithAtlas(FontAtlas *atlas, TextHAlignment alignment, int li
 
 Label::Label(FontAtlas *atlas, TextHAlignment alignment, bool useDistanceField,bool useA8Shader)
 : _reusedLetter(nullptr)
+, _multilineEnable(true)
+, _commonLineHeight(0.0f)
 , _lineBreakWithoutSpaces(false)
-,_multilineEnable(true)
+, _width(0.0f)
 , _alignment(alignment)
 , _currentUTF16String(0)
 , _originalUTF16String(0)
-, _advances(0)
+, _advances(nullptr)
 , _fontAtlas(atlas)
 , _isOpacityModifyRGB(true)
-,_useDistanceField(useDistanceField)
-,_useA8Shader(useA8Shader)
+, _useDistanceField(useDistanceField)
+, _useA8Shader(useA8Shader)
+, _fontSize(0)
+, _uniformEffectColor(0)
 {
 }
 
@@ -141,7 +146,8 @@ bool Label::init()
         setLabelEffect(LabelEffect::NORMAL,Color3B::BLACK);
     else if(_useA8Shader)
         setShaderProgram(ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_A8_COLOR));
-
+    else
+        setShaderProgram(ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR));
     return ret;
 }
 
@@ -496,7 +502,7 @@ void Label::setFontSize(int fontSize)
     Node::setScale(1.0f*_fontSize/DISTANCEFIELD_ATLAS_FONTSIZE);
 }
 
-void Label::draw()
+void Label::onDraw()
 {
     CC_PROFILER_START("CCSpriteBatchNode - draw");
 
@@ -521,6 +527,13 @@ void Label::draw()
     _textureAtlas->drawQuads();
 
     CC_PROFILER_STOP("CCSpriteBatchNode - draw");
+}
+
+void Label::draw()
+{
+    _customCommand.init(0, _vertexZ);
+    _customCommand.func = CC_CALLBACK_0(Label::onDraw, this);
+    Director::getInstance()->getRenderer()->addCommand(&_customCommand);
 }
 
 ///// PROTOCOL STUFF

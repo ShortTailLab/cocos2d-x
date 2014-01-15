@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -54,8 +54,9 @@ void Component::update(float delta)
 {
 }
 
-void Component::serialize(void *ar)
+bool Component::serialize(void *ar)
 {
+    return true;
 }
 
 Component* Component::create(void)
@@ -72,14 +73,14 @@ Component* Component::create(void)
 	return ret;
 }
 
-const char* Component::getName() const
+const std::string& Component::getName() const
 {
-    return _name.c_str();
+    return _name;
 }
 
-void Component::setName(const char *name)
+void Component::setName(const std::string& name)
 {
-    _name.assign(name);
+    _name = name;
 }
 
 Node* Component::getOwner() const

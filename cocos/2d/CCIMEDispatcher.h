@@ -1,6 +1,7 @@
 /****************************************************************************
-Copyright (c) 2010 cocos2d-x.org
-
+Copyright (c) 2010      cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
+ 
 http://www.cocos2d-x.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -77,7 +78,7 @@ public:
      * @js NA
      * @lua NA
      */
-    const char * getContentText();
+    const std::string& getContentText();
 
     //////////////////////////////////////////////////////////////////////////
     // dispatch keyboard notification

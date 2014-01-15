@@ -300,45 +300,6 @@ end
 rawset(CCLabelAtlas,"create",CCLabelAtlasDeprecated.create)
 --functions of CCLabelAtlas will be deprecated end
 
---functions of CCCamera will be deprecated begin
-local CCCameraDeprecated = {}
-function CCCameraDeprecated.setUpXYZ(self,...)
-    deprecatedTip("CCCameraDeprecated:setUpXYZ","CCCameraDeprecated:setUp")
-    return self:setUp(...)
-end
-rawset(CCCamera,"setUpXYZ",CCCameraDeprecated.setUpXYZ)
-
-function CCCameraDeprecated.getUpXYZ(self)
-    deprecatedTip("CCCameraDeprecated:getUpXYZ","CCCameraDeprecated:getUp")
-    return self:getUp()
-end
-rawset(CCCamera,"getUpXYZ",CCCameraDeprecated.getUpXYZ)
-
-function CCCameraDeprecated.setEyeXYZ(self,...)
-    deprecatedTip("CCCameraDeprecated:setEyeXYZ","CCCameraDeprecated:setEye")
-    return self:setEye(...)
-end
-rawset(CCCamera,"setEyeXYZ",CCCameraDeprecated.setEyeXYZ)
-
-function CCCameraDeprecated.getEyeXYZ(self)
-    deprecatedTip("CCCameraDeprecated:getEyeXYZ","CCCameraDeprecated:getEye")
-    return self:getEye()
-end
-rawset(CCCamera,"getEyeXYZ",CCCameraDeprecated.getEyeXYZ)
-
-function CCCameraDeprecated.setCenterXYZ(self,...)
-    deprecatedTip("CCCameraDeprecated:setCenterXYZ","CCCameraDeprecated:setCenter")
-    return self:setCenter(...)
-end
-rawset(CCCamera,"setCenterXYZ",CCCameraDeprecated.setCenterXYZ)
-
-function CCCameraDeprecated.getCenterXYZ(self)
-    deprecatedTip("CCCameraDeprecated:getCenterXYZ","CCCameraDeprecated:getCenter")
-    return self:getCenter()
-end
-rawset(CCCamera,"getCenterXYZ",CCCameraDeprecated.getCenterXYZ)
---functions of CCCamera will be deprecated end
-
 
 ---------------------------
 --global functions wil be deprecated, begin
@@ -1127,21 +1088,6 @@ end
 rawset(SceneReader,"purgeSceneReader",SceneReaderDeprecated.purgeSceneReader)
 --functions of SceneReader will be deprecated end
 
---functions of ActionManager will be deprecated begin
-local ActionManagerDeprecated = { }
-function ActionManagerDeprecated.shareManager()
-    deprecatedTip("ActionManager:shareManager","ccs.ActionManagerEx:getInstance")
-    return ccs.ActionManagerEx:getInstance()
-end
-rawset(ActionManager,"shareManager",ActionManagerDeprecated.shareManager)
-
-function ActionManagerDeprecated.purgeActionManager()
-    deprecatedTip("ActionManager:purgeActionManager","ccs.ActionManagerEx:destroyActionManager")
-    return ccs.ActionManagerEx:destroyActionManager()
-end
-rawset(ActionManager,"purgeActionManager",ActionManagerDeprecated.purgeActionManager)
---functions of ActionManager will be deprecated end
-
 --functions of CCEGLView will be deprecated begin
 local CCEGLViewDeprecated = { }
 function CCEGLViewDeprecated.sharedOpenGLView()
@@ -1150,18 +1096,4 @@ function CCEGLViewDeprecated.sharedOpenGLView()
 end
 rawset(CCEGLView,"sharedOpenGLView",CCEGLViewDeprecated.sharedOpenGLView)
 --functions of CCEGLView will be deprecated end
-
---Enums of CCTableView will be deprecated begin
-rawset(CCTableView, "kTableViewScroll",cc.SCROLLVIEW_SCRIPT_SCROLL)
-rawset(CCTableView,"kTableViewZoom",cc.SCROLLVIEW_SCRIPT_ZOOM)
-rawset(CCTableView,"kTableCellTouched",cc.TABLECELL_TOUCHED)
-rawset(CCTableView,"kTableCellSizeForIndex",cc.TABLECELL_SIZE_FOR_INDEX)
-rawset(CCTableView,"kTableCellSizeAtIndex",cc.TABLECELL_SIZE_AT_INDEX)
-rawset(CCTableView,"kNumberOfCellsInTableView",cc.NUMBER_OF_CELLS_IN_TABLEVIEW)
---Enums of CCTableView will be deprecated end
-
---Enums of CCScrollView will be deprecated begin
-rawset(CCScrollView, "kScrollViewScroll",cc.SCROLLVIEW_SCRIPT_SCROLL)
-rawset(CCScrollView,"kScrollViewZoom",cc.SCROLLVIEW_SCRIPT_ZOOM)
---Enums of CCScrollView will be deprecated end
 

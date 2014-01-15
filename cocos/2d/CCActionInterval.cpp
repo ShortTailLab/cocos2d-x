@@ -1,7 +1,8 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
-Copyright (c) 2011 Zynga Inc.
+Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
  
 http://www.cocos2d-x.org
 
@@ -2053,7 +2054,7 @@ void Animate::startWithTarget(Node *target)
 
     if (_animation->getRestoreOriginalFrame())
     {
-        _origFrame = sprite->getDisplayFrame();
+        _origFrame = sprite->getSpriteFrame();
         _origFrame->retain();
     }
     _nextFrame = 0;
@@ -2064,7 +2065,7 @@ void Animate::stop(void)
 {
     if (_animation->getRestoreOriginalFrame() && _target)
     {
-        static_cast<Sprite*>(_target)->setDisplayFrame(_origFrame);
+        static_cast<Sprite*>(_target)->setSpriteFrame(_origFrame);
     }
 
     ActionInterval::stop();
@@ -2097,7 +2098,7 @@ void Animate::update(float t)
         if( splitTime <= t ) {
             AnimationFrame* frame = frames.at(i);
             frameToDisplay = frame->getSpriteFrame();
-            static_cast<Sprite*>(_target)->setDisplayFrame(frameToDisplay);
+            static_cast<Sprite*>(_target)->setSpriteFrame(frameToDisplay);
 
             const ValueMap& dict = frame->getUserInfo();
             if ( !dict.empty() )

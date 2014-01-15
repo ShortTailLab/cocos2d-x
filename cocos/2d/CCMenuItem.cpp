@@ -1,7 +1,8 @@
 /****************************************************************************
+Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2008-2011 Ricardo Quesada
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -320,7 +321,7 @@ MenuItemAtlasFont * MenuItemAtlasFont::create(const std::string& value, const st
 }
 
 // XXX: deprecated
-MenuItemAtlasFont * MenuItemAtlasFont::create(const char* value, const char* charMapFile, int itemWidth, int itemHeight, char startCharMap, Object* target, SEL_MenuHandler selector)
+MenuItemAtlasFont * MenuItemAtlasFont::create(const std::string& value, const std::string& charMapFile, int itemWidth, int itemHeight, char startCharMap, Object* target, SEL_MenuHandler selector)
 {
     MenuItemAtlasFont *ret = new MenuItemAtlasFont();
     ret->initWithString(value, charMapFile, itemWidth, itemHeight, startCharMap, target, selector);
@@ -337,7 +338,7 @@ MenuItemAtlasFont * MenuItemAtlasFont::create(const std::string& value, const st
 }
 
 // XXX: deprecated
-bool MenuItemAtlasFont::initWithString(const char* value, const char* charMapFile, int itemWidth, int itemHeight, char startCharMap, Object* target, SEL_MenuHandler selector)
+bool MenuItemAtlasFont::initWithString(const std::string& value, const std::string& charMapFile, int itemWidth, int itemHeight, char startCharMap, Object* target, SEL_MenuHandler selector)
 {
 	_target = target;
 	CC_SAFE_RETAIN(_target);
@@ -347,9 +348,8 @@ bool MenuItemAtlasFont::initWithString(const char* value, const char* charMapFil
 bool MenuItemAtlasFont::initWithString(const std::string& value, const std::string& charMapFile, int itemWidth, int itemHeight, char startCharMap, const ccMenuCallback& callback)
 {
     CCASSERT( value.size() != 0, "value length must be greater than 0");
-    LabelAtlas *label = new LabelAtlas();
+    LabelAtlas *label = LabelAtlas::create();
     label->initWithString(value, charMapFile, itemWidth, itemHeight, startCharMap);
-    label->autorelease();
     if (MenuItemLabel::initWithLabel(label, callback))
     {
         // do something ?
@@ -387,7 +387,7 @@ const std::string& MenuItemFont::getFontName()
 }
 
 // XXX: deprecated
-MenuItemFont * MenuItemFont::create(const char *value, Object* target, SEL_MenuHandler selector)
+MenuItemFont * MenuItemFont::create(const std::string& value, Object* target, SEL_MenuHandler selector)
 {
     MenuItemFont *ret = new MenuItemFont();
     ret->initWithString(value, target, selector);
@@ -422,9 +422,9 @@ MenuItemFont::~MenuItemFont()
 }
 
 // XXX: deprecated
-bool MenuItemFont::initWithString(const char *value, Object* target, SEL_MenuHandler selector)
+bool MenuItemFont::initWithString(const std::string& value, Object* target, SEL_MenuHandler selector)
 {
-    CCASSERT( value != nullptr && strlen(value) != 0, "Value length must be greater than 0");
+    CCASSERT( !value.empty(), "Value length must be greater than 0");
 
 	_target = target;
     CC_SAFE_RETAIN(target);
@@ -433,7 +433,7 @@ bool MenuItemFont::initWithString(const char *value, Object* target, SEL_MenuHan
 
 bool MenuItemFont::initWithString(const std::string& value, const ccMenuCallback& callback)
 {
-    CCASSERT( value.size() >= 0, "Value length must be greater than 0");
+    CCASSERT( !value.empty(), "Value length must be greater than 0");
 
     _fontName = _globalFontName;
     _fontSize = _globalFontSize;
@@ -710,7 +710,7 @@ MenuItemImage * MenuItemImage::create(const std::string& normalImage, const std:
 }
 
 // XXX deprecated
-MenuItemImage * MenuItemImage::create(const char *normalImage, const char *selectedImage, Object* target, SEL_MenuHandler selector)
+MenuItemImage * MenuItemImage::create(const std::string& normalImage, const std::string& selectedImage, Object* target, SEL_MenuHandler selector)
 {
     return MenuItemImage::create(normalImage, selectedImage, "", target, selector);
 }
@@ -721,7 +721,7 @@ MenuItemImage * MenuItemImage::create(const std::string& normalImage, const std:
 }
 
 // XXX deprecated
-MenuItemImage * MenuItemImage::create(const char *normalImage, const char *selectedImage, const char *disabledImage, Object* target, SEL_MenuHandler selector)
+MenuItemImage * MenuItemImage::create(const std::string& normalImage, const std::string& selectedImage, const std::string& disabledImage, Object* target, SEL_MenuHandler selector)
 {
     MenuItemImage *ret = new MenuItemImage();
     if (ret && ret->initWithNormalImage(normalImage, selectedImage, disabledImage, target, selector))
@@ -758,7 +758,7 @@ MenuItemImage * MenuItemImage::create(const std::string& normalImage, const std:
 }
 
 // XXX: deprecated
-bool MenuItemImage::initWithNormalImage(const char *normalImage, const char *selectedImage, const char *disabledImage, Object* target, SEL_MenuHandler selector)
+bool MenuItemImage::initWithNormalImage(const std::string& normalImage, const std::string& selectedImage, const std::string& disabledImage, Object* target, SEL_MenuHandler selector)
 {
 	_target = target;
 	CC_SAFE_RETAIN(_target);

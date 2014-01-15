@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -50,7 +50,7 @@ public:
      * @param  name If name is not null, then set name to the bone's name
      * @return A initialized bone which is marked as "autorelease".
      */
-    static Bone *create(const char *name);
+    static Bone *create(const std::string& name);
 
 public:
     /**
@@ -72,7 +72,7 @@ public:
      * Initializes a Bone with the specified name
      * @param name Bone's name.
      */
-    virtual bool init(const char *name);
+    virtual bool init(const std::string& name);
 
     /**
      * Add display and use displayData to init the display.
@@ -91,8 +91,11 @@ public:
 
     void removeDisplay(int index);
 
-    void changeDisplayByIndex(int index, bool force);
-    void changeDisplayByName(const char *name, bool force);
+    CC_DEPRECATED_ATTRIBUTE void changeDisplayByIndex(int index, bool force);
+    CC_DEPRECATED_ATTRIBUTE void changeDisplayByName(const std::string& name, bool force);
+
+    void changeDisplayWithIndex(int index, bool force);
+    void changeDisplayWithName(const std::string& name, bool force);
 
     /**
      * Add a child to this bone, and it will let this child call setParent(Bone *parent) function to set self to it's parent

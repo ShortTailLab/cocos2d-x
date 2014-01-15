@@ -1,7 +1,8 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
+Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -470,6 +471,8 @@ public:
     
     Acceleration(): x(0), y(0), z(0), timestamp(0) {}
 };
+
+extern const std::string STD_STRING_EMPTY;
 
 NS_CC_END
 

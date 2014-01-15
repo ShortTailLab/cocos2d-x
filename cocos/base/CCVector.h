@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010 ForzeField Studios S.L. http://forzefield.com
-Copyright (c) 2010 cocos2d-x.org
+Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies
 
 http://www.cocos2d-x.org
 
@@ -26,7 +27,7 @@ THE SOFTWARE.
 #define __CCVECTOR_H__
 
 #include "ccMacros.h"
-
+#include "CCObject.h"
 #include <vector>
 #include <functional>
 #include <algorithm> // for std::find
@@ -68,13 +69,14 @@ public:
     Vector<T>()
     : _data()
     {
-        
+        static_assert(std::is_convertible<T, Object*>::value, "Invalid Type for cocos2d::Vector<T>!");
     }
     
     /** Constructor with a capacity */
     explicit Vector<T>(ssize_t capacity)
     : _data()
     {
+        static_assert(std::is_convertible<T, Object*>::value, "Invalid Type for cocos2d::Vector<T>!");
         CCLOGINFO("In the default constructor with capacity of Vector.");
         reserve(capacity);
     }
@@ -89,6 +91,7 @@ public:
     /** Copy constructor */
     Vector<T>(const Vector<T>& other)
     {
+        static_assert(std::is_convertible<T, Object*>::value, "Invalid Type for cocos2d::Vector<T>!");
         CCLOGINFO("In the copy constructor!");
         _data = other._data;
         addRefForAllObjects();
@@ -97,6 +100,7 @@ public:
     /** Move constructor */
     Vector<T>(Vector<T>&& other)
     {
+        static_assert(std::is_convertible<T, Object*>::value, "Invalid Type for cocos2d::Vector<T>!");
         CCLOGINFO("In the move constructor of Vector!");
         _data = std::move(other._data);
     }
@@ -104,18 +108,23 @@ public:
     /** Copy assignment operator */
     Vector<T>& operator=(const Vector<T>& other)
     {
-        CCLOGINFO("In the copy assignment operator!");
-        clear();
-        _data = other._data;
-        addRefForAllObjects();
+        if (this != &other) {
+            CCLOGINFO("In the copy assignment operator!");
+            clear();
+            _data = other._data;
+            addRefForAllObjects();
+        }
         return *this;
     }
     
     /** Move assignment operator */
     Vector<T>& operator=(Vector<T>&& other)
     {
-        CCLOGINFO("In the move assignment operator!");
-        _data = std::move(other._data);
+        if (this != &other) {
+            CCLOGINFO("In the move assignment operator!");
+            clear();
+            _data = std::move(other._data);
+        }
         return *this;
     }
     
@@ -332,7 +341,7 @@ public:
      *  @return An iterator pointing to the new location of the element that followed the last element erased by the function call.
      *          This is the container end if the operation erased the last element in the sequence.
      */
-    iterator erase(const_iterator first, const_iterator last)
+    iterator erase(iterator first, iterator last)
     {
         for (auto iter = first; iter != last; ++iter)
         {

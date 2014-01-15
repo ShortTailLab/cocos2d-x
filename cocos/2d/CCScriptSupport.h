@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -41,7 +42,6 @@ NS_CC_BEGIN
 class Timer;
 class Layer;
 class MenuItem;
-class NotificationCenter;
 class CallFunc;
 class Acceleration;
 
@@ -201,7 +201,6 @@ enum ScriptEventType
 {
     kNodeEvent = 0,
     kMenuClickedEvent,
-    kNotificationEvent,
     kCallFuncEvent,
     kScheduleEvent,
     kTouchEvent,
@@ -210,10 +209,6 @@ enum ScriptEventType
     kAccelerometerEvent,
     kControlEvent,
     kCommonEvent,
-    kTableViewEvent,//Now it's only used in LuaBinding
-    kAssetsManagerEvent,//Now it's only used in Lua Binding
-    kCocoStudioEventListener,//Now it's only used in Lua Binding
-    kArmatureWrapper,//Now it's only used in Lua Binding
 };
 
 struct BasicScriptData
@@ -432,6 +427,14 @@ public:
      * @lua NA
      */
     virtual bool handleAssert(const char *msg) = 0;
+    
+    enum class ConfigType
+    {
+        NONE,
+        COCOSTUDIO
+    };
+    /** Parse configuration file */
+    virtual bool parseConfig(ConfigType type, const std::string& str) = 0;
 };
 
 /**

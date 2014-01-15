@@ -1,5 +1,6 @@
 /****************************************************************************
-Copyright (c) 2010 cocos2d-x.org
+Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -26,6 +27,7 @@ THE SOFTWARE.
 #include <stdlib.h>
 
 #include "TGAlib.h"
+#include "CCData.h"
 #include "platform/CCFileUtils.h"
 
 NS_CC_BEGIN
@@ -272,15 +274,11 @@ tImageTGA* tgaLoadBuffer(unsigned char* buffer, long size)
 // this is the function to call when we want to load an image
 tImageTGA * tgaLoad(const char *filename)
 {
-    ssize_t size = 0;
-    unsigned char* buffer = FileUtils::getInstance()->getFileData(filename, "rb", &size);
+    Data data = FileUtils::getInstance()->getDataFromFile(filename);
 
-    if (buffer != nullptr)
+    if (!data.isNull())
     {
-        tImageTGA* data = tgaLoadBuffer(buffer, size);
-        free(buffer);
-        
-        return data;
+        return tgaLoadBuffer(data.getBytes(), data.getSize());
     }
     
     return nullptr;

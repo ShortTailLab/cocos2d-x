@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2013 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -26,7 +26,7 @@
 #define __CCPHYSICS_CONTACT_H__
 
 #include "ccConfig.h"
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
 
 #include "CCObject.h"
 #include "CCGeometry.h"

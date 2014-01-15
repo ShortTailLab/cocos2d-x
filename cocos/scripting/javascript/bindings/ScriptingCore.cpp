@@ -54,6 +54,8 @@
 
 #define BYTE_CODE_FILE_EXT ".jsc"
 
+using namespace cocos2d;
+
 static std::string inData;
 static std::string outData;
 static std::vector<std::string> g_queue;
@@ -67,7 +69,7 @@ static void serverEntryPoint(void);
 
 js_proxy_t *_native_js_global_ht = NULL;
 js_proxy_t *_js_native_global_ht = NULL;
-std::unordered_map<long, js_type_class_t*> _js_global_type_map;
+std::unordered_map<std::string, js_type_class_t*> _js_global_type_map;
 
 static char *_js_log_buf = NULL;
 
@@ -198,12 +200,12 @@ void js_log(const char *format, ...) {
 
     if (_js_log_buf == NULL)
     {
-        _js_log_buf = (char *)calloc(sizeof(char), kMaxLogLen+1);
-        _js_log_buf[kMaxLogLen] = '\0';
+        _js_log_buf = (char *)calloc(sizeof(char), MAX_LOG_LENGTH+1);
+        _js_log_buf[MAX_LOG_LENGTH] = '\0';
     }
     va_list vl;
     va_start(vl, format);
-    int len = vsnprintf(_js_log_buf, kMaxLogLen, format, vl);
+    int len = vsnprintf(_js_log_buf, MAX_LOG_LENGTH, format, vl);
     va_end(vl);
     if (len > 0)
     {
@@ -533,18 +535,17 @@ JSBool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* c
     
     // a) check jsc file first
     std::string byteCodePath = RemoveFileExt(std::string(path)) + BYTE_CODE_FILE_EXT;
-    ssize_t length = 0;
-    unsigned char* data = futil->getFileData(byteCodePath.c_str(),
-                                    "rb",
-                                    &length);
+
+    Data data = futil->getDataFromFile(byteCodePath);
     
-    if (data) {
-        script = JS_DecodeScript(cx, data, length, NULL, NULL);
-        free(data);
+    if (!data.isNull())
+    {
+        script = JS_DecodeScript(cx, data.getBytes(), static_cast<uint32_t>(data.getSize()), nullptr, nullptr);
     }
     
     // b) no jsc file, check js file
-    if (!script) {
+    if (!script)
+    {
         /* Clear any pending exception from previous failed decoding.  */
         ReportException(cx);
         
@@ -553,12 +554,10 @@ JSBool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* c
         options.setUTF8(true).setFileAndLine(fullPath.c_str(), 1);
         
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-        String* content = String::createWithContentsOfFile(path);
-        if (content) {
-            // Not supported in SpiderMonkey 19.0
-            //JSScript* script = JS_CompileScript(cx, global, (char*)content, contentSize, path, 1);
-            const char* contentCStr = content->getCString();
-            script = JS::Compile(cx, obj, options, contentCStr, strlen(contentCStr));
+        std::string jsFileContent = futil->getStringFromFile(fullPath);
+        if (!jsFileContent.empty())
+        {
+            script = JS::Compile(cx, obj, options, jsFileContent.c_str(), jsFileContent.size());
         }
 #else
         script = JS::Compile(cx, obj, options, fullPath.c_str());
@@ -1161,6 +1160,14 @@ int ScriptingCore::sendEvent(ScriptEvent* evt)
     }
     
     return 0;
+}
+
+bool ScriptingCore::parseConfig(ConfigType type, const std::string &str)
+{
+    jsval args[2];
+    args[0] = int32_to_jsval(_cx, static_cast<int>(type));
+    args[1] = std_string_to_jsval(_cx, str);
+    return (JS_TRUE == executeFunctionWithOwner(OBJECT_TO_JSVAL(_global), "__onParseConfig", 2, args));
 }
 
 #pragma mark - Debug

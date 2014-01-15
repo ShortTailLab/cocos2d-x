@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013      Zynga Inc.
- 
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
+
  http://www.cocos2d-x.org
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -51,7 +52,7 @@ TextPageDef::~TextPageDef()
 {
     size_t numLines = _lines.size();
     
-    for( int c = 0; c<numLines; ++c )
+    for( size_t c = 0; c<numLines; ++c )
     {
         delete _lines[c];
     }

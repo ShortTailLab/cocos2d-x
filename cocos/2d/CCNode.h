@@ -1,8 +1,9 @@
 /****************************************************************************
- Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2008-2010 Ricardo Quesada
- Copyright (c) 2009      Valentin Milea
- Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2009      Valentin Milea
+Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -43,7 +44,6 @@
 
 NS_CC_BEGIN
 
-class Camera;
 class GridBase;
 class Point;
 class Touch;
@@ -54,7 +54,8 @@ class ActionManager;
 class Component;
 class ComponentContainer;
 class EventDispatcher;
-#ifdef CC_USE_PHYSICS
+class Scene;
+#if CC_USE_PHYSICS
 class PhysicsBody;
 #endif
 
@@ -98,7 +99,6 @@ class EventListener;
  - position
  - scale (x, y)
  - rotation (in degrees, clockwise)
- - Camera (an interface to gluLookAt )
  - GridBase (to do mesh transformations)
  - anchor point
  - size
@@ -120,18 +120,14 @@ class EventListener;
  -# The node will be translated (position)
  -# The node will be rotated (rotation)
  -# The node will be scaled (scale)
- -# The node will be moved according to the camera values (camera)
 
  Order in transformations with grid enabled
  -# The node will be translated (position)
  -# The node will be rotated (rotation)
  -# The node will be scaled (scale)
  -# The grid will capture the screen
- -# The node will be moved according to the camera values (camera)
  -# The grid will render the captured screen
 
- Camera:
- - Each node has a camera. By default it points to the center of the Node.
  */
 
 class CC_DLL Node : public Object
@@ -595,7 +591,7 @@ public:
      *
      * @return a Node object whose tag equals to the input parameter
      */
-    Node * getChildByTag(int tag);
+    virtual Node * getChildByTag(int tag);
     /**
      * Return an array of children
      *
@@ -620,7 +616,7 @@ public:
      *
      * @return The amount of children.
      */
-    ssize_t getChildrenCount() const;
+    virtual ssize_t getChildrenCount() const;
 
     /**
      * Sets the parent node
@@ -835,19 +831,6 @@ public:
 
 
     /**
-     * Returns a camera object that lets you move the node using a gluLookAt
-     *
-     @code
-     Camera* camera = node->getCamera();
-     camera->setEye(0, 0, 415/2);
-     camera->setCenter(0, 0, 0);
-     @endcode
-     *
-     * @return A Camera object that lets you move the node using a gluLookAt
-     */
-    virtual Camera* getCamera();
-
-    /**
      * Returns whether or not the node accepts event callbacks.
      *
      * Running means the node accept event callbacks like onEnter(), onExit(), update()
@@ -929,6 +912,11 @@ public:
      */
     virtual void visit();
 
+    /** Returns the Scene that contains the Node.
+     It returns `nullptr` if the node doesn't belong to any Scene.
+     This function recursively calls parent->getScene() until parent is a Scene object. The results are not cached. It is that the user caches the results in case this functions is being used inside a loop.
+     */
+    virtual Scene* getScene();
 
     /**
      * Returns a "local" axis aligned bounding box of the node.
@@ -1202,6 +1190,11 @@ public:
     virtual const kmMat4& getNodeToParentTransform() const;
     virtual AffineTransform getNodeToParentAffineTransform() const;
 
+    /** 
+     * Sets the Transformation matrix manually.
+     */
+    virtual void setNodeToParentTransform(const kmMat4& transform);
+
     /** @deprecated use getNodeToParentTransform() instead */
     CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
 
@@ -1273,7 +1266,9 @@ public:
     Point convertTouchToNodeSpaceAR(Touch * touch) const;
 
 	/**
-     *  Sets the additional transform.
+     *  Sets an additional transform matrix to the node.
+     *
+     *  In order to remove it, set the Identity Matrix to the additional transform.
      *
      *  @note The additional transform will be concatenated at the end of getNodeToParentTransform.
      *        It could be used to simulate `parent-child` relationship between two nodes (e.g. one is in BatchNode, another isn't).
@@ -1296,7 +1291,7 @@ public:
      spriteA->setPosition(Point(200, 200));
 
      // Gets the spriteA's transform.
-     AffineTransform t = spriteA->getNodeToParentTransform();
+     auto t = spriteA->getNodeToParentTransform();
 
      // Sets the additional transform to spriteB, spriteB's postion will based on its pseudo parent i.e. spriteA.
      spriteB->setAdditionalTransform(t);
@@ -1330,7 +1325,7 @@ public:
     /**
      *   gets a component by its name
      */
-    Component* getComponent(const char *pName);
+    Component* getComponent(const std::string& pName);
 
     /**
      *   adds a component
@@ -1340,7 +1335,7 @@ public:
     /**
      *   removes a component by its name
      */
-    virtual bool removeComponent(const char *pName);
+    virtual bool removeComponent(const std::string& pName);
 
     /**
      *   removes all components
@@ -1349,7 +1344,7 @@ public:
     /// @} end of component functions
 
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     /**
      *   set the PhysicsBody that let the sprite effect with physics
      */
@@ -1428,16 +1423,15 @@ protected:
 
     Size _contentSize;             ///< untransformed size of the node
 
+    kmMat4  _modelViewTransform;    ///< ModelView transform of the Node.
+
     // "cache" variables are allowed to be mutable
     mutable kmMat4 _additionalTransform; ///< transform
     mutable kmMat4 _transform;     ///< transform
     mutable kmMat4 _inverse;       ///< inverse transform
-    kmMat4  _modelViewTransform;    ///< ModelView transform of the Node.
-    mutable bool _additionalTransformDirty;   ///< The flag to check whether the additional transform is dirty
+    bool _useAdditionalTransform;   ///< The flag to check whether the additional transform is dirty
     mutable bool _transformDirty;             ///< transform dirty flag
     mutable bool _inverseDirty;               ///< inverse transform dirty flag
-
-    Camera *_camera;                ///< a camera
 
     int _ZOrder;                      ///< z-order value that affects the draw order
     
@@ -1475,7 +1469,7 @@ protected:
 
     ComponentContainer *_componentContainer;        ///< Dictionary of components
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     PhysicsBody* _physicsBody;        ///< the physicsBody the node have
 #endif
     

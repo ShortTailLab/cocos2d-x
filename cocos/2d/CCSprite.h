@@ -1,7 +1,8 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
+Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -37,6 +38,7 @@ THE SOFTWARE.
 #include "CCGLBufferedNode.h"
 #endif // EMSCRIPTEN
 #include "CCPhysicsBody.h"
+#include "renderer/CCQuadCommand.h"
 #include "kazmath/kazmath.h"
 
 NS_CC_BEGIN
@@ -229,8 +231,8 @@ public:
     /**
      * Sets a new SpriteFrame to the Sprite.
      */
-    virtual void setSpriteFrame(SpriteFrame* newFrame);
     virtual void setSpriteFrame(const std::string &spriteFrameName);
+    virtual void setSpriteFrame(SpriteFrame* newFrame);
 
     /** @deprecated Use `setSpriteFrame()` instead. */
     CC_DEPRECATED_ATTRIBUTE virtual void setDisplayFrame(SpriteFrame *newFrame) { setSpriteFrame(newFrame); }
@@ -413,10 +415,7 @@ public:
     virtual void removeChild(Node* child, bool cleanup) override;
     virtual void removeAllChildrenWithCleanup(bool cleanup) override;
     virtual void reorderChild(Node *child, int zOrder) override;
-    // Should also override addChild(Node*) and addChild(Node*, int), or binding generator will only
-    // bind addChild(Node*, int, int);
-    virtual void addChild(Node* child) override;
-    virtual void addChild(Node* child, int zOrder) override;
+    using Node::addChild;
     virtual void addChild(Node *child, int zOrder, int tag) override;
     virtual void sortAllChildren() override;
     virtual void setScale(float scale) override;
@@ -548,6 +547,7 @@ protected:
     //
     BlendFunc        _blendFunc;            /// It's required for TextureProtocol inheritance
     Texture2D*       _texture;              /// Texture2D object that is used to render the sprite
+    QuadCommand      _quadCommand;          /// quad command
 
     //
     // Shared data

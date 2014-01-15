@@ -1,7 +1,8 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
+Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -45,7 +46,7 @@ THE SOFTWARE.
 #include "TransformUtils.h"
 #include "CCProfiling.h"
 #include "CCRenderer.h"
-#include "CCQuadCommand.h"
+#include "renderer/CCQuadCommand.h"
 #include "CCFrustum.h"
 
 // external
@@ -222,6 +223,7 @@ bool Sprite::initWithSpriteFrame(SpriteFrame *spriteFrame)
 // designated initializer
 bool Sprite::initWithTexture(Texture2D *texture, const Rect& rect, bool rotated)
 {
+    bool result;
     if (Node::init())
     {
         _batchNode = nullptr;
@@ -262,13 +264,15 @@ bool Sprite::initWithTexture(Texture2D *texture, const Rect& rect, bool rotated)
         // by default use "Self Render".
         // if the sprite is added to a batchnode, then it will automatically switch to "batchnode Render"
         setBatchNode(nullptr);
-        
-        return true;
+        result = true;
     }
     else
     {
-        return false;
+        result = false;
     }
+    _recursiveDirty = true;
+    setDirty(true);
+    return result;
 }
 
 Sprite::Sprite(void)
@@ -499,7 +503,7 @@ void Sprite::updateTransform(void)
 {
     CCASSERT(_batchNode, "updateTransform is only valid when Sprite is being rendered using an SpriteBatchNode");
 
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     if (updatePhysicsTransform())
     {
         setDirty(true);
@@ -668,16 +672,11 @@ void Sprite::updateTransform(void)
 void Sprite::draw(void)
 {
     //TODO implement z order
-    QuadCommand* renderCommand = QuadCommand::getCommandPool().generateCommand();
-    renderCommand->init(0, _vertexZ, _texture->getName(), _shaderProgram, _blendFunc, &_quad, 1, _modelViewTransform);
+    _quadCommand.init(0, _vertexZ, _texture->getName(), _shaderProgram, _blendFunc, &_quad, 1, _modelViewTransform);
 
-//    if(!culling())
-//    {
-//        renderCommand->releaseToCommandPool();
-//    }
-//    else
+//    if(culling())
     {
-        Director::getInstance()->getRenderer()->addCommand(renderCommand);
+        Director::getInstance()->getRenderer()->addCommand(&_quadCommand);
     }
 }
 
@@ -694,7 +693,7 @@ bool Sprite::culling() const
     Rect newRect = RectApplyTransform(_rect, worldTM);
 
     kmVec3 point = {newRect.getMinX(), newRect.getMinY(), _vertexZ};
-
+    
     AABB aabb(point,point);
     kmVec3Fill(&point,newRect.getMaxX(), newRect.getMinY(), _vertexZ);
     aabb.expand(point);
@@ -708,7 +707,7 @@ bool Sprite::culling() const
 
 void Sprite::updateQuadVertices()
 {
-#ifdef CC_USE_PHYSICS
+#if CC_USE_PHYSICS
     updatePhysicsTransform();
     setDirty(true);
 #endif
@@ -725,8 +724,8 @@ void Sprite::updateQuadVertices()
 //        }
 //        else
 //        {
-//            CCASSERT( dynamic_cast<NewSprite*>(_parent), "Logic error in Sprite. Parent must be a Sprite");
-//            _transformToBatch = AffineTransformConcat( getNodeToParentTransform() , static_cast<NewSprite*>(_parent)->_transformToBatch );
+//            CCASSERT( dynamic_cast<Sprite*>(_parent), "Logic error in Sprite. Parent must be a Sprite");
+//            _transformToBatch = AffineTransformConcat( getNodeToParentTransform() , static_cast<Sprite*>(_parent)->_transformToBatch );
 //        }
 
         //TODO optimize this transformation, should use parent's transformation instead
@@ -748,16 +747,6 @@ void Sprite::updateQuadVertices()
 }
 
 // Node overrides
-
-void Sprite::addChild(Node *child)
-{
-    Node::addChild(child);
-}
-
-void Sprite::addChild(Node *child, int zOrder)
-{
-    Node::addChild(child, zOrder);
-}
 
 void Sprite::addChild(Node *child, int zOrder, int tag)
 {
