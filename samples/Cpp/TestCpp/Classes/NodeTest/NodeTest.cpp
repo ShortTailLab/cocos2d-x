@@ -22,40 +22,33 @@ Layer* restartCocosNodeAction();
 
 static int sceneIdx = -1; 
 
-#define MAX_LAYER    14
 
-Layer* createCocosNodeLayer(int nIndex)
+static std::function<Layer*()> createFunctions[] =
 {
-    switch(nIndex)
-    {
-        case 0: return new CameraCenterTest();
-        case 1: return new Test2();
-        case 2: return new Test4();
-        case 3: return new Test5();
-        case 4: return new Test6();
-        case 5: return new StressTest1();
-        case 6: return new StressTest2();
-        case 7: return new NodeToWorld();
-        case 8: return new SchedulerTest1();
-        case 9: return new CameraOrbitTest();
-        case 10: return new CameraZoomTest();
-        case 11: return new ConvertToNode();
-        case 12: return new NodeOpaqueTest();
-        case 13: return new NodeNonOpaqueTest();
-    }
+    CL(CameraCenterTest),
+    CL(Test2),
+    CL(Test4),
+    CL(Test5),
+    CL(Test6),
+    CL(StressTest1),
+    CL(StressTest2),
+    CL(NodeToWorld),
+    CL(SchedulerTest1),
+    CL(CameraOrbitTest),
+    CL(CameraZoomTest),
+    CL(ConvertToNode),
+    CL(NodeOpaqueTest),
+    CL(NodeNonOpaqueTest),
+};
 
-    return NULL;
-}
+#define MAX_LAYER    (sizeof(createFunctions) / sizeof(createFunctions[0]))
 
 Layer* nextCocosNodeAction()
 {
     sceneIdx++;
     sceneIdx = sceneIdx % MAX_LAYER;
 
-    auto layer = createCocosNodeLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
+    return createFunctions[sceneIdx]();
 }
 
 Layer* backCocosNodeAction()
@@ -65,18 +58,12 @@ Layer* backCocosNodeAction()
     if( sceneIdx < 0 )
         sceneIdx += total;    
     
-    auto layer = createCocosNodeLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
+    return createFunctions[sceneIdx]();
 }
 
 Layer* restartCocosNodeAction()
 {
-    auto layer = createCocosNodeLayer(sceneIdx);
-    layer->autorelease();
-
-    return layer;
+    return createFunctions[sceneIdx]();
 } 
 
 
@@ -88,12 +75,12 @@ TestCocosNodeDemo::~TestCocosNodeDemo(void)
 {
 }
 
-std::string TestCocosNodeDemo::title()
+std::string TestCocosNodeDemo::title() const
 {
     return "No title";
 }
 
-std::string TestCocosNodeDemo::subtitle()
+std::string TestCocosNodeDemo::subtitle() const
 {
     return "";
 }
@@ -173,7 +160,7 @@ void Test2::onEnter()
     sp2->runAction(action2);
 }
 
-std::string Test2::title()
+std::string Test2::title() const
 {
     return "anchorPoint and children";
 }
@@ -215,7 +202,7 @@ void Test4::delay4(float dt)
     removeChildByTag(3, false);
 }
 
-std::string Test4::title()
+std::string Test4::title() const
 {
     return "tags";
 }
@@ -268,7 +255,7 @@ void Test5::addAndRemove(float dt)
     sp2->release();
 }
 
-std::string Test5::title()
+std::string Test5::title() const
 {
     return "remove and cleanup";
 }
@@ -329,7 +316,7 @@ void Test6::addAndRemove(float dt)
 
 }
 
-std::string Test6::title()
+std::string Test6::title() const
 {
     return "remove/cleanup with children";
 }
@@ -382,7 +369,7 @@ void StressTest1::removeMe(Node* node)
 }
 
 
-std::string StressTest1::title()
+std::string StressTest1::title() const
 {
     return "stress test #1: no crashes";
 }
@@ -429,7 +416,7 @@ void StressTest2::shouldNotLeak(float dt)
     sublayer->removeAllChildrenWithCleanup(true); 
 }
 
-std::string StressTest2::title()
+std::string StressTest2::title() const
 {
     return "stress test #2: no leaks";
 }
@@ -460,7 +447,7 @@ void SchedulerTest1::doSomething(float dt)
 
 }
 
-std::string SchedulerTest1::title()
+std::string SchedulerTest1::title() const
 {
     return "cocosnode scheduler test #1";
 }
@@ -499,7 +486,7 @@ NodeToWorld::NodeToWorld()
     back->runAction(fe2);
 }
 
-std::string NodeToWorld::title()
+std::string NodeToWorld::title() const
 {
     return "nodeToParent transform";
 }
@@ -569,7 +556,7 @@ CameraOrbitTest::CameraOrbitTest()
     setScale( 1 );
 }
 
-std::string CameraOrbitTest::title()
+std::string CameraOrbitTest::title() const
 {
     return "Camera Orbit test";
 }
@@ -598,16 +585,16 @@ CameraZoomTest::CameraZoomTest()
     auto s = Director::getInstance()->getWinSize();
     
     Sprite *sprite;
-    Camera *cam;
+//    Camera *cam;
     
     // LEFT
     sprite = Sprite::create(s_pathGrossini);
     addChild( sprite, 0);        
     sprite->setPosition( Point(s.width/4*1, s.height/2) );
-    cam = sprite->getCamera();
-    cam->setEye(0, 0, 415/2);
-    cam->setCenter(0, 0, 0);
-    
+//    cam = sprite->getCamera();
+//    cam->setEye(0, 0, 415/2);
+//    cam->setCenter(0, 0, 0);
+
     // CENTER
     sprite = Sprite::create(s_pathGrossini);
     addChild( sprite, 0, 40);
@@ -625,20 +612,20 @@ CameraZoomTest::CameraZoomTest()
 void CameraZoomTest::update(float dt)
 {
     Node *sprite;
-    Camera *cam;
-    
+//    Camera *cam;
+
     _z += dt * 100;
     
     sprite = getChildByTag(20);
-    cam = sprite->getCamera();
-    cam->setEye(0, 0, _z);
-    
+//    cam = sprite->getCamera();
+//    cam->setEye(0, 0, _z);
+
     sprite = getChildByTag(40);
-    cam = sprite->getCamera();
-    cam->setEye(0, 0, -_z);    
+//    cam = sprite->getCamera();
+//    cam->setEye(0, 0, -_z);    
 }
 
-std::string CameraZoomTest::title()
+std::string CameraZoomTest::title() const
 {
     return "Camera Zoom test";
 }
@@ -706,12 +693,12 @@ CameraCenterTest::CameraCenterTest()
     sprite->runAction(RepeatForever::create( orbit ) );
 }
 
-std::string CameraCenterTest::title()
+std::string CameraCenterTest::title() const
 {
     return "Camera Center test";
 }
 
-std::string CameraCenterTest::subtitle()
+std::string CameraCenterTest::subtitle() const
 {
     return "Sprites should rotate at the same speed";
 }
@@ -780,12 +767,12 @@ void ConvertToNode::onTouchesEnded(const std::vector<Touch*>& touches, Event *ev
     }    
 }
 
-std::string ConvertToNode::title()
+std::string ConvertToNode::title() const
 {
     return "Convert To Node Space";
 }
 
-std::string ConvertToNode::subtitle()
+std::string ConvertToNode::subtitle() const
 {
     return "testing convertToNodeSpace / AR. Touch and see console";
 }
@@ -805,12 +792,12 @@ NodeOpaqueTest::NodeOpaqueTest()
     }
 }
 
-std::string NodeOpaqueTest::title()
+std::string NodeOpaqueTest::title() const
 {
     return "Node Opaque Test";
 }
 
-std::string NodeOpaqueTest::subtitle()
+std::string NodeOpaqueTest::subtitle() const
 {
     return "Node rendered with GL_BLEND disabled";
 }
@@ -830,12 +817,12 @@ NodeNonOpaqueTest::NodeNonOpaqueTest()
     }
 }
 
-std::string NodeNonOpaqueTest::title()
+std::string NodeNonOpaqueTest::title() const
 {
     return "Node Non Opaque Test";
 }
 
-std::string NodeNonOpaqueTest::subtitle()
+std::string NodeNonOpaqueTest::subtitle() const
 {
     return "Node rendered with GL_BLEND enabled";
 }

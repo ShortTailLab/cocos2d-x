@@ -18,7 +18,6 @@ set(EXTENSIONS_SRC
   GUI/CCEditBox/CCEditBoxImplTizen.cpp
   GUI/CCEditBox/CCEditBoxImplWin.cpp
   GUI/CCScrollView/CCScrollView.cpp
-  GUI/CCScrollView/CCSorting.cpp
   GUI/CCScrollView/CCTableView.cpp
   GUI/CCScrollView/CCTableViewCell.cpp
   physics-nodes/CCPhysicsDebugNode.cpp
@@ -35,7 +34,7 @@ add_library(extensions STATIC
 
 set_target_properties(extensions
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 

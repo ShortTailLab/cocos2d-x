@@ -65,9 +65,9 @@ void js_register_cocos2dx_String(JSContext *cx, JSObject *global) {
 	JS_SetPropertyAttributes(cx, global, "String", JSPROP_ENUMERATE | JSPROP_READONLY, &found);
     
 	// add the proto and JSClass to the type->js info hash table
-	TypeTest<String> t;
+	TypeTest<cocos2d::String> t;
 	js_type_class_t *p;
-	long typeId = t.s_id();
+    std::string typeId = t.s_name();
 	if (_js_global_type_map.find(typeId) == _js_global_type_map.end())
 	{
 		p = (js_type_class_t *)malloc(sizeof(js_type_class_t));

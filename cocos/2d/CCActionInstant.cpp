@@ -1,7 +1,8 @@
 /****************************************************************************
- Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2008-2010 Ricardo Quesada
- Copyright (c) 2011 Zynga Inc.
+ Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2011      Zynga Inc.
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
 
@@ -421,7 +422,7 @@ CallFuncN * CallFuncN::create(const std::function<void(Node*)> &func)
     }
 
     CC_SAFE_DELETE(ret);
-    return NULL;
+    return nullptr;
 }
 
 // XXX deprecated
@@ -472,7 +473,7 @@ CallFuncN * CallFuncN::clone() const
     if( _selectorTarget) {
         a->initWithTarget(_selectorTarget, _callFuncN);
     }
-    else if( _function ){
+    else if( _functionN ){
         a->initWithFunction(_functionN);
     }
 

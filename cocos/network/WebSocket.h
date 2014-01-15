@@ -1,6 +1,6 @@
 /****************************************************************************
- Copyright (c) 2010-2013 cocos2d-x.org
- Copyright (c) 2013 James Chen
+ Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -37,6 +37,8 @@ struct libwebsocket;
 struct libwebsocket_context;
 struct libwebsocket_protocols;
 
+NS_CC_BEGIN
+
 namespace network {
 
 class WsThreadHelper;
@@ -62,7 +64,7 @@ public:
     {
         Data():bytes(NULL), len(0), isBinary(false){}
         char* bytes;
-        int len;
+        ssize_t len;
         bool isBinary;
     };
     
@@ -143,7 +145,7 @@ private:
     int onSocketCallback(struct libwebsocket_context *ctx,
                          struct libwebsocket *wsi,
                          int reason,
-                         void *user, void *in, size_t len);
+                         void *user, void *in, ssize_t len);
     
 private:
 	State        _readyState;
@@ -162,5 +164,7 @@ private:
 };
 
 }
+
+NS_CC_END
 
 #endif /* defined(__CC_JSB_WEBSOCKET_H__) */

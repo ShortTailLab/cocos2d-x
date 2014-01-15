@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2013 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -22,20 +22,13 @@
  THE SOFTWARE.
  ****************************************************************************/
 #include "CCPhysicsContact.h"
-#ifdef CC_USE_PHYSICS
-
-#if (CC_PHYSICS_ENGINE == CC_PHYSICS_CHIPMUNK)
+#if CC_USE_PHYSICS
 #include "chipmunk.h"
-#elif (CC_PHYSICS_ENGINE == CCPHYSICS_BOX2D)
-#include "Box2D.h"
-#endif
 
 #include "CCPhysicsBody.h"
 
 #include "chipmunk/CCPhysicsContactInfo_chipmunk.h"
-#include "box2d/CCPhysicsContactInfo_box2d.h"
 #include "chipmunk/CCPhysicsHelper_chipmunk.h"
-#include "box2d/CCPhysicsHelper_box2d.h"
 
 #include "CCEventCustom.h"
 
@@ -105,7 +98,7 @@ void PhysicsContact::generateContactData()
     cpArbiter* arb = static_cast<cpArbiter*>(_contactInfo);
     _contactData = new PhysicsContactData();
     _contactData->count = cpArbiterGetCount(arb);
-    for (int i=0; i<_contactData->count; ++i)
+    for (int i=0; i<_contactData->count && i<PhysicsContactData::POINT_MAX; ++i)
     {
         _contactData->points[i] = PhysicsHelper::cpv2point(cpArbiterGetPoint(arb, i));
     }
@@ -202,7 +195,7 @@ bool EventListenerPhysicsContact::init()
         onEvent(event);
     };
     
-    return EventListenerCustom::init(std::hash<std::string>()(PHYSICSCONTACT_EVENT_NAME), func);
+    return EventListenerCustom::init(PHYSICSCONTACT_EVENT_NAME, func);
 }
 
 void EventListenerPhysicsContact::onEvent(EventCustom* event)

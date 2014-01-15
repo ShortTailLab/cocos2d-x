@@ -1,8 +1,9 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
+Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-
+Copyright (c) 2013-2014 Chukong Technologies Inc.
+ 
 http://www.cocos2d-x.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -47,19 +48,10 @@ public:
     /// Default tag used for all the actions
     static const int INVALID_TAG = -1;
     /**
-     * @js ctor
-     */
-    Action();
-    /**
      * @js NA
      * @lua NA
      */
-    virtual ~Action();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    const char* description() const;
+    virtual std::string description() const;
 
 	/** returns a clone of action */
 	virtual Action* clone() const = 0;
@@ -108,6 +100,9 @@ public:
     inline void setTag(int tag) { _tag = tag; }
 
 protected:
+    Action();
+    virtual ~Action();
+
     Node    *_originalTarget;
     /** The "target".
     The target will be set with the 'startWithTarget' method.
@@ -117,6 +112,9 @@ protected:
     Node    *_target;
     /** The action tag. An identifier of the action */
     int     _tag;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(Action);
 };
 
 /** 
@@ -131,17 +129,6 @@ protected:
 class CC_DLL FiniteTimeAction : public Action
 {
 public:
-    /**
-     * @js ctor
-     */
-    FiniteTimeAction()
-	: _duration(0)
-    {}
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~FiniteTimeAction(){}
     //! get duration in seconds of the action
     inline float getDuration() const { return _duration; }
     //! set duration in seconds of the action
@@ -154,8 +141,16 @@ public:
 	virtual FiniteTimeAction* clone() const override = 0;
 
 protected:
+    FiniteTimeAction()
+	: _duration(0)
+    {}
+    virtual ~FiniteTimeAction(){}
+
     //! duration in seconds
     float _duration;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(FiniteTimeAction);
 };
 
 class ActionInterval;
@@ -172,22 +167,11 @@ class CC_DLL Speed : public Action
 public:
     /** create the action */
     static Speed* create(ActionInterval* action, float speed);
-    /**
-     * @js ctor
-     */
-    Speed();
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~Speed(void);
 
     inline float getSpeed(void) const { return _speed; }
     /** alter the speed of the inner function in runtime */
     inline void setSpeed(float speed) { _speed = speed; }
 
-    /** initializes the action */
-    bool initWithAction(ActionInterval *action, float speed);
 
     void setInnerAction(ActionInterval *action);
 
@@ -204,8 +188,16 @@ public:
     virtual bool isDone() const  override;
 
 protected:
+    Speed();
+    virtual ~Speed(void);
+    /** initializes the action */
+    bool initWithAction(ActionInterval *action, float speed);
+
     float _speed;
     ActionInterval *_innerAction;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(Speed);
 };
 
 /** 
@@ -230,37 +222,10 @@ public:
      *              with no boundary.
      */
     static Follow* create(Node *followedNode, const Rect& rect = Rect::ZERO);
-    /**
-     * @js ctor
-     */
-    Follow()
-		: _followedNode(nullptr)
-        , _boundarySet(false)
-        , _boundaryFullyCovered(false)        
-        , _leftBoundary(0.0)
-        , _rightBoundary(0.0)
-        , _topBoundary(0.0)
-        , _bottomBoundary(0.0)
-		, _worldRect(Rect::ZERO)
-    {}
-    /**
-     * @js NA
-     * @lua NA
-     */
-    virtual ~Follow();
-    
+
     inline bool isBoundarySet() const { return _boundarySet; }
     /** alter behavior - turn on/off boundary */
     inline void setBoudarySet(bool value) { _boundarySet = value; }
-
-    /**
-     * Initializes the action with a set boundary or with no boundary.
-     *
-     * @param followedNode  The node to be followed.
-     * @param rect  The boundary. If \p rect is equal to Rect::ZERO, it'll work
-     *              with no boundary.
-     */
-    bool initWithTarget(Node *followedNode, const Rect& rect = Rect::ZERO);
 
     //
     // Override
@@ -272,6 +237,33 @@ public:
     virtual void stop() override;
 
 protected:
+    /**
+     * @js ctor
+     */
+    Follow()
+    : _followedNode(nullptr)
+    , _boundarySet(false)
+    , _boundaryFullyCovered(false)
+    , _leftBoundary(0.0)
+    , _rightBoundary(0.0)
+    , _topBoundary(0.0)
+    , _bottomBoundary(0.0)
+    , _worldRect(Rect::ZERO)
+    {}
+    /**
+     * @js NA
+     * @lua NA
+     */
+    virtual ~Follow();
+    /**
+     * Initializes the action with a set boundary or with no boundary.
+     *
+     * @param followedNode  The node to be followed.
+     * @param rect  The boundary. If \p rect is equal to Rect::ZERO, it'll work
+     *              with no boundary.
+     */
+    bool initWithTarget(Node *followedNode, const Rect& rect = Rect::ZERO);
+
     // node to follow
     Node *_followedNode;
 
@@ -292,6 +284,8 @@ protected:
     float _bottomBoundary;
 	Rect _worldRect;
 
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(Follow);
 };
 
 // end of actions group

@@ -6,8 +6,6 @@
 
 USING_NS_CC;
 
-using namespace std;
-
 class TestScene : public Scene
 {
 public: 
@@ -17,15 +15,9 @@ public:
     virtual void runThisTest() = 0;
 };
 
-typedef Layer* (*NEWTESTFUNC)();
-#define TESTLAYER_CREATE_FUNC(className) \
-static Layer* create##className() \
-{ return new className(); }
-
-#define CF(className) create##className
-
 // C++ 11
 
-#define CL(__className__) [](){ return new __className__();}
+#define CL(__className__) [](){ return __className__::create();}
+#define CLN(__className__) [](){ auto obj = new __className__(); obj->autorelease(); return obj; }
 
 #endif

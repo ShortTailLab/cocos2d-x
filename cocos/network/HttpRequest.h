@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2013-2014 Chukong Technologies Inc.
  
  http://www.cocos2d-x.org
  
@@ -28,12 +29,14 @@
 #include "cocos2d.h"
 #include <functional>
 
+NS_CC_BEGIN
+
 namespace network {
 
 class HttpClient;
 class HttpResponse;
 typedef void (cocos2d::Object::*SEL_HttpResponse)(HttpClient* client, HttpResponse* response);
-#define httpresponse_selector(_SELECTOR) (network::SEL_HttpResponse)(&_SELECTOR)
+#define httpresponse_selector(_SELECTOR) (cocos2d::network::SEL_HttpResponse)(&_SELECTOR)
 
 /** 
  @brief defines the object which users must packed for HttpClient::send(HttpRequest*) method.
@@ -131,7 +134,7 @@ public:
         return nullptr;
     }
     /** Get the size of request data back */
-    inline int getRequestDataSize()
+    inline ssize_t getRequestDataSize()
     {
         return _requestData.size();
     }
@@ -272,5 +275,7 @@ protected:
 };
 
 }
+
+NS_CC_END
 
 #endif //__HTTP_REQUEST_H__
