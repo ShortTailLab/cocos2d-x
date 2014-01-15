@@ -110,6 +110,7 @@ Node::Node(void)
 , _inverseDirty(true)
 //, _camera(NULL)
 , _effectCamera(NULL)
+, _grid(NULL)
 // children (lazy allocs)
 // lazy alloc
 , _ZOrder(0)
@@ -916,6 +917,9 @@ void Node::transform()
         if( translate )
             kmGLTranslatef(RENDER_IN_SUBPIXEL(-_anchorPointInPoints.x), RENDER_IN_SUBPIXEL(-_anchorPointInPoints.y), 0 );
     }
+    
+    // saves the MV matrix
+    kmGLGetMatrix(KM_GL_MODELVIEW, &_modelViewTransform);
 }
 
 void Node::onEnter()
