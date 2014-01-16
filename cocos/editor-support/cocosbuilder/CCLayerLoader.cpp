@@ -3,10 +3,10 @@
 
 using namespace cocos2d;
 
-#define PROPERTY_TOUCH_ENABLED "isTouchEnabled"
-#define PROPERTY_ACCELEROMETER_ENABLED "isAccelerometerEnabled"
-#define PROPERTY_MOUSE_ENABLED "isMouseEnabled"
-#define PROPERTY_KEYBOARD_ENABLED "isKeyboardEnabled"
+#define PROPERTY_TOUCH_ENABLED "touchEnabled"
+#define PROPERTY_ACCELEROMETER_ENABLED "accelerometerEnabled"
+#define PROPERTY_MOUSE_ENABLED "mouseEnabled"
+#define PROPERTY_KEYBOARD_ENABLED "keyboardEnabled"
 
 #if defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
