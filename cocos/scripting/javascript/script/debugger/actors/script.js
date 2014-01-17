@@ -447,9 +447,9 @@ ThreadActor.prototype = {
   actorPrefix: "context",
 
   get state() { return this._state; },
-  get attached() this.state == "attached" ||
+  get attached() { return this.state == "attached" ||
                  this.state == "running" ||
-                 this.state == "paused",
+                 this.state == "paused"},
 
   get breakpointStore() { return ThreadActor.breakpointStore; },
 
@@ -768,7 +768,7 @@ ThreadActor.prototype = {
     if (aRequest && aRequest.resumeLimit) {
       // Bind these methods because some of the hooks are called with 'this'
       // set to the current frame.
-      let pauseAndRespond = (aFrame, onPacket=function (k) k) => {
+      let pauseAndRespond = (aFrame, onPacket=function (k) {return k;}) => {
         this._pauseAndRespond(aFrame, { type: "resumeLimit" }, onPacket);
       };
       let createValueGrip = this.createValueGrip.bind(this);
@@ -1127,8 +1127,8 @@ ThreadActor.prototype = {
     }
 
     let res;
-    for each (let actorID in aRequest.actors) {
-      let actor = this.threadLifetimePool.get(actorID);
+    for (let key in aRequest.actors) {
+      let actor = this.threadLifetimePool.get(aRequest.actors[key]);
       if (!actor) {
         if (!res) {
           res = { error: "notReleasable",
@@ -1386,7 +1386,7 @@ ThreadActor.prototype = {
                                                                      aScript,
                                                                      aScriptsAndOffsetMappings) {
     let offsetMappings = aScript.getAllColumnOffsets()
-      .filter(({ lineNumber }) => lineNumber === aTargetLocation.line);
+      .filter(({ lineNumber }) => {return lineNumber === aTargetLocation.line;});
 
     // If we are given a column, we will try and break only at that location,
     // otherwise we will break anytime we get on that line.
@@ -1438,9 +1438,13 @@ ThreadActor.prototype = {
     // Only get one script per url.
     let scriptsByUrl = {};
     for (let s of this.dbg.findScripts()) {
-      scriptsByUrl[s.url] = s;
+      if (s.url != "(string)" && s.url != null) {
+          scriptsByUrl[s.url] = s;
+      }
     }
 
+    cc.log("scripts all");
+    cc.log(JSON.stringify(scriptsByUrl));
     return all([this.sources.sourcesForScript(scriptsByUrl[s])
                 for (s of Object.keys(scriptsByUrl))]);
   },
@@ -1673,7 +1677,8 @@ ThreadActor.prototype = {
     let framePool = new ActorPool(this.conn);
     let frameList = [];
 
-    for each (let frameActor in this._frameActors) {
+    for (let key in this._frameActors) {
+      let frameActor = this._frameActors[key];
       if (frameActor.frame.live) {
         framePool.addActor(frameActor);
         frameList.push(frameActor);
@@ -2186,8 +2191,8 @@ SourceActor.prototype = {
   constructor: SourceActor,
   actorPrefix: "source",
 
-  get threadActor() this._threadActor,
-  get url() this._url,
+  get threadActor() { return this._threadActor; },
+  get url() { return this._url; },
 
   form: function SA_form() {
     return {
@@ -2899,8 +2904,8 @@ FrameActor.prototype = {
       return [];
     }
 
-    return [this.threadActor.createValueGrip(arg)
-            for each (arg in this.frame.arguments)];
+    return [this.threadActor.createValueGrip(this.frame.arguments[arg])
+            for (arg in this.frame.arguments)];
   },
 
   /**
@@ -3103,7 +3108,8 @@ EnvironmentActor.prototype = {
     if (this.obj.callee) {
       parameterNames = this.obj.callee.parameterNames;
     }
-    for each (let name in parameterNames) {
+    for (let key in parameterNames) {
+      let name = parameterNames[key];
       let arg = {};
       // TODO: this part should be removed in favor of the commented-out part
       // below when getVariableDescriptor lands (bug 725815).
@@ -3130,7 +3136,8 @@ EnvironmentActor.prototype = {
       bindings.arguments.push(arg);
     }
 
-    for each (let name in this.obj.names()) {
+    for (let key in this.obj.names()) {
+      let name = this.obj.names()[key];
       if (bindings.arguments.some(function exists(element) {
                                     return !!element[name];
                                   })) {
@@ -3290,7 +3297,7 @@ update(ChromeDebuggerActor.prototype, {
    * Override the eligibility check for scripts and sources to make sure every
    * script and source with a URL is stored when debugging chrome.
    */
-  _allowSource: function(aSourceURL) !!aSourceURL,
+  _allowSource: function(aSourceURL) { return !!aSourceURL; },
 
    /**
    * An object that will be used by ThreadActors to tailor their behavior

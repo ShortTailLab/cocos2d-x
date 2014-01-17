@@ -177,12 +177,12 @@ RootActor.prototype = {
   /**
    * This is true for the root actor only, used by some child actors
    */
-  get isRootActor() true,
+  get isRootActor() {return true;},
 
   /**
    * The (chrome) window, for use by child actors
    */
-  get window() Services.wm.getMostRecentWindow(DebuggerServer.chromeWindowType),
+  get window() {return Services.wm.getMostRecentWindow(DebuggerServer.chromeWindowType)},
 
   /**
    * Disconnects the actor from the browser window.

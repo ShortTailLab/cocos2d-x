@@ -46,6 +46,7 @@ function dbg_assert(cond, e) {
     log("assert >>>> " + cond.toString());
     return e;
   }
+  return null;
 }
 
 function XPCInspector() {
@@ -222,7 +223,7 @@ var DebuggerServer = {
                             this._defaultAllowConnection;
   },
 
-  get initialized() this._initialized,
+  get initialized() { return this._initialized; },
 
   /**
    * Performs cleanup tasks before shutting down the debugger server. Such tasks
@@ -708,7 +709,8 @@ ActorPool.prototype = {
    * Run all actor cleanups.
    */
   cleanup: function AP_cleanup() {
-    for each (let actor in this._cleanups) {
+    for (let key in this._cleanups) {
+      let actor = this._cleanups[key];
       actor.disconnect();
     }
     this._cleanups = {};
@@ -914,7 +916,7 @@ DebuggerServerConnection.prototype = {
     }
 
     let actor = this.getActor(aPacket.to);
-    if (!actor) {
+      if (!actor) {
       this.transport.send({ from: aPacket.to ? aPacket.to : "root",
                             error: "noSuchActor" });
       return;
@@ -1007,9 +1009,9 @@ DebuggerServerConnection.prototype = {
       dumpn("--------------------- actorPool actors: " +
             uneval(Object.keys(this._actorPool._actors)));
     }
-    for each (let pool in this._extraPools)
+    for (let key in this._extraPools)
       dumpn("--------------------- extraPool actors: " +
-            uneval(Object.keys(pool._actors)));
+            uneval(Object.keys(this._extraPools[key]._actors)));
   },
 
   /*
