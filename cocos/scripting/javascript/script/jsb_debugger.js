@@ -95,7 +95,7 @@ this.processInput = function (inputstr) {
         DebuggerServer.createRootActor = (conn => {
             return new RootActor(conn, { tabList: new TestTabList(conn) });
         });
-        DebuggerServer.init(() => true);
+        DebuggerServer.init(function(){return true;});
         DebuggerServer.openListener(5086);
 
         if (debuggerServer && debuggerServer.onSocketAccepted)
