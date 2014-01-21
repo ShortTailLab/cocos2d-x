@@ -1884,26 +1884,6 @@
 		59A79D561821E26E00F19697 /* CCEventMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59A79D4F1821E26E00F19697 /* CCEventMouse.cpp */; };
 		59A79D571821E26E00F19697 /* CCEventMouse.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A79D501821E26E00F19697 /* CCEventMouse.h */; };
 		59A79D581821E26E00F19697 /* CCEventMouse.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A79D501821E26E00F19697 /* CCEventMouse.h */; };
-		86BCDAFA1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDAFB1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDAFC1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDAFD1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDAFE1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDAFF1856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDB001856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDB011856FCF700E66C52 /* EffectCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BCDAF81856FCF700E66C52 /* EffectCamera.h */; };
-		86BCDB021856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB031856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB041856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB051856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB061856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB071856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB081856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86BCDB091856FCF700E66C52 /* EffectCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */; };
-		86DA3C1B187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
-		86DA3C1C187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
-		86DA3C24187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
-		86DA3C25187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
 		74AC80E553789C6DE3EC737A /* CCRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74AC8EB8FE47EED9B30B7106 /* CCRenderer.cpp */; };
 		74AC819B780D9EB49CC421AB /* CCRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC8DF0EA49A124E1B11681 /* CCRenderer.h */; };
 		74AC81CAB5F3883FCC2A4A5B /* CCQuadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC8C4AE1EB0FCB287E7396 /* CCQuadCommand.h */; };
@@ -1928,6 +1908,10 @@
 		74AC8E2CDB69E1FDBFCFBD78 /* CCRenderCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC8F4F7D9E52FCB522B647 /* CCRenderCommand.h */; };
 		74AC8E3E7D85FB595242AAEC /* CCMaterialManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC800F4905C8827A44EED3 /* CCMaterialManager.h */; };
 		74AC8EE0C2AAB82783F47089 /* CCFrustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC840F2F17ED6D0163669F /* CCFrustum.h */; };
+		86DA3C1B187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
+		86DA3C1C187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
+		86DA3C24187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
+		86DA3C25187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
 		A023FA34185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA32185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h */; };
 		A023FA35185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA32185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h */; };
 		A023FA36185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_vert.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA33185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_vert.h */; };
@@ -3092,10 +3076,6 @@
 		59A79D4E1821E26E00F19697 /* CCEventListenerMouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCEventListenerMouse.h; sourceTree = "<group>"; };
 		59A79D4F1821E26E00F19697 /* CCEventMouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCEventMouse.cpp; sourceTree = "<group>"; };
 		59A79D501821E26E00F19697 /* CCEventMouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCEventMouse.h; sourceTree = "<group>"; };
-		86BCDAF81856FCF700E66C52 /* EffectCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EffectCamera.h; sourceTree = "<group>"; };
-		86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectCamera.cpp; sourceTree = "<group>"; };
-		86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsb_cocos2d_custom.h; sourceTree = "<group>"; };
-		86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_cocos2d_custom.cpp; sourceTree = "<group>"; };
 		74AC800F4905C8827A44EED3 /* CCMaterialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMaterialManager.h; sourceTree = "<group>"; };
 		74AC80EEB031D67E86B45096 /* CCFrustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCFrustum.cpp; sourceTree = "<group>"; };
 		74AC80F6E92FC29EA536D7F8 /* CCRenderCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCRenderCommand.cpp; sourceTree = "<group>"; };
@@ -3108,6 +3088,8 @@
 		74AC8DF0EA49A124E1B11681 /* CCRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRenderer.h; sourceTree = "<group>"; };
 		74AC8EB8FE47EED9B30B7106 /* CCRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCRenderer.cpp; sourceTree = "<group>"; };
 		74AC8F4F7D9E52FCB522B647 /* CCRenderCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRenderCommand.h; sourceTree = "<group>"; };
+		86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsb_cocos2d_custom.h; sourceTree = "<group>"; };
+		86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_cocos2d_custom.cpp; sourceTree = "<group>"; };
 		A023FA32185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccShader_PositionTextureColor_noMVP_frag.h; sourceTree = "<group>"; };
 		A023FA33185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_vert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccShader_PositionTextureColor_noMVP_vert.h; sourceTree = "<group>"; };
 		A03F2CB81780BD04006731B9 /* libchipmunk Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libchipmunk Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3137,20 +3119,9 @@
 		B375104D1823AC7B00B3BA6A /* CCPhysicsShapeInfo_chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhysicsShapeInfo_chipmunk.h; sourceTree = "<group>"; };
 		B375104E1823AC7B00B3BA6A /* CCPhysicsWorldInfo_chipmunk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCPhysicsWorldInfo_chipmunk.cpp; sourceTree = "<group>"; };
 		B375104F1823AC7B00B3BA6A /* CCPhysicsWorldInfo_chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhysicsWorldInfo_chipmunk.h; sourceTree = "<group>"; };
-		B37510501823AC9200B3BA6A /* CCPhysicsBodyInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsBodyInfo_box2d.cpp; path = ../box2d/CCPhysicsBodyInfo_box2d.cpp; sourceTree = "<group>"; };
-		B37510511823AC9200B3BA6A /* CCPhysicsBodyInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsBodyInfo_box2d.h; path = ../box2d/CCPhysicsBodyInfo_box2d.h; sourceTree = "<group>"; };
-		B37510521823AC9200B3BA6A /* CCPhysicsContactInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsContactInfo_box2d.cpp; path = ../box2d/CCPhysicsContactInfo_box2d.cpp; sourceTree = "<group>"; };
-		B37510531823AC9200B3BA6A /* CCPhysicsContactInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsContactInfo_box2d.h; path = ../box2d/CCPhysicsContactInfo_box2d.h; sourceTree = "<group>"; };
-		B37510541823AC9200B3BA6A /* CCPhysicsHelper_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsHelper_box2d.h; path = ../box2d/CCPhysicsHelper_box2d.h; sourceTree = "<group>"; };
-		B37510551823AC9200B3BA6A /* CCPhysicsJointInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsJointInfo_box2d.cpp; path = ../box2d/CCPhysicsJointInfo_box2d.cpp; sourceTree = "<group>"; };
-		B37510561823AC9200B3BA6A /* CCPhysicsJointInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsJointInfo_box2d.h; path = ../box2d/CCPhysicsJointInfo_box2d.h; sourceTree = "<group>"; };
-		B37510571823AC9200B3BA6A /* CCPhysicsShapeInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsShapeInfo_box2d.cpp; path = ../box2d/CCPhysicsShapeInfo_box2d.cpp; sourceTree = "<group>"; };
-		B37510581823AC9200B3BA6A /* CCPhysicsShapeInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsShapeInfo_box2d.h; path = ../box2d/CCPhysicsShapeInfo_box2d.h; sourceTree = "<group>"; };
-		B37510591823AC9200B3BA6A /* CCPhysicsWorldInfo_box2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCPhysicsWorldInfo_box2d.cpp; path = ../box2d/CCPhysicsWorldInfo_box2d.cpp; sourceTree = "<group>"; };
-		B375105A1823AC9200B3BA6A /* CCPhysicsWorldInfo_box2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCPhysicsWorldInfo_box2d.h; path = ../box2d/CCPhysicsWorldInfo_box2d.h; sourceTree = "<group>"; };
-		E4AC8EC11869651A00D1B7A0 /* libnspr4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnspr4.a; sourceTree = "<group>"; };
 		B3AF019E1842FBA400A98B85 /* b2MotorJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2MotorJoint.cpp; sourceTree = "<group>"; };
 		B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2MotorJoint.h; sourceTree = "<group>"; };
+		E4AC8EC11869651A00D1B7A0 /* libnspr4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnspr4.a; sourceTree = "<group>"; };
 		ED9C6A9218599AD8000A5232 /* CCNodeGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCNodeGrid.cpp; sourceTree = "<group>"; };
 		ED9C6A9318599AD8000A5232 /* CCNodeGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNodeGrid.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -5147,8 +5118,6 @@
 		46A169A11807B037005B8026 /* 2d */ = {
 			isa = PBXGroup;
 			children = (
-				86BCDAF81856FCF700E66C52 /* EffectCamera.h */,
-				86BCDAF91856FCF700E66C52 /* EffectCamera.cpp */,
 				1A9DCA47180E6DE3007A3AD4 /* ccTypes.cpp */,
 				1A9DCA48180E6DE3007A3AD4 /* ccTypes.h */,
 				1A9DCA41180E6D90007A3AD4 /* CCDeprecated.cpp */,
@@ -5626,7 +5595,6 @@
 				1A570267180BCC6F0088DEC7 /* ccShader_PositionTextureColor_vert.h in Headers */,
 				1A570269180BCC6F0088DEC7 /* ccShader_PositionTextureColorAlphaTest_frag.h in Headers */,
 				1A57026D180BCC6F0088DEC7 /* CCShaderCache.h in Headers */,
-				86BCDAFA1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				1A57026F180BCC6F0088DEC7 /* ccShaderEx_SwitchMask_frag.h in Headers */,
 				1A570273180BCC6F0088DEC7 /* ccShaders.h in Headers */,
 				1A570280180BCC900088DEC7 /* CCSprite.h in Headers */,
@@ -5816,7 +5784,6 @@
 				1A3B1F87180E88C300497A22 /* CCLuaStack.h in Headers */,
 				1A3B1F8B180E88C300497A22 /* CCLuaValue.h in Headers */,
 				1A3B1F8F180E88C300497A22 /* Cocos2dxLuaLoader.h in Headers */,
-				86BCDB011856FCF700E66C52 /* EffectCamera.h in Headers */,
 				1A3B1F93180E88C300497A22 /* lua_cocos2dx_deprecated.h in Headers */,
 				1A3B1F97180E88C300497A22 /* lua_cocos2dx_extension_manual.h in Headers */,
 				1A3B1F9B180E88C300497A22 /* lua_cocos2dx_manual.hpp in Headers */,
@@ -5853,7 +5820,6 @@
 				1A3B1F86180E88C300497A22 /* CCLuaStack.h in Headers */,
 				1A3B1F8A180E88C300497A22 /* CCLuaValue.h in Headers */,
 				1A3B1F8E180E88C300497A22 /* Cocos2dxLuaLoader.h in Headers */,
-				86BCDAFD1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				1A3B1F92180E88C300497A22 /* lua_cocos2dx_deprecated.h in Headers */,
 				1A3B1F96180E88C300497A22 /* lua_cocos2dx_extension_manual.h in Headers */,
 				1A3B1F9A180E88C300497A22 /* lua_cocos2dx_manual.hpp in Headers */,
@@ -5995,7 +5961,6 @@
 				460E479118080902000CDD6D /* CCControlUtils.h in Headers */,
 				460E468118080832000CDD6D /* cocos-ext.h in Headers */,
 				460E47B41808090B000CDD6D /* CCEditBoxImplIOS.h in Headers */,
-				86BCDAFB1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				460E47CC18080913000CDD6D /* CCScrollView.h in Headers */,
 				460E47B01808090B000CDD6D /* CCEditBox.h in Headers */,
 				460E478918080902000CDD6D /* CCControlSaturationBrightnessPicker.h in Headers */,
@@ -6036,7 +6001,6 @@
 				1A2C7931181A1257004E5527 /* jsb_cocos2dx_studio_manual.h in Headers */,
 				1A2C789A181A11EC004E5527 /* jsb_cocos2dx_studio_auto.hpp in Headers */,
 				1A2C794D181A1257004E5527 /* jsb_opengl_manual.h in Headers */,
-				86BCDAFC1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				86DA3C1B187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */,
 				1A2C7967181A1257004E5527 /* ScriptingCore.h in Headers */,
 				1A2C795B181A1257004E5527 /* js_bindings_system_registration.h in Headers */,
@@ -6157,7 +6121,6 @@
 				1A570145180BC9460088DEC7 /* CCEventCustom.h in Headers */,
 				1A570149180BC9460088DEC7 /* CCEventDispatcher.h in Headers */,
 				1A57014D180BC9460088DEC7 /* CCEventKeyboard.h in Headers */,
-				86BCDAFE1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				1A570151180BC9460088DEC7 /* CCEventListener.h in Headers */,
 				1A570155180BC9460088DEC7 /* CCEventListenerAcceleration.h in Headers */,
 				1A570159180BC9460088DEC7 /* CCEventListenerCustom.h in Headers */,
@@ -6411,7 +6374,6 @@
 				460E47C41808090D000CDD6D /* CCEditBoxImplMac.h in Headers */,
 				460E47BF1808090D000CDD6D /* CCEditBoxImpl.h in Headers */,
 				460E47AE18080904000CDD6D /* CCScale9Sprite.h in Headers */,
-				86BCDAFF1856FCF700E66C52 /* EffectCamera.h in Headers */,
 				460E477C180808F7000CDD6D /* ExtensionMacros.h in Headers */,
 				460E47A218080904000CDD6D /* CCControlSaturationBrightnessPicker.h in Headers */,
 				460E479B18080904000CDD6D /* CCControlColourPicker.h in Headers */,
@@ -6553,7 +6515,6 @@
 				1A2C7932181A1257004E5527 /* jsb_cocos2dx_studio_manual.h in Headers */,
 				1A2C789C181A11EC004E5527 /* jsb_cocos2dx_studio_auto.hpp in Headers */,
 				1A2C794E181A1257004E5527 /* jsb_opengl_manual.h in Headers */,
-				86BCDB001856FCF700E66C52 /* EffectCamera.h in Headers */,
 				86DA3C1C187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */,
 				1A2C7968181A1257004E5527 /* ScriptingCore.h in Headers */,
 				1A2C795C181A1257004E5527 /* js_bindings_system_registration.h in Headers */,
@@ -6873,7 +6834,6 @@
 				46A170CC1807CEBB005B8026 /* ray2.c in Sources */,
 				460E44EF1807DED6000CDD6D /* mat4stack.c in Sources */,
 				46A170581807CC1C005B8026 /* CCEventDispatcherMac.mm in Sources */,
-				86BCDB021856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				46A170CA1807CEBB005B8026 /* plane.c in Sources */,
 				46A170EA1807CECA005B8026 /* CCPhysicsJoint.cpp in Sources */,
 				46A170141807CBFC005B8026 /* CCFileUtilsApple.mm in Sources */,
@@ -7169,7 +7129,6 @@
 				1A3B1F9D180E88C300497A22 /* Lua_web_socket.cpp in Sources */,
 				B362C3AE1872BAB700F0BDF4 /* lua_cocos2dx_physics_auto.cpp in Sources */,
 				1A3B1FA1180E88C300497A22 /* LuaBasicConversions.cpp in Sources */,
-				86BCDB091856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				1A3B1FA5180E88C300497A22 /* LuaOpengl.cpp in Sources */,
 				1A3B1FA9180E88C300497A22 /* LuaScriptHandlerMgr.cpp in Sources */,
 				15CA8D0E18697A56000032AB /* lua_cocos2dx_spine_manual.cpp in Sources */,
@@ -7209,7 +7168,6 @@
 				1A3B1F9C180E88C300497A22 /* Lua_web_socket.cpp in Sources */,
 				B362C3B01872BABC00F0BDF4 /* lua_cocos2dx_physics_auto.cpp in Sources */,
 				1A3B1FA0180E88C300497A22 /* LuaBasicConversions.cpp in Sources */,
-				86BCDB051856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				1A3B1FA4180E88C300497A22 /* LuaOpengl.cpp in Sources */,
 				1A3B1FA8180E88C300497A22 /* LuaScriptHandlerMgr.cpp in Sources */,
 				15CA8D0D18697A56000032AB /* lua_cocos2dx_spine_manual.cpp in Sources */,
@@ -7346,7 +7304,6 @@
 				460E47B81808090B000CDD6D /* CCEditBoxImplNone.cpp in Sources */,
 				460E478418080902000CDD6D /* CCControlHuePicker.cpp in Sources */,
 				460E478A18080902000CDD6D /* CCControlSlider.cpp in Sources */,
-				86BCDB031856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				460E478818080902000CDD6D /* CCControlSaturationBrightnessPicker.cpp in Sources */,
 				460E47B91808090B000CDD6D /* CCEditBoxImplTizen.cpp in Sources */,
 				460E47B51808090B000CDD6D /* CCEditBoxImplIOS.mm in Sources */,
@@ -7382,7 +7339,6 @@
 				86DA3C24187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */,
 				1A2C7933181A1257004E5527 /* jsb_cocos2dx_extension_manual.cpp in Sources */,
 				1A2C7947181A1257004E5527 /* jsb_opengl_functions.cpp in Sources */,
-				86BCDB041856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				1A2C7927181A1257004E5527 /* js_bindings_ccbreader.cpp in Sources */,
 				1A2C7872181A11EC004E5527 /* jsb_cocos2dx_auto.cpp in Sources */,
 				1A2C7939181A1257004E5527 /* js_bindings_core.cpp in Sources */,
@@ -7412,7 +7368,6 @@
 				46A170D61807CEBC005B8026 /* ray2.c in Sources */,
 				460E44F11807DED7000CDD6D /* mat4stack.c in Sources */,
 				46A170D41807CEBC005B8026 /* plane.c in Sources */,
-				86BCDB061856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				46A1704B1807CC07005B8026 /* EAGLView.mm in Sources */,
 				46A171001807CECB005B8026 /* CCPhysicsJoint.cpp in Sources */,
 				46A170441807CC07005B8026 /* CCES2Renderer.m in Sources */,
@@ -7702,7 +7657,6 @@
 				460E47C91808090D000CDD6D /* CCEditBoxImplWin.cpp in Sources */,
 				460E47A918080904000CDD6D /* CCControlUtils.cpp in Sources */,
 				460E47D718080914000CDD6D /* CCTableView.cpp in Sources */,
-				86BCDB071856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				460E479F18080904000CDD6D /* CCControlPotentiometer.cpp in Sources */,
 				460E479818080904000CDD6D /* CCControlButton.cpp in Sources */,
 				460E47C51808090D000CDD6D /* CCEditBoxImplMac.mm in Sources */,
@@ -7840,7 +7794,6 @@
 				86DA3C25187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */,
 				1A2C7934181A1257004E5527 /* jsb_cocos2dx_extension_manual.cpp in Sources */,
 				1A2C7948181A1257004E5527 /* jsb_opengl_functions.cpp in Sources */,
-				86BCDB081856FCF700E66C52 /* EffectCamera.cpp in Sources */,
 				1A2C7928181A1257004E5527 /* js_bindings_ccbreader.cpp in Sources */,
 				1A2C7874181A11EC004E5527 /* jsb_cocos2dx_auto.cpp in Sources */,
 				1A2C793A181A1257004E5527 /* js_bindings_core.cpp in Sources */,
