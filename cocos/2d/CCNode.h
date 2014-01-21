@@ -44,7 +44,6 @@ Copyright (c) 2013-2014 Chukong Technologies Inc.
 
 NS_CC_BEGIN
 
-class EffectCamera;
 class GridBase;
 class Point;
 class Touch;
@@ -869,19 +868,6 @@ public:
 //    virtual Camera* getCamera();
     
     /**
-     * returns node's effect camera that enable you to scroll, scale, rotate, 
-     * shake node without changing its outer and inner coordinates
-     *
-     @code
-     EffectCamera* camera = node->getEffectCamera();
-     camera->scrollTo(100, 100);
-     camera->shake(30, 60);
-     @endcode
-     *
-     */
-    virtual EffectCamera* getEffectCamera();
-    
-    /**
      * Returns whether or not the node accepts event callbacks.
      *
      * Running means the node accept event callbacks like onEnter(), onExit(), update()
@@ -1480,9 +1466,6 @@ protected:
     mutable bool _additionalTransformDirty;   ///< The flag to check whether the additional transform is dirty
     mutable bool _transformDirty;             ///< transform dirty flag
     mutable bool _inverseDirty;               ///< inverse transform dirty flag
-
-//    Camera *_camera;                ///< a camera
-    EffectCamera *_effectCamera;
     
     GridBase *_grid;                ///< a grid
 

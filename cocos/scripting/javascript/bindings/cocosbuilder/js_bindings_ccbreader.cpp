@@ -119,7 +119,7 @@ JSBool js_cocos2dx_CCBReader_readNodeGraphFromFile(JSContext *cx, uint32_t argc,
             JSObject *tmpObj = JSVAL_TO_OBJECT(argv[1]);
             proxy = jsb_get_js_proxy(tmpObj);
             arg1 = (cocos2d::Object*)(proxy ? proxy->ptr : NULL);
-            TEST_NATIVE_OBJECT(cx, arg1)
+//            TEST_NATIVE_OBJECT(cx, arg1)
         } while (0);
         
         JSB_PRECONDITION2(ok, cx, JS_FALSE, "Error processing arguments");
@@ -162,7 +162,7 @@ JSBool js_cocos2dx_CCBReader_readNodeGraphFromFile(JSContext *cx, uint32_t argc,
             JSObject *tmpObj = JSVAL_TO_OBJECT(argv[1]);
             proxy = jsb_get_js_proxy(tmpObj);
             arg1 = (cocos2d::Object*)(proxy ? proxy->ptr : NULL);
-            TEST_NATIVE_OBJECT(cx, arg1)
+//            TEST_NATIVE_OBJECT(cx, arg1)
         } while (0);
         cocos2d::Size arg2;
         ok &= jsval_to_ccsize(cx, argv[2], &arg2);
@@ -204,7 +204,7 @@ JSBool js_cocos2dx_CCBReader_createSceneWithNodeGraphFromFile(JSContext *cx, uin
 			JSObject *tmpObj = JSVAL_TO_OBJECT(argv[1]);
 			proxy = jsb_get_js_proxy(tmpObj);
 			arg1 = (cocos2d::Object*)(proxy ? proxy->ptr : NULL);
-			TEST_NATIVE_OBJECT(cx, arg1)
+//			TEST_NATIVE_OBJECT(cx, arg1)
 		} while (0);
         
         JSB_PRECONDITION2(ok, cx, JS_FALSE, "Error processing arguments");
@@ -247,7 +247,7 @@ JSBool js_cocos2dx_CCBReader_createSceneWithNodeGraphFromFile(JSContext *cx, uin
 			JSObject *tmpObj = JSVAL_TO_OBJECT(argv[1]);
 			proxy = jsb_get_js_proxy(tmpObj);
 			arg1 = (cocos2d::Object*)(proxy ? proxy->ptr : NULL);
-			TEST_NATIVE_OBJECT(cx, arg1)
+//			TEST_NATIVE_OBJECT(cx, arg1)
 		} while (0);
 		cocos2d::Size arg2;
         ok &= jsval_to_ccsize(cx, argv[2], &arg2);

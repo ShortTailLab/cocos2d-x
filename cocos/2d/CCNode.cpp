@@ -44,7 +44,6 @@ THE SOFTWARE.
 #include "CCEvent.h"
 #include "CCEventTouch.h"
 #include "CCScene.h"
-#include "EffectCamera.h"
 #include "TransformUtils.h"
 
 #if CC_USE_PHYSICS
@@ -109,7 +108,6 @@ Node::Node(void)
 , _transformDirty(true)
 , _inverseDirty(true)
 //, _camera(NULL)
-, _effectCamera(NULL)
 , _grid(NULL)
 // children (lazy allocs)
 // lazy alloc
@@ -173,7 +171,6 @@ Node::~Node()
     
     // attributes
 //    CC_SAFE_RELEASE(_camera);
-    CC_SAFE_RELEASE(_effectCamera);
 
     CC_SAFE_RELEASE(_grid);
     CC_SAFE_RELEASE(_shaderProgram);
@@ -418,13 +415,6 @@ ssize_t Node::getChildrenCount() const
 //    
 //    return _camera;
 //}
-
-EffectCamera* Node::getEffectCamera() {
-    if (!_effectCamera) {
-        _effectCamera = new EffectCamera();
-    }
-    return _effectCamera;
-}
 
 /// grid setter
 void Node::setGrid(GridBase* pGrid)
@@ -905,18 +895,6 @@ void Node::transform()
 //        if( translate )
 //            kmGLTranslatef(RENDER_IN_SUBPIXEL(-_anchorPointInPoints.x), RENDER_IN_SUBPIXEL(-_anchorPointInPoints.y), 0 );
 //    }
-    
-    if (_effectCamera != NULL) {
-        bool translate = (_anchorPointInPoints.x != 0.0f || _anchorPointInPoints.y != 0.0f);
-        
-        if( translate )
-            kmGLTranslatef(RENDER_IN_SUBPIXEL(_anchorPointInPoints.x), RENDER_IN_SUBPIXEL(_anchorPointInPoints.y), 0 );
-        
-        _effectCamera->visit();
-        
-        if( translate )
-            kmGLTranslatef(RENDER_IN_SUBPIXEL(-_anchorPointInPoints.x), RENDER_IN_SUBPIXEL(-_anchorPointInPoints.y), 0 );
-    }
     
     // saves the MV matrix
     kmGLGetMatrix(KM_GL_MODELVIEW, &_modelViewTransform);
