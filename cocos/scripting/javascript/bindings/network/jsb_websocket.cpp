@@ -70,6 +70,7 @@ public:
         JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JS_BeginRequest(cx);
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         JS::RootedValue vp(cx);
         vp = c_string_to_jsval(cx, "open");
@@ -78,6 +79,7 @@ public:
         jsval args = OBJECT_TO_JSVAL(jsobj);
         
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(_JSDelegate), "onopen", 1, &args);
+        JS_EndRequest(cx);
     }
     
     virtual void onMessage(WebSocket* ws, const WebSocket::Data& data)
@@ -88,6 +90,7 @@ public:
         JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JS_BeginRequest(cx);
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         JS::RootedValue vp(cx);
         vp = c_string_to_jsval(cx, "message");
@@ -112,6 +115,7 @@ public:
         }
 
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(_JSDelegate), "onmessage", 1, &args);
+        JS_EndRequest(cx);
     }
     
     virtual void onClose(WebSocket* ws)
@@ -122,6 +126,7 @@ public:
         JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JS_BeginRequest(cx);
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         JS::RootedValue vp(cx);
         vp = c_string_to_jsval(cx, "close");
@@ -134,6 +139,7 @@ public:
         JS_RemoveObjectRoot(cx, &jsproxy->obj);
         jsb_remove_proxy(p, jsproxy);
         CC_SAFE_DELETE(ws);
+        JS_EndRequest(cx);
     }
     
     virtual void onError(WebSocket* ws, const WebSocket::ErrorCode& error)
@@ -144,6 +150,7 @@ public:
         JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
         
         JSContext* cx = ScriptingCore::getInstance()->getGlobalContext();
+        JS_BeginRequest(cx);
         JSObject* jsobj = JS_NewObject(cx, NULL, NULL, NULL);
         JS::RootedValue vp(cx);
         vp = c_string_to_jsval(cx, "error");
@@ -152,6 +159,7 @@ public:
         jsval args = OBJECT_TO_JSVAL(jsobj);
         
         ScriptingCore::getInstance()->executeFunctionWithOwner(OBJECT_TO_JSVAL(_JSDelegate), "onerror", 1, &args);
+        JS_EndRequest(cx);
     }
     
     void setJSDelegate(JSObject* pJSDelegate)
