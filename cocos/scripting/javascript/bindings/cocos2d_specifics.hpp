@@ -173,11 +173,11 @@ public:
     void setJSObject(JSObject *obj);
     void registerStandardDelegate(int priority);
     void registerTargetedDelegate(int priority, bool swallowsTouches);
+    void registerTargetedDelegateForNode(bool swallowsTouches, cocos2d::Node* node);
 	// unregister touch delegate.
 	// Normally, developer should invoke cc.unregisterTouchDelegate() in when the scene exits.
 	// So this function need to be binded.
     void unregisterTouchDelegate();
-
     bool onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event);
     void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *event);
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event);
