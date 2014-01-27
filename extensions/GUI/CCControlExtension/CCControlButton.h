@@ -239,6 +239,8 @@ protected:
     CC_SYNTHESIZE_READONLY(int, _marginV, VerticalMargin);
     /* Define the button margin for Left/Right edge */
     CC_SYNTHESIZE_READONLY(int, _marginH, HorizontalOrigin);
+    CC_PROPERTY(float, _btnScaleX, BtnScaleX);
+    CC_PROPERTY(float, _btnScaleY, BtnScaleY);
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(ControlButton);

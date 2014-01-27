@@ -3,6 +3,7 @@
 #include "CCBMemberVariableAssigner.h"
 #include "CCBAnimationManager.h"
 #include "CCNode+CCBRelativePositioning.h"
+#include "CCControlButton.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -1036,6 +1037,10 @@ void NodeLoader::onHandlePropTypeScaleLock(Node * pNode, Node * pParent, const c
     if(strcmp(pPropertyName, PROPERTY_SCALE) == 0) {
         pNode->setScaleX(pScaleLock[0]);
         pNode->setScaleY(pScaleLock[1]);
+        if (nullptr != dynamic_cast<ControlButton*>(pNode)) {
+            dynamic_cast<ControlButton *>(pNode)->setBtnScaleX(pScaleLock[0]);
+            dynamic_cast<ControlButton *>(pNode)->setBtnScaleY(pScaleLock[1]);
+        }
     } else {
         ASSERT_FAIL_UNEXPECTED_PROPERTY(pPropertyName);
     }
