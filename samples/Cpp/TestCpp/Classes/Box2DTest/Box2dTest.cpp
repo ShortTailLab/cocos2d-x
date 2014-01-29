@@ -17,9 +17,12 @@ Box2DTestLayer::Box2DTestLayer()
 , world(NULL)
 {
 #if CC_ENABLE_BOX2D_INTEGRATION
-    setTouchEnabled( true );
-    setAccelerometerEnabled( true );
-
+    auto dispatcher = Director::getInstance()->getEventDispatcher();
+    
+    auto touchListener = EventListenerTouchAllAtOnce::create();
+    touchListener->onTouchesEnded = CC_CALLBACK_2(Box2DTestLayer::onTouchesEnded, this);
+    dispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+    
     // init physics
     this->initPhysics();
     // create reset button
@@ -149,7 +152,7 @@ void Box2DTestLayer::draw()
     kmGLPushMatrix();
     kmGLGetMatrix(KM_GL_MODELVIEW, &_modelViewMV);
 
-    _customCommand.init(0, _vertexZ);
+    _customCommand.init(_globalZOrder);
     _customCommand.func = CC_CALLBACK_0(Box2DTestLayer::onDraw, this);
     Director::getInstance()->getRenderer()->addCommand(&_customCommand);
 

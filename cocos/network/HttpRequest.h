@@ -26,7 +26,8 @@
 #ifndef __HTTP_REQUEST_H__
 #define __HTTP_REQUEST_H__
 
-#include "cocos2d.h"
+#include "CCPlatformMacros.h"
+#include "CCObject.h"
 #include <functional>
 
 NS_CC_BEGIN

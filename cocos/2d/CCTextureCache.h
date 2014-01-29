@@ -106,7 +106,7 @@ public:
     * If the filename was not previously loaded, it will create a new Texture2D
     *  object and it will return it. It will use the filename as a key.
     * Otherwise it will return a reference of a previously loaded image.
-    * Supported image extensions: .png, .bmp, .tiff, .jpeg, .pvr, .gif
+    * Supported image extensions: .png, .bmp, .tiff, .jpeg, .pvr
     */
     Texture2D* addImage(const std::string &filepath);
 
@@ -163,7 +163,7 @@ public:
     *
     * @since v1.0
     */
-    void dumpCachedTextureInfo() const;
+    std::string getCachedTextureInfo() const;
 
     //wait for texture cahe to quit befor destroy instance
     //called by director, please do not called outside

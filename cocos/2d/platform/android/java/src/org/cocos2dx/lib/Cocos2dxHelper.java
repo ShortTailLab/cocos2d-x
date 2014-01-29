@@ -28,15 +28,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.lang.Runnable;
-import java.io.File;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.DigestInputStream;
-import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import android.util.Log;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -71,10 +62,7 @@ public class Cocos2dxHelper {
 	private static Activity sActivity = null;
 	private static Cocos2dxHelperListener sCocos2dxHelperListener;
 	private static ConcurrentLinkedQueue<Runnable> jobs = new ConcurrentLinkedQueue<Runnable>();
-    
-    // swen
-    private static String sCacheDirectory;
-    
+
     /**
      * Optional meta-that can be in the manifest for this component, specifying
      * the name of the native shared library to load.  If not specified,
@@ -101,45 +89,43 @@ public class Cocos2dxHelper {
 		jobs.add(r);
 	}
 
+	private static boolean sInited = false;
 	public static void init(final Activity activity) {
-		final ApplicationInfo applicationInfo = activity.getApplicationInfo();
-		
-        initListener();
-            
-        try {
-        // Get the lib_name from AndroidManifest.xml metadata
-            ActivityInfo ai =
-                activity.getPackageManager().getActivityInfo(activity.getIntent().getComponent(), PackageManager.GET_META_DATA);
-            if (null != ai.metaData) {
-                String lib_name = ai.metaData.getString(META_DATA_LIB_NAME);
-                if (null != lib_name) {
-                    System.loadLibrary(lib_name);
-                } else {
-                    System.loadLibrary(DEFAULT_LIB_NAME);
+	    if (!sInited) {
+    		final ApplicationInfo applicationInfo = activity.getApplicationInfo();
+    		
+            initListener();
+                
+            try {
+            // Get the lib_name from AndroidManifest.xml metadata
+                ActivityInfo ai =
+                    activity.getPackageManager().getActivityInfo(activity.getIntent().getComponent(), PackageManager.GET_META_DATA);
+                if (null != ai.metaData) {
+                    String lib_name = ai.metaData.getString(META_DATA_LIB_NAME);
+                    if (null != lib_name) {
+                        System.loadLibrary(lib_name);
+                    } else {
+                        System.loadLibrary(DEFAULT_LIB_NAME);
+                    }
                 }
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException("Error getting activity info", e);
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException("Error getting activity info", e);
-        }
+    
+    		Cocos2dxHelper.sPackageName = applicationInfo.packageName;
+    		Cocos2dxHelper.sFileDirectory = activity.getFilesDir().getAbsolutePath();
+    		//Cocos2dxHelper.nativeSetApkPath(applicationInfo.sourceDir);
+    
+    		Cocos2dxHelper.sCocos2dMusic = new Cocos2dxMusic(activity);
+    		Cocos2dxHelper.sCocos2dSound = new Cocos2dxSound(activity);
+    		Cocos2dxHelper.sAssetManager = activity.getAssets();
+    
+    		//Cocos2dxHelper.nativeSetAssetManager(sAssetManager);
+            Cocos2dxBitmap.setContext(activity);
+            sActivity = activity;
 
-		Cocos2dxHelper.sPackageName = applicationInfo.packageName;
-		Cocos2dxHelper.sFileDirectory = activity.getFilesDir().getAbsolutePath();
-		//Cocos2dxHelper.nativeSetApkPath(applicationInfo.sourceDir);
-        // swen
-        if (pContext.getExternalCacheDir() != null) {
-            Cocos2dxHelper.sCacheDirectory = activity.getExternalCacheDir().getAbsolutePath()+"/Application Support";
-        }
-        else {
-            Cocos2dxHelper.sCacheDirectory = activity.getCacheDir().getAbsolutePath()+"/Application Support";
-        }
-
-		Cocos2dxHelper.sCocos2dMusic = new Cocos2dxMusic(activity);
-		Cocos2dxHelper.sCocos2dSound = new Cocos2dxSound(activity);
-		Cocos2dxHelper.sAssetManager = activity.getAssets();
-
-		//Cocos2dxHelper.nativeSetAssetManager(sAssetManager);
-        Cocos2dxBitmap.setContext(activity);
-        sActivity = activity;                   
+            sInited = true;
+	    }
 	}
 	
 	public static void initListener() {
@@ -234,96 +220,6 @@ public class Cocos2dxHelper {
 	public static String getCocos2dxWritablePath() {
 		return Cocos2dxHelper.sFileDirectory;
 	}
-    
-    
-    // swen
-    public static String getCachePath() {
-        return Cocos2dxHelper.sCacheDirectory;
-    }
-    public static boolean createDirectory(String path) {
-        File file = new File(path);
-        if (file.mkdirs()) {
-            return true;
-        }
-        return false;
-    }
-    public static boolean createFile(String path, String fileName) {
-        File directory = new File(path);
-        if (!directory.exists()) {
-            if (!directory.mkdirs())
-                return false;
-        }
-        File file = new File(path, fileName);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            }
-            catch (IOException error) {
-                return false;
-            }
-            return true;
-        }
-        return true;
-    }
-    public static boolean removeDirectory(String path) {
-        File directory = new File(path);
-        if (directory.exists()) {
-            if (!directory.delete())
-                return false;
-        }
-        return true;
-    }
-    public static boolean removeFile(String path, String fileName) {
-        File file = new File(path, fileName);
-        if (file.exists()) {
-            if (!file.delete())
-                return false;
-        }
-        return true;
-    }
-    public static boolean moveFile(String srcPath, String dstPath) {
-        File srcFile = new File(srcPath);
-        File dstFile = new File(dstPath);
-        if (srcFile.exists()) {
-            if (srcFile.renameTo(dstFile))
-                return true;
-        }
-        return false;
-    }
-    public static String getFileMD5FromZip(String path) {
-        MessageDigest md;
-        InputStream is;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            return "";
-        }
-        try {
-            is = sAssetManager.open(path);
-        } catch (IOException e) {
-            return "";
-        }
-        DigestInputStream dis = new DigestInputStream(is, md);
-        byte[] buffer = new byte[4096];
-        try {
-            while (dis.read(buffer) != -1){}
-        } catch (IOException e) {
-            return "";
-        }
-        
-        byte[] digest = md.digest();
-        // Create Hex String
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < digest.length; i++) {
-            String h = Integer.toHexString(0xFF & digest[i]);
-            while (h.length() < 2) {
-                h = "0" + h;
-            }
-            hexString.append(h);
-        }
-        return hexString.toString();
-    }
-    
 
 	public static String getCurrentLanguage() {
 		return Locale.getDefault().getLanguage();

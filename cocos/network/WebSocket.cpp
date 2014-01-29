@@ -28,6 +28,8 @@
  ****************************************************************************/
 
 #include "WebSocket.h"
+#include "CCDirector.h"
+#include "CCScheduler.h"
 
 #include <thread>
 #include <mutex>
@@ -46,7 +48,7 @@ namespace network {
 class WsMessage
 {
 public:
-    WsMessage() : what(0), obj(NULL){}
+    WsMessage() : what(0), obj(nullptr){}
     unsigned int what; // message type
     void* obj;
 };
@@ -114,7 +116,7 @@ public:
 // Implementation of WsThreadHelper
 WsThreadHelper::WsThreadHelper()
 : _subThreadInstance(nullptr)
-, _ws(NULL)
+, _ws(nullptr)
 , _needQuit(false)
 {
     _UIWsMessageQueue = new std::list<WsMessage*>();
@@ -183,7 +185,7 @@ void WsThreadHelper::joinSubThread()
 
 void WsThreadHelper::update(float dt)
 {
-    WsMessage *msg = NULL;
+    WsMessage *msg = nullptr;
 
     // Returns quickly if no message
     std::lock_guard<std::mutex> lk(_UIWsMessageQueueMutex);
@@ -223,9 +225,9 @@ WebSocket::WebSocket()
 , _delegate(nullptr)
 , _SSLConnection(0)
 , _wsProtocols(nullptr)
-, _pending_frame_data_len(0)
-, _current_data_len(0)
-, _current_data(NULL)
+, _pendingFrameDataLen(0)
+, _currentDataLen(0)
+, _currentData(nullptr)
 {
 }
 
@@ -243,7 +245,7 @@ WebSocket::~WebSocket()
 
 bool WebSocket::init(const Delegate& delegate,
                      const std::string& url,
-                     const std::vector<std::string>* protocols/* = NULL*/)
+                     const std::vector<std::string>* protocols/* = nullptr*/)
 {
     bool ret = false;
     bool useSSL = false;
@@ -521,7 +523,7 @@ int WebSocket::onSocketCallback(struct libwebsocket_context *ctx,
 
                         size_t remaining = data->len - data->issued;
                         size_t n = std::min(remaining, c_bufferSize );
-                        CCLOG("[websocket:send] total: %d, sent: %d, remaining: %d, buffer size: %d", data->len, data->issued, remaining, n);
+                        CCLOG("[websocket:send] total: %d, sent: %d, remaining: %d, buffer size: %d", static_cast<int>(data->len), static_cast<int>(data->issued), static_cast<int>(remaining), static_cast<int>(n));
 
                         unsigned char* buf = new unsigned char[LWS_SEND_BUFFER_PRE_PADDING + n + LWS_SEND_BUFFER_POST_PADDING];
 
@@ -604,60 +606,60 @@ int WebSocket::onSocketCallback(struct libwebsocket_context *ctx,
                 if (in && len > 0)
                 {
                     // Accumulate the data (increasing the buffer as we go)
-                    if (_current_data_len == 0)
+                    if (_currentDataLen == 0)
                     {
-                        _current_data = new char[len];
-                        memcpy (_current_data, in, len);
-                        _current_data_len = len;
+                        _currentData = new char[len];
+                        memcpy (_currentData, in, len);
+                        _currentDataLen = len;
                     }
                     else
                     {
-                        char *new_data = new char [_current_data_len + len];
-                        memcpy (new_data, _current_data, _current_data_len);
-                        memcpy (new_data + _current_data_len, in, len);
-                        CC_SAFE_DELETE_ARRAY(_current_data);
-                        _current_data = new_data;
-                        _current_data_len = _current_data_len + len;
+                        char *new_data = new char [_currentDataLen + len];
+                        memcpy (new_data, _currentData, _currentDataLen);
+                        memcpy (new_data + _currentDataLen, in, len);
+                        CC_SAFE_DELETE_ARRAY(_currentData);
+                        _currentData = new_data;
+                        _currentDataLen = _currentDataLen + len;
                     }
 
-                    _pending_frame_data_len = libwebsockets_remaining_packet_payload (wsi);
+                    _pendingFrameDataLen = libwebsockets_remaining_packet_payload (wsi);
 
-                    if (_pending_frame_data_len > 0)
+                    if (_pendingFrameDataLen > 0)
                     {
-                        //CCLOG("%ld bytes of pending data to receive, consider increasing the libwebsocket rx_buffer_size value.", _pending_frame_data_len);
+                        //CCLOG("%ld bytes of pending data to receive, consider increasing the libwebsocket rx_buffer_size value.", _pendingFrameDataLen);
                     }
                     
                     // If no more data pending, send it to the client thread
-                    if (_pending_frame_data_len == 0)
+                    if (_pendingFrameDataLen == 0)
                     {
 						WsMessage* msg = new WsMessage();
 						msg->what = WS_MSG_TO_UITHREAD_MESSAGE;
 
-						char* bytes = NULL;
+						char* bytes = nullptr;
 						Data* data = new Data();
 
 						if (lws_frame_is_binary(wsi))
 						{
 
-							bytes = new char[_current_data_len];
+							bytes = new char[_currentDataLen];
 							data->isBinary = true;
 						}
 						else
 						{
-							bytes = new char[_current_data_len+1];
-							bytes[_current_data_len] = '\0';
+							bytes = new char[_currentDataLen+1];
+							bytes[_currentDataLen] = '\0';
 							data->isBinary = false;
 						}
 
-						memcpy(bytes, _current_data, _current_data_len);
+						memcpy(bytes, _currentData, _currentDataLen);
 
 						data->bytes = bytes;
-						data->len = _current_data_len;
+						data->len = _currentDataLen;
 						msg->obj = (void*)data;
 
-						CC_SAFE_DELETE_ARRAY(_current_data);
-						_current_data = NULL;
-						_current_data_len = 0;
+						CC_SAFE_DELETE_ARRAY(_currentData);
+						_currentData = nullptr;
+						_currentDataLen = 0;
 
 						_wsHelper->sendMessageToUIThread(msg);
                     }

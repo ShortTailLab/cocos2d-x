@@ -80,13 +80,13 @@ bool ControlButton::initWithLabelAndBackgroundSprite(Node* node, Scale9Sprite* b
         _parentInited = true;
 
         _isPushed = false;
-        _zoomOnTouchDown = true;
 
         // Adjust the background image by default
         setAdjustBackgroundImage(true);
         setPreferredSize(Size::ZERO);
         // Zooming button by default
         _zoomOnTouchDown = true;
+        _scaleRatio = 1.1f;
         
         // Set the default anchor point
         ignoreAnchorPointForPosition(false);
@@ -199,8 +199,8 @@ void ControlButton::setHighlighted(bool enabled)
     needsLayout();
     if( _zoomOnTouchDown )
     {
-        float scaleValue = (isHighlighted() && isEnabled() && !isSelected()) ? 1.1f : 1.0f;
-        Action *zoomAction = ScaleTo::create(0.05f, scaleValue*_btnScaleX, scaleValue*_btnScaleY);
+        float scaleValue = (isHighlighted() && isEnabled() && !isSelected()) ? _scaleRatio : 1.0f;
+        Action *zoomAction = ScaleTo::create(0.05f, scaleValue);
         zoomAction->setTag(kZoomActionTag);
         runAction(zoomAction);
     }
@@ -699,23 +699,6 @@ const Color3B& ControlButton::getColor() const
 {
 	return _realColor;
 }
-
-void ControlButton::setBtnScaleX(float value) {
-    _btnScaleX = value;
-}
-
-void ControlButton::setBtnScaleY(float value) {
-    _btnScaleY = value;
-}
-
-float ControlButton::getBtnScaleX() {
-    return _btnScaleX;
-}
-
-float ControlButton::getBtnScaleY() {
-    return _btnScaleY;
-}
-
 
 void ControlButton::onTouchCancelled(Touch *pTouch, Event *pEvent)
 {

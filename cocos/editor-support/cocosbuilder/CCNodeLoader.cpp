@@ -1,9 +1,12 @@
+#include "cocos2d.h"
+
 #include "CCNodeLoader.h"
 #include "CCBSelectorResolver.h"
 #include "CCBMemberVariableAssigner.h"
 #include "CCBAnimationManager.h"
 #include "CCNode+CCBRelativePositioning.h"
 #include "CCControlButton.h"
+
 
 using namespace std;
 using namespace cocos2d;
