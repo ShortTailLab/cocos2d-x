@@ -601,7 +601,7 @@ ScriptingCore::~ScriptingCore()
 {
     cleanup();
 }
-
+ 
 void ScriptingCore::cleanup()
 {
     localStorageFree();
