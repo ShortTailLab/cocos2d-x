@@ -925,6 +925,9 @@ Node * NodeLoader::parsePropTypeCCBFile(Node * pNode, Node * pParent, CCBReader 
     ccbFileName = ccbFileWithoutPathExtension + ".ccbi";
     
     // Load sub file
+    if (FileUtils::getInstance()->isFileExist(FileUtils::getInstance()->getInstance()->getApplicationSupportPath()+ccbFileName)) {
+        ccbFileName = FileUtils::getInstance()->getInstance()->getApplicationSupportPath()+ccbFileName;
+    }
     std::string path = FileUtils::getInstance()->fullPathForFilename(ccbFileName.c_str());
 
     auto dataPtr = std::make_shared<Data>(FileUtils::getInstance()->getDataFromFile(path));
