@@ -223,6 +223,7 @@ public:
      * @lua NA
      */
     std::set<std::string>& getLoadedSpriteSheet();
+    void addLoadedSpriteSheet(const std::string& sheetName);
     /**
      * @js NA
      * @lua NA

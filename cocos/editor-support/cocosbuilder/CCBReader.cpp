@@ -192,6 +192,10 @@ set<string>& CCBReader::getLoadedSpriteSheet()
     return _loadedSpriteSheets;
 }
 
+void CCBReader::addLoadedSpriteSheet(const std::string &sheetName) {
+    _loadedSpriteSheets.insert(sheetName);
+}
+
 Object* CCBReader::getOwner()
 {
     return _owner;

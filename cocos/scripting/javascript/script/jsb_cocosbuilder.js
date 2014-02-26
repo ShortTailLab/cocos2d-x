@@ -16,6 +16,9 @@ cc.BuilderReader.load = function(file, owner, parentSize)
     // Load the node graph using the correct function
     var reader = cc._Reader.create();
     reader.setCCBRootPath(cc.BuilderReader._resourcePath);
+    for (var i in cc.BuilderReader._loadedSpriteSheets) {
+        ccbreaderAddLoadedSpriteSheet(reader, cc.BuilderReader._loadedSpriteSheets[i]);
+    }
     
     var node;
 
@@ -176,3 +179,10 @@ cc.BuilderReader.loadAsScene = function(file, owner, parentSize)
 
     return scene;
 };
+
+cc.BuilderReader._loadedSpriteSheets = [];
+cc.BuilderReader.addLoadedSpriteSheet = function(sheetName) {
+    if (cc.BuilderReader._loadedSpriteSheets.indexOf(sheetName) === -1) {
+        cc.BuilderReader._loadedSpriteSheets.push(sheetName);
+    }
+}

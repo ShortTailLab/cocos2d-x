@@ -1243,7 +1243,11 @@ void LabelBMFont::setFntFile(const std::string& fntFile)
 {
     if (_fntFile.compare(fntFile) != 0)
     {
-        CCBMFontConfiguration *newConf = FNTConfigLoadFile(fntFile);
+        std::string fnt = fntFile;
+        if (FileUtils::getInstance()->isFileExist(FileUtils::getInstance()->getApplicationSupportPath()+fntFile)) {
+            fnt = FileUtils::getInstance()->getApplicationSupportPath()+fntFile;
+        }
+        CCBMFontConfiguration *newConf = FNTConfigLoadFile(fnt);
 
         CCASSERT( newConf, "CCLabelBMFont: Impossible to create font. Please check file");
 
@@ -1253,7 +1257,13 @@ void LabelBMFont::setFntFile(const std::string& fntFile)
         CC_SAFE_RELEASE(_configuration);
         _configuration = newConf;
 
-        this->setTexture(Director::getInstance()->getTextureCache()->addImage(_configuration->getAtlasName()));
+        std::string png = _configuration->getAtlasName().substr(_configuration->getAtlasName().rfind("/")+1);
+        png = FileUtils::getInstance()->fullPathFromRelativeFile(png, fntFile);
+        if (FileUtils::getInstance()->isFileExist(FileUtils::getInstance()->getApplicationSupportPath()+png)) {
+            png = FileUtils::getInstance()->getApplicationSupportPath()+png;
+        }
+//        printf("fntt %s\n png %s\n", fnt.c_str(), png.c_str());
+        this->setTexture(Director::getInstance()->getTextureCache()->addImage(png));
         this->createFontChars();
     }
 }
