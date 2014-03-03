@@ -539,20 +539,22 @@ JSBool ScriptingCore::runScript(const char *path, JSObject* global, JSContext* c
     if (cx == NULL) {
         cx = _cx;
     }
-    
-    // a) check jsc file first
-    std::string byteCodePath = RemoveFileExt(std::string(path)) + BYTE_CODE_FILE_EXT;
-    Data data = futil->getDataFromFile(byteCodePath);
-    
+
     JSAutoCompartment ac(cx, global);
     JS_BeginRequest(_cx);
     
     js::RootedScript script(cx);
     js::RootedObject obj(cx, global);
     
-    if (!data.isNull())
+    // a) check jsc file first
+    std::string byteCodePath = RemoveFileExt(std::string(path)) + BYTE_CODE_FILE_EXT;
+    if(futil->isFileExist(byteCodePath))
     {
-        script = JS_DecodeScript(cx, data.getBytes(), static_cast<uint32_t>(data.getSize()), nullptr, nullptr);
+        Data data = futil->getDataFromFile(byteCodePath);
+        if (!data.isNull())
+        {
+            script = JS_DecodeScript(cx, data.getBytes(), static_cast<uint32_t>(data.getSize()), nullptr, nullptr);
+        }
     }
     
     // b) no jsc file, check js file
@@ -643,6 +645,7 @@ void ScriptingCore::reportError(JSContext *cx, const char *message, JSErrorRepor
     else
         typeStr = "ERROR";
     
+    LOGD("\n");
     LOGD("********** ERROR REPORT **********\n"
          "%s: %s at\n"
          "%s:%u\n",
@@ -655,7 +658,7 @@ void ScriptingCore::reportError(JSContext *cx, const char *message, JSErrorRepor
         LOGD("Stacktrace:");
         js_DumpBacktrace(cx);
     }
-    LOGD("**********************************");
+    LOGD("**********************************\n");
 };
 
 

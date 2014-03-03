@@ -580,13 +580,9 @@ unsigned char* FileUtils::getFileData(const std::string& filename, const char* m
     
     if (! buffer)
     {
-        if(std::string(filename).rfind(".jsc") == string::npos)
-        {
-            std::string msg = "Get data from file(";
-            msg.append(filename).append(") failed!");
-            
-            CCLOG("%s", msg.c_str());
-        }
+        std::string msg = "Get data from file(";
+        msg.append(filename).append(") failed!");
+        CCLOG("%s", msg.c_str());
     }
     return buffer;
 }
