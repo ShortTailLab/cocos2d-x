@@ -209,7 +209,7 @@ void js_log(const char *format, ...) {
     va_end(vl);
     if (len > 0)
     {
-        CCLOG("JS: %s\n", _js_log_buf);
+        CCLOG("JS: %s", _js_log_buf);
     }
 }
 
@@ -633,10 +633,29 @@ void ScriptingCore::cleanup()
 
 void ScriptingCore::reportError(JSContext *cx, const char *message, JSErrorReport *report)
 {
-    js_log("%s:%u:%s\n",
-            report->filename ? report->filename : "<no filename=\"filename\">",
-            (unsigned int) report->lineno,
-            message);
+    std::string typeStr = "";
+    if(report->flags == JSREPORT_WARNING)
+        typeStr = "WARNING";
+    else if(report->flags == JSREPORT_EXCEPTION)
+        typeStr = "EXCEPTION";
+    else if(report->flags == JSREPORT_STRICT)
+        typeStr = "STRICT";
+    else
+        typeStr = "ERROR";
+    
+    LOGD("********** ERROR REPORT **********\n"
+         "%s: %s at\n"
+         "%s:%u\n",
+         typeStr.c_str(),
+         message,
+         report->filename ? report->filename : "Unknown file",
+         (unsigned int) report->lineno);
+    if(JS_GetDebugMode(cx))
+    {
+        LOGD("Stacktrace:");
+        js_DumpBacktrace(cx);
+    }
+    LOGD("**********************************");
 };
 
 
@@ -1416,6 +1435,13 @@ JSBool JSBDebug_BufferWrite(JSContext* cx, unsigned argc, jsval* vp)
     return JS_TRUE;
 }
 
+JSTrapStatus throwHook(JSContext *cx, JSScript *script, jsbytecode *pc, jsval *rval, void *closure)
+{
+    const char* filename = JS_GetScriptFilename(cx, script);
+    LOGD("!!! exception throw from %s", filename);
+    return JSTRAP_ERROR;
+}
+
 void ScriptingCore::enableDebugger()
 {
     if (_debugGlobal == NULL)
@@ -1423,6 +1449,9 @@ void ScriptingCore::enableDebugger()
         JSAutoCompartment ac0(_cx, _global);
         
         JS_SetDebugMode(_cx, JS_TRUE);
+        
+        // install an exception hook.
+//        JS_SetThrowHook(_rt, throwHook, nullptr);
         
         JS_BeginRequest(_cx);
         
@@ -1438,7 +1467,6 @@ void ScriptingCore::enableDebugger()
         JS_DefineFunction(_cx, _debugGlobal, "_enterNestedEventLoop", JSBDebug_enterNestedEventLoop, 0, JSPROP_READONLY | JSPROP_PERMANENT);
         JS_DefineFunction(_cx, _debugGlobal, "_exitNestedEventLoop", JSBDebug_exitNestedEventLoop, 0, JSPROP_READONLY | JSPROP_PERMANENT);
         JS_DefineFunction(_cx, _debugGlobal, "_getEventLoopNestLevel", JSBDebug_getEventLoopNestLevel, 0, JSPROP_READONLY | JSPROP_PERMANENT);
-        
         
         runScript("jsb_debugger.js", _debugGlobal);
         
