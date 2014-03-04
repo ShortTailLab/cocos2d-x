@@ -452,9 +452,20 @@ static JSSecurityCallbacks securityCallbacks = {
     NULL
 };
 
+static struct timeval gLAST_TV;
 static void customGCCallback(JSRuntime *rt, JSGCStatus status, void *data)
 {
-    LOGD("GC status %d\n", status);
+    if( !status ) gettimeofday(&gLAST_TV, NULL);
+    else
+    {
+        struct timeval gNow;
+        gettimeofday(&gNow, NULL);
+        
+        int delta = - gLAST_TV.tv_sec*1000 - gLAST_TV.tv_usec/1000 +
+        gNow.tv_sec*1000 + gNow.tv_usec/1000;
+        
+        LOGD("[GC] done in %dms", delta);
+    }
 }
 
 void ScriptingCore::createGlobalContext() {
