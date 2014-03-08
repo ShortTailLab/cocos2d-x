@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
 
 static const float AUTOSCROLLMAXSPEED = 1000.0f;
 
@@ -34,6 +34,8 @@ const Point SCROLLDIR_UP = Point(0.0f, 1.0f);
 const Point SCROLLDIR_DOWN = Point(0.0f, -1.0f);
 const Point SCROLLDIR_LEFT = Point(-1.0f, 0.0f);
 const Point SCROLLDIR_RIGHT = Point(1.0f, 0.0f);
+    
+IMPLEMENT_CLASS_GUI_INFO(ScrollView)
 
 ScrollView::ScrollView():
 _innerContainer(nullptr),
@@ -272,6 +274,46 @@ Node* ScrollView::getChildByTag(int tag)
 Widget* ScrollView::getChildByName(const char *name)
 {
     return _innerContainer->getChildByName(name);
+}
+    
+void ScrollView::addNode(Node* node)
+{
+    Layout::addNode(node);
+}
+
+void ScrollView::addNode(Node * node, int zOrder)
+{
+    Layout::addNode(node, zOrder);
+}
+
+void ScrollView::addNode(Node* node, int zOrder, int tag)
+{
+    _innerContainer->addNode(node, zOrder, tag);
+}
+
+Node* ScrollView::getNodeByTag(int tag)
+{
+    return _innerContainer->getNodeByTag(tag);
+}
+
+Vector<Node*>& ScrollView::getNodes()
+{
+    return _innerContainer->getNodes();
+}
+
+void ScrollView::removeNode(Node* node)
+{
+    _innerContainer->removeNode(node);
+}
+
+void ScrollView::removeNodeByTag(int tag)
+{
+    _innerContainer->removeNodeByTag(tag);
+}
+
+void ScrollView::removeAllNodes()
+{
+    _innerContainer->removeAllNodes();
 }
 
 void ScrollView::moveChildren(float offsetX, float offsetY)
@@ -1584,7 +1626,7 @@ void ScrollView::bounceRightEvent()
     }
 }
 
-void ScrollView::addEventListenerScrollView(Object *target, SEL_ScrollViewEvent selector)
+void ScrollView::addEventListenerScrollView(Ref *target, SEL_ScrollViewEvent selector)
 {
     _scrollViewEventListener = target;
     _scrollViewEventSelector = selector;

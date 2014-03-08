@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
 
 /**
 *   @js NA
@@ -37,128 +37,104 @@ namespace gui {
 */
 class Text : public Widget
 {
+    
+    DECLARE_CLASS_GUI_INFO
+    
 public:
     /**
      * Default constructor
      */
     Text();
-    
+
     /**
      * Default destructor
      */
     virtual ~Text();
-    
+
     /**
      * Allocates and initializes.
      */
     static Text* create();
-    
+
     /**
      * Changes the string value of label.
      *
      * @param text  string value.
      */
     void setText(const std::string& text);
-    
+
     /**
      * Gets the string value of label.
      *
      * @return text  string value.
      */
     const std::string& getStringValue();
-    
+
     /**
      * Gets the string length of label.
      *
      * @return  string length.
      */
     ssize_t getStringLength();
-    
+
     /**
      * Sets the font size of label.
      *
      * @param  font size.
      */
     void setFontSize(int size);
-    
+
+    int getFontSize();
+
     /**
      * Sets the font name of label.
      *
      * @param  font name.
      */
     void setFontName(const std::string& name);
-    
+
+    const std::string& getFontName();
+
     /**
      * Sets the touch scale enabled of label.
      *
      * @param  touch scale enabled of label.
      */
     void setTouchScaleChangeEnabled(bool enabled);
-    
+
     /**
      * Gets the touch scale enabled of label.
      *
      * @return  touch scale enabled of label.
      */
     bool isTouchScaleChangeEnabled();
-    
-    /**
-     * Changes both X and Y scale factor of the widget.
-     *
-     * 1.0 is the default scale factor. It modifies the X and Y scale at the same time.
-     *
-     * @param scale     The scale factor for both X and Y axis.
-     */
-    virtual void setScale(float fScale) override;
-    
-    /**
-     * Changes the scale factor on X axis of this widget
-     *
-     * The deafult value is 1.0 if you haven't changed it before
-     *
-     * @param fScaleX   The scale factor on X axis.
-     */
-    virtual void setScaleX(float fScaleX) override;
-    
-    /**
-     * Changes the scale factor on Y axis of this widget
-     *
-     * The Default value is 1.0 if you haven't changed it before.
-     *
-     * @param fScaleY   The scale factor on Y axis.
-     */
-    virtual void setScaleY(float fScaleY) override;
-    
 
-    //override "setFlipX" method of widget.
-    virtual void setFlipX(bool flipX) override;
-    
-    //override "setFlipY" method of widget.
-    virtual void setFlipY(bool flipY) override;
-    
-    //override "isFlipX" method of widget.
-    virtual bool isFlipX() override;
-    
-    //override "isFlipY" method of widget.
-    virtual bool isFlipY() override;
-    
     //override "setAnchorPoint" method of widget.
     virtual void setAnchorPoint(const Point &pt) override;
-    
+
     //override "getContentSize" method of widget.
     virtual const Size& getContentSize() const override;
-    
+
     //override "getVirtualRenderer" method of widget.
     virtual Node* getVirtualRenderer() override;
-    
+
     /**
      * Returns the "class name" of widget.
      */
     virtual std::string getDescription() const override;
-    
+
     void setTextAreaSize(const Size &size);
+
+    const Size& getTextAreaSize();
+
     void setTextHorizontalAlignment(TextHAlignment alignment);
-    void setTextVerticalAlignment(TextVAlignment alignment);    
+
+    TextHAlignment getTextHorizontalAlignment();
+
+    void setTextVerticalAlignment(TextVAlignment alignment);
+
+    TextVAlignment getTextVerticalAlignment();
+
 protected:
     virtual bool init() override;
     virtual void initRenderer() override;
@@ -166,7 +142,11 @@ protected:
     virtual void onPressStateChangedToPressed() override;
     virtual void onPressStateChangedToDisabled() override;
     virtual void onSizeChanged() override;
-    void clickScale(float scaleX, float scaleY);
+    virtual void updateTextureColor() override;
+    virtual void updateTextureOpacity() override;
+    virtual void updateTextureRGBA() override;
+    virtual void updateFlippedX() override;
+    virtual void updateFlippedY() override;
     void labelScaleChangedWithSize();
     virtual Widget* createCloneInstance() override;
     virtual void copySpecialProperties(Widget* model) override;

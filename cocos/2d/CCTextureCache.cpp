@@ -123,7 +123,7 @@ void TextureCache::addImageAsync(const std::string &path, std::function<void(Tex
 
     if (0 == _asyncRefCount)
     {
-        Director::getInstance()->getScheduler()->scheduleSelector(schedule_selector(TextureCache::addImageAsyncCallBack), this, 0, false);
+        Director::getInstance()->getScheduler()->schedule(schedule_selector(TextureCache::addImageAsyncCallBack), this, 0, false);
     }
 
     ++_asyncRefCount;
@@ -277,7 +277,7 @@ void TextureCache::addImageAsyncCallBack(float dt)
         --_asyncRefCount;
         if (0 == _asyncRefCount)
         {
-            Director::getInstance()->getScheduler()->unscheduleSelector(schedule_selector(TextureCache::addImageAsyncCallBack), this);
+            Director::getInstance()->getScheduler()->unschedule(schedule_selector(TextureCache::addImageAsyncCallBack), this);
         }
     }
 }
@@ -370,6 +370,42 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
 #endif
     
     return texture;
+}
+
+bool TextureCache::reloadTexture(const std::string& fileName)
+{
+    Texture2D * texture = nullptr;
+
+    std::string fullpath = FileUtils::getInstance()->fullPathForFilename(fileName);
+    if (fullpath.size() == 0)
+    {
+        return false;
+    }
+
+    auto it = _textures.find(fullpath);
+    if (it != _textures.end()) {
+        texture = it->second;
+    }
+
+    bool ret = false;
+    if (! texture) {
+        texture = this->addImage(fullpath);
+        ret = (texture != nullptr);
+    }
+    else
+    {
+        do {
+            Image* image = new Image();
+            CC_BREAK_IF(nullptr == image);
+
+            bool bRet = image->initWithImageFile(fullpath);
+            CC_BREAK_IF(!bRet);
+            
+            ret = texture->initWithImage(image);
+        } while (0);
+    }
+
+    return ret;
 }
 
 // TextureCache - Remove

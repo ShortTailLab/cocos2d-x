@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui{
+namespace ui{
 
 typedef enum
 {
@@ -48,11 +48,13 @@ typedef enum
     LISTVIEW_ONSELECTEDITEM
 }ListViewEventType;
 
-typedef void (Object::*SEL_ListViewEvent)(Object*,ListViewEventType);
+typedef void (Ref::*SEL_ListViewEvent)(Ref*,ListViewEventType);
 #define listvieweventselector(_SELECTOR) (SEL_ListViewEvent)(&_SELECTOR)
 
 class ListView : public ScrollView
 {
+ 
+    DECLARE_CLASS_GUI_INFO
     
 public:
     
@@ -150,11 +152,13 @@ public:
      */
     void setItemsMargin(float margin);
     
+    float getItemsMargin();
+    
     virtual void sortAllChildren() override;
     
     ssize_t getCurSelectedIndex() const;
     
-    void addEventListenerListView(Object* target, SEL_ListViewEvent selector);
+    void addEventListenerListView(Ref* target, SEL_ListViewEvent selector);
     
     /**
      * Changes scroll direction of scrollview.
@@ -168,7 +172,7 @@ public:
     virtual std::string getDescription() const override;
     
     void requestRefreshView();
-    
+    void refreshView();
 protected:
     virtual void addChild(Node* child) override{ScrollView::addChild(child);};
     virtual void addChild(Node * child, int zOrder) override{ScrollView::addChild(child, zOrder);};
@@ -191,14 +195,13 @@ protected:
     virtual void copyClonedWidgetChildren(Widget* model) override;
     void selectedItemEvent();
     virtual void interceptTouchEvent(int handleState,Widget* sender,const Point &touchPoint) override;
-    void refreshView();
 protected:
     
     Widget* _model;
     Vector<Widget*> _items;
     ListViewGravity _gravity;
     float _itemsMargin;
-    Object*       _listViewEventListener;
+    Ref*       _listViewEventListener;
     SEL_ListViewEvent    _listViewEventSelector;
     ssize_t _curSelectedIndex;
     bool _refreshViewDirty;

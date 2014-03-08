@@ -29,14 +29,14 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
 
 typedef enum
 {
     SLIDER_PERCENTCHANGED
 }SliderEventType;
 
-typedef void (Object::*SEL_SlidPercentChangedEvent)(Object*,SliderEventType);
+typedef void (Ref::*SEL_SlidPercentChangedEvent)(Ref*,SliderEventType);
 #define sliderpercentchangedselector(_SELECTOR) (SEL_SlidPercentChangedEvent)(&_SELECTOR)
 
 /**
@@ -45,6 +45,9 @@ typedef void (Object::*SEL_SlidPercentChangedEvent)(Object*,SliderEventType);
 */
 class Slider : public Widget
 {
+    
+    DECLARE_CLASS_GUI_INFO
+    
 public:
     /**
      * Default constructor
@@ -77,6 +80,8 @@ public:
      */
     void setScale9Enabled(bool able);
     
+    bool isScale9Enabled();
+    
     /**
      * Sets capinsets for slider, if slider is using scale9 renderer.
      *
@@ -91,12 +96,16 @@ public:
      */
     void setCapInsetsBarRenderer(const Rect &capInsets);
     
+    const Rect& getCapInsetsBarRenderer();
+    
     /**
      * Sets capinsets for slider, if slider is using scale9 renderer.
      *
      * @param capInsets    capinsets for slider
      */
     void setCapInsetProgressBarRebderer(const Rect &capInsets);
+    
+    const Rect& getCapInsetsProgressBarRebderer();
     
     /**
      * Load textures for slider ball.
@@ -164,7 +173,7 @@ public:
     /**
      * Add call back function called when slider's percent has changed to slider.
      */
-    void addEventListenerSlider(Object* target,SEL_SlidPercentChangedEvent selector);
+    void addEventListenerSlider(Ref* target,SEL_SlidPercentChangedEvent selector);
     
     virtual bool onTouchBegan(Touch *touch, Event *unusedEvent) override;
     virtual void onTouchMoved(Touch *touch, Event *unusedEvent) override;
@@ -186,6 +195,7 @@ public:
     virtual std::string getDescription() const override;
 
 protected:
+    virtual bool init() override;
     virtual void initRenderer() override;
     float getPercentWithBallPos(float location);
     void percentChangedEvent();
@@ -193,6 +203,9 @@ protected:
     virtual void onPressStateChangedToPressed() override;
     virtual void onPressStateChangedToDisabled() override;
     virtual void onSizeChanged() override;
+    virtual void updateTextureColor() override;
+    virtual void updateTextureOpacity() override;
+    virtual void updateTextureRGBA() override;
     void barRendererScaleChangedWithSize();
     void progressBarRendererScaleChangedWithSize();
     virtual Widget* createCloneInstance() override;
@@ -221,7 +234,7 @@ protected:
     Rect _capInsetsBarRenderer;
     Rect _capInsetsProgressBarRenderer;
 
-    Object*       _sliderEventListener;
+    Ref*       _sliderEventListener;
     SEL_SlidPercentChangedEvent    _sliderEventSelector;
     TextureResType _barTexType;
     TextureResType _progressBarTexType;

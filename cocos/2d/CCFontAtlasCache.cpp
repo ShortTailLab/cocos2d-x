@@ -35,17 +35,32 @@ NS_CC_BEGIN
 
 std::unordered_map<std::string, FontAtlas *> FontAtlasCache::_atlasMap;
 
-FontAtlas * FontAtlasCache::getFontAtlasTTF(const std::string& fontFileName, int size, GlyphCollection glyphs, const char *customGlyphs, bool useDistanceField)
-{
-    std::string atlasName = generateFontName(fontFileName, size, glyphs, useDistanceField);
+FontAtlas * FontAtlasCache::getFontAtlasTTF(const TTFConfig & config)
+{  
+    bool useDistanceField = config.distanceFieldEnabled;
+    if(config.outlineSize > 0)
+    {
+        useDistanceField = false;
+    }
+    int fontSize = config.fontSize;
+    if (useDistanceField)
+    {
+        fontSize = Label::DefultFontSize;
+    }
+
+    std::string atlasName = generateFontName(config.fontFilePath, fontSize, GlyphCollection::DYNAMIC, useDistanceField);
+    atlasName.append("_outline_");
+    std::stringstream ss;
+    ss << config.outlineSize;
+    atlasName.append(ss.str());
+
     FontAtlas  *tempAtlas = _atlasMap[atlasName];
-    
+
     if ( !tempAtlas )
     {
-        FontFreeType *font = FontFreeType::create(fontFileName, size, glyphs, customGlyphs);
+        FontFreeType *font = FontFreeType::create(config.fontFilePath, fontSize, config.glyphs, config.customGlyphs,useDistanceField,config.outlineSize);
         if (font)
         {
-            font->setDistanceFieldEnabled(useDistanceField);
             tempAtlas = font->createFontAtlas();
             if (tempAtlas)
                 _atlasMap[atlasName] = tempAtlas;
@@ -63,14 +78,14 @@ FontAtlas * FontAtlasCache::getFontAtlasTTF(const std::string& fontFileName, int
     return tempAtlas;
 }
 
-FontAtlas * FontAtlasCache::getFontAtlasFNT(const std::string& fontFileName)
+FontAtlas * FontAtlasCache::getFontAtlasFNT(const std::string& fontFileName, const Point& imageOffset /* = Point::ZERO */)
 {
     std::string atlasName = generateFontName(fontFileName, 0, GlyphCollection::CUSTOM,false);
     FontAtlas *tempAtlas = _atlasMap[atlasName];
     
     if ( !tempAtlas )
     {
-        Font *font = FontFNT::create(fontFileName);
+        Font *font = FontFNT::create(fontFileName,imageOffset);
 
         if(font)
         {

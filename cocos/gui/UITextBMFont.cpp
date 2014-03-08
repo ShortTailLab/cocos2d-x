@@ -26,9 +26,11 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
     
 static const int LABELBMFONT_RENDERER_Z = (-1);
+    
+IMPLEMENT_CLASS_GUI_INFO(TextBMFont)
     
 TextBMFont::TextBMFont():
 _labelBMFontRenderer(nullptr),
@@ -142,6 +144,21 @@ void TextBMFont::labelBMFontScaleChangedWithSize()
 std::string TextBMFont::getDescription() const
 {
     return "TextBMFont";
+}
+    
+void TextBMFont::updateTextureColor()
+{
+    updateColorToRenderer(_labelBMFontRenderer);
+}
+
+void TextBMFont::updateTextureOpacity()
+{
+    updateOpacityToRenderer(_labelBMFontRenderer);
+}
+
+void TextBMFont::updateTextureRGBA()
+{
+    updateRGBAToRenderer(_labelBMFontRenderer);
 }
 
 Widget* TextBMFont::createCloneInstance()

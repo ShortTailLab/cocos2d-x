@@ -37,8 +37,8 @@ NS_CC_BEGIN
 class CC_DLL FontAtlasCache
 {  
 public:
-    static FontAtlas * getFontAtlasTTF(const std::string& fontFileName, int size, GlyphCollection glyphs, const char *customGlyphs = 0, bool useDistanceField = false);
-    static FontAtlas * getFontAtlasFNT(const std::string& fontFileName);
+    static FontAtlas * getFontAtlasTTF(const TTFConfig & config);
+    static FontAtlas * getFontAtlasFNT(const std::string& fontFileName, const Point& imageOffset = Point::ZERO);
 
     static FontAtlas * getFontAtlasCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
     static FontAtlas * getFontAtlasCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);

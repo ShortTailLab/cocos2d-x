@@ -41,9 +41,10 @@ THE SOFTWARE.
 #include "gui/UITextBMFont.h"
 #include "gui/UIPageView.h"
 #include "gui/UIHelper.h"
+#include "gui/UIRichText.h"
 
 NS_CC_BEGIN
-namespace gui {
+namespace ui {
 
 const char* CocosGUIVersion();
 

@@ -58,13 +58,13 @@ namespace network {
     static Vector<HttpRequest*>*  s_requestQueue = nullptr;
     static Vector<HttpResponse*>* s_responseQueue = nullptr;
     
-    static HttpClient *s_pHttpClient = NULL; // pointer to singleton
+    static HttpClient *s_pHttpClient = nullptr; // pointer to singleton
     
     typedef size_t (*write_callback)(void *ptr, size_t size, size_t nmemb, void *stream);
     
     static std::string s_cookieFilename = "";
     
-    static CURLM* curlMultiHandle = NULL;
+    static CURLM* curlMultiHandle = nullptr;
     
     static bool pollCurlEvents();
     
@@ -268,8 +268,8 @@ namespace network {
     public:
         CURLRaii()
         : _curl(curl_easy_init())
-        , _headers(NULL)
-        , _response(NULL)
+        , _headers(nullptr)
+        , _response(nullptr)
         {
         }
         
@@ -300,7 +300,7 @@ namespace network {
         
         /**
          * @brief Inits CURL instance for common usage
-         * @param request Null not allowed
+         * @param request nullptr not allowed
          * @param callback Response write callback
          * @param stream Response write stream
          */
@@ -406,7 +406,7 @@ namespace network {
         
         // when a curl request finishes, post notification on main thread
         {
-            CURLMsg* msg = NULL;
+            CURLMsg* msg = nullptr;
             int msgLeft = 0;
             
             while ((msg=curl_multi_info_read(curlMultiHandle, &msgLeft)))
@@ -430,7 +430,7 @@ namespace network {
                     if (!resp->getHttpRequest()->getDownloadPath().empty())
                     {
                         fclose(resp->getFileHandle());
-                        resp->setFileHandle(NULL);
+                        resp->setFileHandle(nullptr);
                     }
                     
                     resp->setErrorBuffer(curlRaii->getErrorBuffer());
@@ -454,7 +454,7 @@ namespace network {
         
         if (runningHandles)
         {
-            curl_multi_wait(curlMultiHandle, NULL, 0, 50, NULL);
+            curl_multi_wait(curlMultiHandle, nullptr, 0, 50, nullptr);
             return true;
         }
         else
@@ -466,7 +466,7 @@ namespace network {
     // HttpClient implementation
     HttpClient* HttpClient::getInstance()
     {
-        if (s_pHttpClient == NULL) {
+        if (s_pHttpClient == nullptr) {
             s_pHttpClient = new HttpClient();
         }
         
@@ -497,17 +497,17 @@ namespace network {
     {
         s_need_quit = true;
         
-        if (s_requestQueue != NULL) {
+        if (s_requestQueue != nullptr) {
             s_SleepCondition.notify_one();
         }
         
-        s_pHttpClient = NULL;
+        s_pHttpClient = nullptr;
     }
     
     //Lazy create semaphore & mutex & thread
     bool HttpClient::lazyInitThreadSemphore()
     {
-        if (s_requestQueue != NULL) {
+        if (s_requestQueue != nullptr) {
             return true;
         } else {
             
@@ -530,28 +530,32 @@ namespace network {
         {
             return;
         }
-        
+
         if (!request)
         {
             return;
         }
         
         request->retain();
+
+        if (nullptr != s_requestQueue) {
+            s_requestQueueMutex.lock();
+            s_requestQueue->pushBack(request);
+            s_requestQueueMutex.unlock();
         
-        s_requestQueueMutex.lock();
-        s_requestQueue->pushBack(request);
-        s_requestQueueMutex.unlock();
-        
-        // Notify thread start to work
-        s_SleepCondition.notify_one();
+            // Notify thread start to work
+            s_SleepCondition.notify_one();
+        }
     }
-    
+
     // Poll and notify main thread if responses exists in queue
     void HttpClient::dispatchResponseCallbacks()
     {
         // log("CCHttpClient::dispatchResponseCallbacks is running");
-        
-        HttpResponse* response = NULL;
+        if (nullptr == s_responseQueue) {
+            return;
+        }
+        HttpResponse* response = nullptr;
         
         s_responseQueueMutex.lock();
         
@@ -566,7 +570,7 @@ namespace network {
         if (response)
         {
             HttpRequest *request = response->getHttpRequest();
-            Object *pTarget = request->getTarget();
+            Ref *pTarget = request->getTarget();
             SEL_HttpResponse pSelector = request->getSelector();
             
             if (pTarget && pSelector) 

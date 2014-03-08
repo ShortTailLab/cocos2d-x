@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
 
 /**
 *   @js NA
@@ -37,22 +37,25 @@ namespace gui {
 */
 class ImageView : public Widget
 {
+    
+    DECLARE_CLASS_GUI_INFO
+    
 public:
     /**
      * Default constructor
      */
     ImageView();
-    
+
     /**
      * Default destructor
      */
     virtual ~ImageView();
-    
+
     /**
      * Allocates and initializes.
      */
     static ImageView* create();
-    
+
     /**
      * Load texture for imageview.
      *
@@ -61,55 +64,52 @@ public:
      * @param texType    @see UI_TEX_TYPE_LOCAL
      */
     void loadTexture(const char* fileName,TextureResType texType = UI_TEX_TYPE_LOCAL);
-    
+
     /**
      * Updates the texture rect of the ImageView in points.
      * It will call setTextureRect:rotated:untrimmedSize with rotated = NO, and utrimmedSize = rect.size.
      */
     void setTextureRect(const Rect& rect);
-    
+
     /**
      * Sets if imageview is using scale9 renderer.
      *
      * @param true that using scale9 renderer, false otherwise.
      */
     void setScale9Enabled(bool able);
-    
+
+    bool isScale9Enabled();
+
     /**
      * Sets capinsets for imageview, if imageview is using scale9 renderer.
      *
      * @param capInsets    capinsets for imageview
      */
     void setCapInsets(const Rect &capInsets);
-    
-    //override "setFlipX" method of widget.
-    virtual void setFlipX(bool flipX) override;
-    
-    //override "setFlipY" method of widget.
-    virtual void setFlipY(bool flipY) override;
-    
-    //override "isFlipX" method of widget.
-    virtual bool isFlipX() override;
-    
-    //override "isFlipY" method of widget.
-    virtual bool isFlipY() override;
-    
+
+    const Rect& getCapInsets();
+
     //override "setAnchorPoint" method of widget.
     virtual void setAnchorPoint(const Point &pt) override;
-    
+
     //override "ignoreContentAdaptWithSize" method of widget.
     virtual void ignoreContentAdaptWithSize(bool ignore) override;
-    
+
     /**
      * Returns the "class name" of widget.
      */
     virtual std::string getDescription() const override;
-    
+
     virtual const Size& getContentSize() const override;
     virtual Node* getVirtualRenderer() override;
 protected:
     virtual void initRenderer() override;
     virtual void onSizeChanged() override;
+    virtual void updateTextureColor() override;
+    virtual void updateTextureOpacity() override;
+    virtual void updateTextureRGBA() override;
+    virtual void updateFlippedX() override;
+    virtual void updateFlippedY() override;
     void imageTextureScaleChangedWithSize();
     virtual Widget* createCloneInstance() override;
     virtual void copySpecialProperties(Widget* model) override;

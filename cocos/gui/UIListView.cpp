@@ -28,7 +28,9 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-namespace gui {
+namespace ui {
+    
+IMPLEMENT_CLASS_GUI_INFO(ListView)
 
 ListView::ListView():
 _model(nullptr),
@@ -347,6 +349,11 @@ void ListView::setItemsMargin(float margin)
     _itemsMargin = margin;
     _refreshViewDirty = true;
 }
+    
+float ListView::getItemsMargin()
+{
+    return _itemsMargin;
+}
 
 void ListView::setDirection(SCROLLVIEW_DIR dir)
 {
@@ -394,7 +401,7 @@ void ListView::sortAllChildren()
     }
 }
     
-void ListView::addEventListenerListView(Object *target, SEL_ListViewEvent selector)
+void ListView::addEventListenerListView(Ref *target, SEL_ListViewEvent selector)
 {
     _listViewEventListener = target;
     _listViewEventSelector = selector;
