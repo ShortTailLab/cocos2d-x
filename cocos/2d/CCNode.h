@@ -783,6 +783,7 @@ public:
      */
     virtual void setTag(int tag);
 
+    
     /**
      * Returns a custom user data pointer
      *
@@ -1444,7 +1445,9 @@ protected:
     Vector<Node*> _children;        ///< array of children nodes
     Node *_parent;                  ///< weak reference to parent node
 
-    int _tag;                       ///< a tag. Can be any number you assigned just to identify this node
+    int _tag;                         ///< a tag. Can be any number you assigned just to identify this node
+    
+    std::string _name;               ///<a string label, an user defined string to identify this node
 
     void *_userData;                ///< A user assingned void pointer, Can be point to any cpp object
     Ref *_userObject;               ///< A user assigned Object
