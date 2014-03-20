@@ -31,8 +31,9 @@ THE SOFTWARE.
 #include "jni/Java_org_cocos2dx_lib_Cocos2dxHelper.h"
 #include "android/asset_manager.h"
 #include "android/asset_manager_jni.h"
-
+#include <sys/stat.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define  LOG_TAG    "CCFileUtilsAndroid.cpp"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
@@ -97,38 +98,20 @@ std::string FileUtilsAndroid::getApplicationSupportPath() {
 bool FileUtilsAndroid::isDirectoryExist(const std::string& path) {
     return isFileExist(path);
 }
-bool FileUtilsAndroid::createDirecotory(const std::string& path) {
-    if (createDirectoryJNI(path.c_str())) {
-        return true;
-    }
-    return false;
+bool FileUtilsAndroid::createDirectory(const std::string& path) {
+	return mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == 0;
 }
 bool FileUtilsAndroid::createFile(const std::string& path, const std::string& fileName) {
-    if (createFileJNI(path.c_str(), fileName.c_str())) {
-        return true;
-    }
     return false;
 }
 bool FileUtilsAndroid::removeDirectory(const std::string& path) {
-    if (removeDirectoryJNI(path.c_str())) {
-        return true;
-    }
-    return false;
+    return rmdir(path.c_str()) == 0;
 }
 bool FileUtilsAndroid::removeFile(const std::string& path, const std::string& fileName) {
-    if (removeFileJNI(path.c_str(), fileName.c_str())) {
-        return true;
-    }
-    return false;
+	return unlink(path.c_str()) == 0;
 }
 bool FileUtilsAndroid::moveFile(const std::string& srcPath, const std::string& dstPath) {
-    if (moveFileJNI(srcPath.c_str(), dstPath.c_str())) {
-        return true;
-    }
-    return false;
-}
-std::string FileUtilsAndroid::getFileMD5FromZip(const std::string& path) {
-    return getFileMD5FromZipJNI(path.c_str());
+    return moveFileJNI(srcPath.c_str(), dstPath.c_str());
 }
 
 
@@ -294,6 +277,8 @@ Data FileUtilsAndroid::getData(const std::string& filename, bool forString)
 std::string FileUtilsAndroid::getStringFromFile(const std::string& filename)
 {
     Data data = getData(filename, true);
+    if (data.isNull())
+        return "";
     std::string ret((const char*)data.getBytes());
     return ret;
 }

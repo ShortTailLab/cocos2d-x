@@ -251,7 +251,7 @@ bool FileUtilsApple::isDirectoryExist(const std::string& path) {
     }
     return false;
 }
-bool FileUtilsApple::createDirecotory(const std::string& path) {
+bool FileUtilsApple::createDirectory(const std::string& path) {
     NSError* error = nil;
     if (![s_fileManager createDirectoryAtPath:[NSString stringWithUTF8String:path.c_str()] withIntermediateDirectories:YES attributes:nil error:&error]) {
         return false;
@@ -286,9 +286,6 @@ bool FileUtilsApple::moveFile(const std::string &srcPath, const std::string &dst
         return true;
     }
     return false;
-}
-std::string FileUtilsApple::getFileMD5FromZip(const std::string& path) {
-    return path;
 }
 
 

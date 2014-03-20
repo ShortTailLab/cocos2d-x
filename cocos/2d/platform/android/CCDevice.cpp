@@ -110,8 +110,19 @@ public:
 
            // Do a full lookup for the font path using FileUtils in case the given font name is a relative path to a font file asset,
            // or the path has been mapped to a different location in the app package:
-           std::string fullPathOrFontName = FileUtils::getInstance()->fullPathForFilename(pFontName);
-            
+           std::string fontName = pFontName;
+           std::string fullPathOrFontName;
+           if (!FileUtils::getInstance()->isAbsolutePath(fontName)) {
+               std::string ttfName = fontName + ".ttf";
+               std::string ttfFullPath = FileUtils::getInstance()->fullPathForFilename(ttfName);
+               if (ttfFullPath != ttfName) {
+                   fullPathOrFontName = ttfFullPath;
+               }
+           }
+           if (fullPathOrFontName.empty()) {
+               fullPathOrFontName = FileUtils::getInstance()->fullPathForFilename(pFontName);
+           }
+        
            // If the path name returned includes the 'assets' dir then that needs to be removed, because the android.content.Context
            // requires this portion of the path to be omitted for assets inside the app package.
            if (fullPathOrFontName.find("assets/") == 0)

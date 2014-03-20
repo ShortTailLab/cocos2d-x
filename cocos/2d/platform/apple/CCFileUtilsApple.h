@@ -45,12 +45,11 @@ class CC_DLL FileUtilsApple : public FileUtils
 public:
     virtual std::string getApplicationSupportPath();
     virtual bool isDirectoryExist(const std::string& path);
-    virtual bool createDirecotory(const std::string& path);
+    virtual bool createDirectory(const std::string& path);
     virtual bool createFile(const std::string& path, const std::string& fileName);
     virtual bool removeDirectory(const std::string& path);
     virtual bool removeFile(const std::string& path, const std::string& fileName);
     virtual bool moveFile(const std::string& srcPath, const std::string& dstPath);
-    virtual std::string getFileMD5FromZip(const std::string& path);
 
     /* override funtions */
     virtual std::string getWritablePath() const override;

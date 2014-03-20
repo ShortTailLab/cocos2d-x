@@ -24,10 +24,17 @@ THE SOFTWARE.
  ****************************************************************************/
 package org.cocos2dx.lib;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.Exception;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Locale;
 import java.lang.Runnable;
+import java.nio.channels.FileChannel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,10 +44,14 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.os.Build;
+import android.os.*;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 
 public class Cocos2dxHelper {
 	// ===========================================================
@@ -59,6 +70,7 @@ public class Cocos2dxHelper {
 	private static boolean sAccelerometerEnabled;
 	private static String sPackageName;
 	private static String sFileDirectory;
+    private static String sCachePath;
 	private static Activity sActivity = null;
 	private static Cocos2dxHelperListener sCocos2dxHelperListener;
 	private static ConcurrentLinkedQueue<Runnable> jobs = new ConcurrentLinkedQueue<Runnable>();
@@ -123,6 +135,8 @@ public class Cocos2dxHelper {
     		//Cocos2dxHelper.nativeSetAssetManager(sAssetManager);
             Cocos2dxBitmap.setContext(activity);
             sActivity = activity;
+
+            sCachePath = isExternalStorageUsable() ? getExternalCachePath() : getInternalCachePath();
 
             sInited = true;
 	    }
@@ -212,6 +226,107 @@ public class Cocos2dxHelper {
 	// ===========================================================
 
 	private static native void nativeSetEditTextDialogResult(final byte[] pBytes);
+
+    public static boolean moveFile(String srcPath, String dstPath)
+    {
+        boolean success = false;
+        File src = new File(srcPath);
+        File dst = new File(dstPath);
+
+        FileChannel inChannel = null, outChannel = null;
+
+        try {
+            inChannel = new FileInputStream(src).getChannel();
+            outChannel = new FileOutputStream(dst).getChannel();
+
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            src.delete();
+            success = true;
+        }
+        catch (java.io.IOException e) {
+        }
+        finally {
+            if (inChannel != null) {
+                try {
+                    inChannel.close();
+                }
+                catch (java.io.IOException e) {
+                }
+            }
+
+            if (outChannel != null) {
+                try {
+                    outChannel.close();
+                }
+                catch (java.io.IOException e) {
+                }
+            }
+        }
+        return success;
+    }
+
+    public static String getCachePath() {
+        return sCachePath;
+    }
+
+    public static boolean isExternalStorageUsable()
+    {
+        boolean externalStorageAvailable = false;
+        boolean externalStorageWriteable = false;
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            externalStorageAvailable = externalStorageWriteable = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            externalStorageAvailable = true;
+            externalStorageWriteable = false;
+        } else {
+            // Something else is wrong. It may be one of many other states, but all we need
+            //  to know is we can neither read nor write
+            externalStorageAvailable = externalStorageWriteable = false;
+        }
+
+        return externalStorageAvailable && externalStorageWriteable;
+    }
+
+    public static boolean isInstalledOnExternalStorage()
+    {
+        PackageManager pm = sActivity.getPackageManager();
+        try {
+            PackageInfo pi = pm.getPackageInfo(sActivity.getPackageName(), 0);
+            ApplicationInfo ai = pi.applicationInfo;
+            return (ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) == ApplicationInfo.FLAG_EXTERNAL_STORAGE;
+        } catch (NameNotFoundException e) {
+            Log.d("cocos2dx-helper", "Failed to : " + e.getMessage());
+        }
+        return false;
+    }
+
+    public static String getExternalDocPath()
+    {
+        File f = sActivity.getExternalFilesDir(null);
+        return f == null ? "" : f.getAbsolutePath() + "/";
+    }
+
+    public static String getExternalCachePath()
+    {
+        File f = sActivity.getExternalCacheDir();
+        return f == null ? "" : f.getAbsolutePath() + "/";
+    }
+
+    public static String getInternalDocPath()
+    {
+        File f = sActivity.getFilesDir();
+        return f.getAbsolutePath() + "/";
+    }
+
+    public static String getInternalCachePath()
+    {
+        File f = sActivity.getCacheDir();
+        return f.getAbsolutePath() + "/";
+    }
 
 	public static String getCocos2dxPackageName() {
 		return Cocos2dxHelper.sPackageName;
