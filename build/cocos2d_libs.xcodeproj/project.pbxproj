@@ -1657,10 +1657,6 @@
 		74AC8E2CDB69E1FDBFCFBD78 /* CCRenderCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC8F4F7D9E52FCB522B647 /* CCRenderCommand.h */; };
 		74AC8E3E7D85FB595242AAEC /* CCMaterialManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC800F4905C8827A44EED3 /* CCMaterialManager.h */; };
 		74AC8EE0C2AAB82783F47089 /* CCFrustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 74AC840F2F17ED6D0163669F /* CCFrustum.h */; };
-		86DA3C1B187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
-		86DA3C1C187FB7BA00856A8D /* jsb_cocos2d_custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */; };
-		86DA3C24187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
-		86DA3C25187FB89A00856A8D /* jsb_cocos2d_custom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */; };
 		A023FA34185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA32185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h */; };
 		A023FA35185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA32185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_frag.h */; };
 		A023FA36185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_vert.h in Headers */ = {isa = PBXBuildFile; fileRef = A023FA33185198C800E10CD1 /* ccShader_PositionTextureColor_noMVP_vert.h */; };
@@ -1756,7 +1752,6 @@
 		B3AF01A31842FBA400A98B85 /* b2MotorJoint.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */; };
 		B3B12A5A17E7F44000026B4A /* libchipmunk Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A03F2CB81780BD04006731B9 /* libchipmunk Mac.a */; };
 		B3B12A5B17E7F45C00026B4A /* libchipmunk iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A07A4F3B178387670073F6A7 /* libchipmunk iOS.a */; };
-		E43876601869762600E245FD /* libnspr4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4AC8EC11869651A00D1B7A0 /* libnspr4.a */; };
 		ED9C6A9418599AD8000A5232 /* CCNodeGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED9C6A9218599AD8000A5232 /* CCNodeGrid.cpp */; };
 		ED9C6A9518599AD8000A5232 /* CCNodeGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED9C6A9218599AD8000A5232 /* CCNodeGrid.cpp */; };
 		ED9C6A9618599AD8000A5232 /* CCNodeGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = ED9C6A9318599AD8000A5232 /* CCNodeGrid.h */; };
@@ -2724,8 +2719,6 @@
 		74AC8DF0EA49A124E1B11681 /* CCRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRenderer.h; sourceTree = "<group>"; };
 		74AC8EB8FE47EED9B30B7106 /* CCRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCRenderer.cpp; sourceTree = "<group>"; };
 		74AC8F4F7D9E52FCB522B647 /* CCRenderCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRenderCommand.h; sourceTree = "<group>"; };
-		86DA3C1A187FB7BA00856A8D /* jsb_cocos2d_custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsb_cocos2d_custom.h; sourceTree = "<group>"; };
-		86DA3C23187FB89A00856A8D /* jsb_cocos2d_custom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_cocos2d_custom.cpp; sourceTree = "<group>"; };
 		A0053F46189B2BEA0035A564 /* Android.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = Android.mk; sourceTree = "<group>"; };
 		A0053F47189B2BEA0035A564 /* CCApplication.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCApplication.cpp; sourceTree = "<group>"; };
 		A0053F48189B2BEA0035A564 /* CCApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCApplication.h; sourceTree = "<group>"; };
@@ -2817,7 +2810,6 @@
 		B375104F1823AC7B00B3BA6A /* CCPhysicsWorldInfo_chipmunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPhysicsWorldInfo_chipmunk.h; sourceTree = "<group>"; };
 		B3AF019E1842FBA400A98B85 /* b2MotorJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2MotorJoint.cpp; sourceTree = "<group>"; };
 		B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2MotorJoint.h; sourceTree = "<group>"; };
-		E4AC8EC11869651A00D1B7A0 /* libnspr4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnspr4.a; sourceTree = "<group>"; };
 		ED9C6A9218599AD8000A5232 /* CCNodeGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CCNodeGrid.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		ED9C6A9318599AD8000A5232 /* CCNodeGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNodeGrid.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -7052,7 +7044,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"COCOS2D_DEBUG=1",
 					USE_FILE32API,
-					"CC_ENABLE_CHIPMUNK_INTEGRATION=1",
+					"CC_ENABLE_CHIPMUNK_INTEGRATION=0",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -7084,7 +7076,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"CC_ENABLE_CHIPMUNK_INTEGRATION=1",
+					"CC_ENABLE_CHIPMUNK_INTEGRATION=0",
 					NDEBUG,
 					USE_FILE32API,
 				);
