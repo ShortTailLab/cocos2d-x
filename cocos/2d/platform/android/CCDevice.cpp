@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <string.h>
 #include <android/log.h>
 #include <jni.h>
+#include <unordered_map>
 #include "ccTypes.h"
 #include "jni/DPIJni.h"
 #include "jni/JniHelper.h"
@@ -79,6 +80,11 @@ public:
     ~BitmapDC(void)
     {
     }
+    
+    bool endsWith(const std::string& str, const std::string& suffix)
+    {
+        return str.size() >= suffix.size() && std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
+    }
 
     bool getBitmapFromJavaShadowStroke(	const char *text,
     									int nWidth,
@@ -108,26 +114,35 @@ public:
                return false;
            }
 
-           // Do a full lookup for the font path using FileUtils in case the given font name is a relative path to a font file asset,
-           // or the path has been mapped to a different location in the app package:
            std::string fontName = pFontName;
            std::string fullPathOrFontName;
-           if (!FileUtils::getInstance()->isAbsolutePath(fontName)) {
-               std::string ttfName = fontName + ".ttf";
-               std::string ttfFullPath = FileUtils::getInstance()->fullPathForFilename(ttfName);
-               if (ttfFullPath != ttfName) {
-                   fullPathOrFontName = ttfFullPath;
-               }
-           }
-           if (fullPathOrFontName.empty()) {
-               fullPathOrFontName = FileUtils::getInstance()->fullPathForFilename(pFontName);
-           }
-        
-           // If the path name returned includes the 'assets' dir then that needs to be removed, because the android.content.Context
-           // requires this portion of the path to be omitted for assets inside the app package.
-           if (fullPathOrFontName.find("assets/") == 0)
+           auto iter = fontMap.find(fontName);
+           if (iter != fontMap.end())
            {
-               fullPathOrFontName = fullPathOrFontName.substr(strlen("assets/"));	// Chop out the 'assets/' portion of the path.
+               fullPathOrFontName = iter->second;
+           }
+           else
+           {
+               // Do a full lookup for the font path using FileUtils in case the given font name is a relative path to a font file asset,
+               // or the path has been mapped to a different location in the app package:
+               if (!FileUtils::getInstance()->isAbsolutePath(fontName) && !endsWith(fontName, ".ttf")) {
+                   std::string ttfName = fontName + ".ttf";
+                   std::string ttfFullPath = FileUtils::getInstance()->fullPathForFilename(ttfName);
+                   if (ttfFullPath != ttfName) {
+                       fullPathOrFontName = ttfFullPath;
+                   }
+               }
+               if (fullPathOrFontName.empty()) {
+                   fullPathOrFontName = FileUtils::getInstance()->fullPathForFilename(pFontName);
+               }
+               
+               // If the path name returned includes the 'assets' dir then that needs to be removed, because the android.content.Context
+               // requires this portion of the path to be omitted for assets inside the app package.
+               if (fullPathOrFontName.find("assets/") == 0)
+               {
+                   fullPathOrFontName = fullPathOrFontName.substr(strlen("assets/"));	// Chop out the 'assets/' portion of the path.
+               }
+               fontMap[fontName] = fullPathOrFontName;
            }
 
            /**create bitmap
@@ -170,6 +185,7 @@ public:
     int _width;
     int _height;
     unsigned char *_data;
+    std::unordered_map<std::string, std::string> fontMap;
 };
 
 static BitmapDC& sharedBitmapDC()
