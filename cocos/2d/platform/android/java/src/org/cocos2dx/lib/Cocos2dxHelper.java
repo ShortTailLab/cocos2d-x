@@ -307,25 +307,25 @@ public class Cocos2dxHelper {
     public static String getExternalDocPath()
     {
         File f = sActivity.getExternalFilesDir(null);
-        return f == null ? "" : f.getAbsolutePath() + "/";
+        return f == null ? "" : f.getAbsolutePath();
     }
 
     public static String getExternalCachePath()
     {
         File f = sActivity.getExternalCacheDir();
-        return f == null ? "" : f.getAbsolutePath() + "/";
+        return f == null ? "" : f.getAbsolutePath();
     }
 
     public static String getInternalDocPath()
     {
         File f = sActivity.getFilesDir();
-        return f.getAbsolutePath() + "/";
+        return f.getAbsolutePath();
     }
 
     public static String getInternalCachePath()
     {
         File f = sActivity.getCacheDir();
-        return f.getAbsolutePath() + "/";
+        return f.getAbsolutePath();
     }
 
 	public static String getCocos2dxPackageName() {

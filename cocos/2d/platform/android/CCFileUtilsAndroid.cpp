@@ -83,6 +83,27 @@ bool FileUtilsAndroid::init()
 }
 
 // swen
+static
+int mkdirp(const char *pathname, mode_t mode)
+{
+    char parent[PATH_MAX], *p;
+    /* make a parent directory path */
+    strncpy(parent, pathname, sizeof(parent));
+    parent[sizeof(parent) - 1] = '\0';
+    for(p = parent + strlen(parent); *p != '/' && p != parent; p--);
+    *p = '\0';
+    /* try make parent directory */
+    if(p != parent && mkdirp(parent, mode) != 0)
+        return -1;
+    /* make this one if parent has been made */
+    if(mkdir(pathname, mode) == 0)
+        return 0;
+    /* if it already exists that is fine */
+    if(errno == EEXIST)
+        return 0;
+    return -1;
+}
+
 std::string FileUtilsAndroid::getApplicationSupportPath() {
     string dir("");
     string tmp = getCachePathJNI();
@@ -99,7 +120,7 @@ bool FileUtilsAndroid::isDirectoryExist(const std::string& path) {
     return isFileExist(path);
 }
 bool FileUtilsAndroid::createDirectory(const std::string& path) {
-	return mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == 0;
+	return mkdirp(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == 0;
 }
 bool FileUtilsAndroid::createFile(const std::string& path, const std::string& fileName) {
     return false;
