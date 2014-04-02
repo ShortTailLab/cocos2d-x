@@ -37,8 +37,7 @@ import java.lang.Runnable;
 import java.nio.channels.FileChannel;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -67,6 +66,7 @@ public class Cocos2dxHelper {
 	private static Cocos2dxMusic sCocos2dMusic;
 	private static Cocos2dxSound sCocos2dSound;
 	private static AssetManager sAssetManager;
+	private static Cocos2dxAccelerometer sCocos2dxAccelerometer;
 	private static boolean sAccelerometerEnabled;
 	private static String sPackageName;
 	private static String sFileDirectory;
@@ -106,7 +106,7 @@ public class Cocos2dxHelper {
 	    if (!sInited) {
     		final ApplicationInfo applicationInfo = activity.getApplicationInfo();
     		
-            initListener();
+            Cocos2dxHelper.sCocos2dxHelperListener = (Cocos2dxHelperListener)activity;
                 
             try {
             // Get the lib_name from AndroidManifest.xml metadata
@@ -126,89 +126,25 @@ public class Cocos2dxHelper {
     
     		Cocos2dxHelper.sPackageName = applicationInfo.packageName;
     		Cocos2dxHelper.sFileDirectory = activity.getFilesDir().getAbsolutePath();
-    		//Cocos2dxHelper.nativeSetApkPath(applicationInfo.sourceDir);
+            Cocos2dxHelper.nativeSetApkPath(applicationInfo.sourceDir);
     
+    		Cocos2dxHelper.sCocos2dxAccelerometer = new Cocos2dxAccelerometer(activity);
     		Cocos2dxHelper.sCocos2dMusic = new Cocos2dxMusic(activity);
     		Cocos2dxHelper.sCocos2dSound = new Cocos2dxSound(activity);
     		Cocos2dxHelper.sAssetManager = activity.getAssets();
+    		Cocos2dxHelper.nativeSetContext((Context)activity, Cocos2dxHelper.sAssetManager);
     
-    		//Cocos2dxHelper.nativeSetAssetManager(sAssetManager);
             Cocos2dxBitmap.setContext(activity);
+            Cocos2dxETCLoader.setContext(activity);
             sActivity = activity;
 
             sCachePath = isExternalStorageUsable() ? getExternalCachePath() : getInternalCachePath();
 
             sInited = true;
+
 	    }
 	}
 	
-	public static void initListener() {
-        Cocos2dxHelper.sCocos2dxHelperListener = new Cocos2dxHelperListener() {
-            
-            @Override
-            public void showEditTextDialog(final String title, final String message,
-                    final int inputMode, final int inputFlag, final int returnType, final int maxLength) {           	
-            	sActivity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						new Cocos2dxEditBoxDialog(sActivity,
-	                            title,
-	            				message,
-	            				inputMode,
-	            				inputFlag,
-	            				returnType,
-	            				maxLength).show();
-					}
-				});	
-            }
-            	
-            @Override
-            public void openIMEKeyboard() {
-            	sActivity.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						Cocos2dxEditText.getInstance(sActivity).openIMEKeyboard();
-					}
-            		
-            	});
-            }
-            
-            @Override
-            public void closeIMEKeyboard() {
-            	sActivity.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						Cocos2dxEditText.getInstance(sActivity).closeIMEKeyboard();
-					}
-            		
-            	});
-            }
-            
-            @Override
-            public void showDialog(final String title, final String message) {
-
-                sActivity.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(sActivity)
-                        .setTitle(title)
-                        .setMessage(message)
-                        .setPositiveButton("Ok", 
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // TODO Auto-generated method stub
-                                    }
-                                }).create().show();
-                    }
-                });
-            }
-        };
-	}
-
     public static Activity getActivity() {
         return sActivity;
     }
@@ -224,6 +160,8 @@ public class Cocos2dxHelper {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+
+	private static native void nativeSetApkPath(final String pApkPath);
 
 	private static native void nativeSetEditTextDialogResult(final byte[] pBytes);
 
@@ -328,6 +266,8 @@ public class Cocos2dxHelper {
         return f.getAbsolutePath();
     }
 
+	private static native void nativeSetContext(final Context pContext, final AssetManager pAssetManager);
+
 	public static String getCocos2dxPackageName() {
 		return Cocos2dxHelper.sPackageName;
 	}
@@ -346,6 +286,21 @@ public class Cocos2dxHelper {
 
 	public static AssetManager getAssetManager() {
 		return Cocos2dxHelper.sAssetManager;
+	}
+
+	public static void enableAccelerometer() {
+		Cocos2dxHelper.sAccelerometerEnabled = true;
+		Cocos2dxHelper.sCocos2dxAccelerometer.enable();
+	}
+
+
+	public static void setAccelerometerInterval(float interval) {
+		Cocos2dxHelper.sCocos2dxAccelerometer.setInterval(interval);
+	}
+
+	public static void disableAccelerometer() {
+		Cocos2dxHelper.sAccelerometerEnabled = false;
+		Cocos2dxHelper.sCocos2dxAccelerometer.disable();
 	}
 
 	public static void preloadBackgroundMusic(final String pPath) {
@@ -433,6 +388,18 @@ public class Cocos2dxHelper {
 		Cocos2dxHelper.sCocos2dSound.end();
 	}
 
+	public static void onResume() {
+		if (Cocos2dxHelper.sAccelerometerEnabled) {
+			Cocos2dxHelper.sCocos2dxAccelerometer.enable();
+		}
+	}
+
+	public static void onPause() {
+		if (Cocos2dxHelper.sAccelerometerEnabled) {
+			Cocos2dxHelper.sCocos2dxAccelerometer.disable();
+		}
+	}
+
 	public static void terminateProcess() {
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
@@ -448,18 +415,16 @@ public class Cocos2dxHelper {
 	public static void setEditTextDialogResult(final String pResult) {
 		try {
 			final byte[] bytesUTF8 = pResult.getBytes("UTF8");
-			Cocos2dxHelper.nativeSetEditTextDialogResult(bytesUTF8);			
+
+			Cocos2dxHelper.sCocos2dxHelperListener.runOnGLThread(new Runnable() {
+				@Override
+				public void run() {
+					Cocos2dxHelper.nativeSetEditTextDialogResult(bytesUTF8);
+				}
+			});
 		} catch (UnsupportedEncodingException pUnsupportedEncodingException) {
 			/* Nothing. */
 		}
-	}
-	
-	private static void openIMEKeyboard() {
-		sCocos2dxHelperListener.openIMEKeyboard();
-	}
-	
-	private static void closeIMEKeyboard() {
-		sCocos2dxHelperListener.closeIMEKeyboard();
 	}
 
     public static int getDPI()
@@ -546,17 +511,15 @@ public class Cocos2dxHelper {
     	editor.putString(key, value);
     	editor.commit();
     }
-    
-    public static native void nativeRequestFocus();
 	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
 	public static interface Cocos2dxHelperListener {
-		public void showDialog(final String title, final String message);
-		public void showEditTextDialog(final String title, final String message, final int inputMode, final int inputFlag, final int returnType, final int maxLength);
-		public void openIMEKeyboard();
-		public void closeIMEKeyboard();
+		public void showDialog(final String pTitle, final String pMessage);
+		public void showEditTextDialog(final String pTitle, final String pMessage, final int pInputMode, final int pInputFlag, final int pReturnType, final int pMaxLength);
+
+		public void runOnGLThread(final Runnable pRunnable);
 	}
 }
