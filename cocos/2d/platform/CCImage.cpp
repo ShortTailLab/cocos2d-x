@@ -1866,6 +1866,7 @@ bool Image::initWithWebpData(const unsigned char * data, ssize_t dataLen)
             break;
         }
         
+        WebPFreeDecBuffer(&config.output);
         bRet = true;
 	} while (0);
 #endif
