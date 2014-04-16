@@ -790,7 +790,7 @@ void Layout::stencilClippingVisit(Renderer *renderer, const kmMat4 &parentTransf
     {
         auto node = _children.at(i);
         
-        if ( node && node->getZOrder() < 0 )
+        if ( node && node->getLocalZOrder() < 0 )
             node->visit(renderer, _modelViewTransform, dirty);
         else
             break;
@@ -800,7 +800,7 @@ void Layout::stencilClippingVisit(Renderer *renderer, const kmMat4 &parentTransf
     {
         auto node = _protectedChildren.at(j);
         
-        if ( node && node->getZOrder() < 0 )
+        if ( node && node->getLocalZOrder() < 0 )
             node->visit(renderer, _modelViewTransform, dirty);
         else
             break;
@@ -1003,7 +1003,7 @@ const Rect& Layout::getClippingRect()
         float scissorHeight = _size.height*t.d;
         Rect parentClippingRect;
         Layout* parent = this;
-        bool firstClippingParentFounded = false;
+
         while (parent)
         {
             parent = dynamic_cast<Layout*>(parent->getParent());
@@ -1011,12 +1011,8 @@ const Rect& Layout::getClippingRect()
             {
                 if (parent->isClippingEnabled())
                 {
-                    if (!firstClippingParentFounded)
-                    {
-                        _clippingParent = parent;
-                        firstClippingParentFounded = true;
-                        break;
-                    }
+                    _clippingParent = parent;
+                    break;
                 }
             }
         }
@@ -1111,7 +1107,7 @@ void Layout::setBackGroundImageScale9Enabled(bool able)
     _backGroundImage = nullptr;
     _backGroundScale9Enabled = able;
     addBackGroundImage();
-    setBackGroundImage(_backGroundImageFileName.c_str(),_bgImageTexType);
+    setBackGroundImage(_backGroundImageFileName,_bgImageTexType);
     setBackGroundImageCapInsets(_backGroundImageCapInsets);
 }
     
@@ -1120,9 +1116,9 @@ bool Layout::isBackGroundImageScale9Enabled()
     return _backGroundScale9Enabled;
 }
 
-void Layout::setBackGroundImage(const char* fileName,TextureResType texType)
+void Layout::setBackGroundImage(const std::string& fileName,TextureResType texType)
 {
-    if (!fileName || strcmp(fileName, "") == 0)
+    if (fileName.empty())
     {
         return;
     }
@@ -1519,7 +1515,7 @@ void Layout::copySpecialProperties(Widget *widget)
     if (layout)
     {
         setBackGroundImageScale9Enabled(layout->_backGroundScale9Enabled);
-        setBackGroundImage(layout->_backGroundImageFileName.c_str(),layout->_bgImageTexType);
+        setBackGroundImage(layout->_backGroundImageFileName,layout->_bgImageTexType);
         setBackGroundImageCapInsets(layout->_backGroundImageCapInsets);
         setBackGroundColorType(layout->_colorType);
         setBackGroundColor(layout->_cColor);

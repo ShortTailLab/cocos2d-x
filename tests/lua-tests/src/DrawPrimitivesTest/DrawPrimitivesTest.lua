@@ -66,13 +66,13 @@ local function drawPrimitivesMainLayer()
 
     local function InitTitle(layer)
         --Title
-        local lableTitle = cc.Label:create(GetTitle(), s_arialPath, 40)
+        local lableTitle = cc.Label:createWithTTF(GetTitle(), s_arialPath, 40)
         layer:addChild(lableTitle, 15)
         lableTitle:setAnchorPoint(cc.p(0.5, 0.5))
         lableTitle:setPosition(cc.p(size.width / 2, size.height - 32))
         lableTitle:setColor(cc.c3b(255, 255, 40))
         --SubTitle
-        local subLabelTitle = cc.Label:create(GetSubTitle(), s_thonburiPath, 16)
+        local subLabelTitle = cc.Label:createWithTTF(GetSubTitle(), s_thonburiPath, 16)
         layer:addChild(subLabelTitle, 15)
         subLabelTitle:setAnchorPoint(cc.p(0.5, 0.5))
         subLabelTitle:setPosition(cc.p(size.width / 2, size.height - 80)) 
@@ -87,7 +87,11 @@ local function drawPrimitivesMainLayer()
         glNode:setContentSize(cc.size(size.width, size.height))
         glNode:setAnchorPoint(cc.p(0.5, 0.5))
 
-        local function primitivesDraw()
+        local function primitivesDraw(transform, transformUpdated)
+
+            kmGLPushMatrix()
+            kmGLLoadMatrix(transform)
+
             cc.DrawPrimitives.drawLine(VisibleRect:leftBottom(), VisibleRect:rightTop() )
 
             gl.lineWidth( 5.0 )
@@ -152,6 +156,8 @@ local function drawPrimitivesMainLayer()
             gl.lineWidth(1)
             cc.DrawPrimitives.drawColor4B(255,255,255,255)
             cc.DrawPrimitives.setPointSize(1)
+
+            kmGLPopMatrix()
         end
 
         glNode:registerScriptDrawHandler(primitivesDraw)

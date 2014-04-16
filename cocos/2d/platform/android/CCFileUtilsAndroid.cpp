@@ -82,6 +82,7 @@ bool FileUtilsAndroid::init()
     return FileUtils::init();
 }
 
+
 // swen
 static
 int mkdirp(const char *pathname, mode_t mode)
@@ -136,9 +137,9 @@ bool FileUtilsAndroid::moveFile(const std::string& srcPath, const std::string& d
 }
 
 
-bool FileUtilsAndroid::isFileExist(const std::string& strFilePath) const
+bool FileUtilsAndroid::isFileExistInternal(const std::string& strFilePath) const
 {
-    if (0 == strFilePath.length())
+    if (strFilePath.empty())
     {
         return false;
     }
@@ -300,6 +301,7 @@ std::string FileUtilsAndroid::getStringFromFile(const std::string& filename)
     Data data = getData(filename, true);
     if (data.isNull())
         return "";
+
     std::string ret((const char*)data.getBytes());
     return ret;
 }

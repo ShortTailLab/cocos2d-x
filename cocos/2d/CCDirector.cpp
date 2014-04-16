@@ -35,7 +35,6 @@ THE SOFTWARE.
 #include "CCDrawingPrimitives.h"
 #include "CCNS.h"
 #include "CCScene.h"
-#include "CCArray.h"
 #include "CCScheduler.h"
 #include "ccMacros.h"
 #include "CCTransition.h"
@@ -255,6 +254,12 @@ void Director::drawScene()
 {
     // calculate "global" dt
     calculateDeltaTime();
+    
+    // skip one flame when _deltaTime equal to zero.
+    if(_deltaTime < FLT_EPSILON)
+    {
+        return;
+    }
 
     if (_openGLView)
     {
@@ -387,7 +392,10 @@ void Director::setOpenGLView(GLView *openGLView)
 
         CHECK_GL_ERROR_DEBUG();
 
-//        _touchDispatcher->setDispatchEvents(true);
+        if (_eventDispatcher)
+        {
+            _eventDispatcher->setEnabled(true);
+        }
     }
 }
 
@@ -422,9 +430,9 @@ void Director::setViewport()
     }
 }
 
-void Director::setNextDeltaTimeZero(bool bNextDeltaTimeZero)
+void Director::setNextDeltaTimeZero(bool nextDeltaTimeZero)
 {
-    _nextDeltaTimeZero = bNextDeltaTimeZero;
+    _nextDeltaTimeZero = nextDeltaTimeZero;
 }
 
 void Director::setProjection(Projection projection)
@@ -741,9 +749,11 @@ void Director::purgeDirector()
     // cleanup scheduler
     getScheduler()->unscheduleAll();
     
-    // don't release the event handlers
-    // They are needed in case the director is run again
-//    _touchDispatcher->removeAllDelegates();
+    // Disable event dispatching
+    if (_eventDispatcher)
+    {
+        _eventDispatcher->setEnabled(false);
+    }
 
     if (_runningScene)
     {

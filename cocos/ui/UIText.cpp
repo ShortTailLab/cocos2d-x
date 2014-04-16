@@ -68,6 +68,32 @@ bool Text::init()
     }
     return false;
 }
+    
+Text* Text::create(const std::string &textContent, const std::string &fontName, int fontSize)
+{
+    Text *text = new Text;
+    if (text && text->init(textContent, fontName, fontSize)) {
+        text->autorelease();
+        return text;
+    }
+    CC_SAFE_DELETE(text);
+    return nullptr;
+}
+    
+bool Text::init(const std::string &textContent, const std::string &fontName, int fontSize)
+{
+    bool ret = true;
+    do {
+        if (!Widget::init()) {
+            ret = false;
+            break;
+        }
+        this->setText(textContent);
+        this->setFontName(fontName);
+        this->setFontSize(fontSize);
+    } while (0);
+    return ret;
+}
 
 void Text::initRenderer()
 {
@@ -94,7 +120,7 @@ ssize_t Text::getStringLength()
 void Text::setFontSize(int size)
 {
     _fontSize = size;
-    _labelRenderer->setFontSize(size);
+    _labelRenderer->setSystemFontSize(size);
     labelScaleChangedWithSize();
 }
     
@@ -106,7 +132,7 @@ int Text::getFontSize()
 void Text::setFontName(const std::string& name)
 {
     _fontName = name;
-    _labelRenderer->setFontName(name);
+    _labelRenderer->setSystemFontName(name);
     labelScaleChangedWithSize();
 }
     
@@ -287,8 +313,8 @@ void Text::copySpecialProperties(Widget *widget)
     Text* label = dynamic_cast<Text*>(widget);
     if (label)
     {
-        setFontName(label->_fontName.c_str());
-        setFontSize(label->_labelRenderer->getFontSize());
+        setFontName(label->_fontName);
+        setFontSize(label->_labelRenderer->getSystemFontSize());
         setText(label->getStringValue());
         setTouchScaleChangeEnabled(label->_touchScaleChangeEnabled);
         setTextHorizontalAlignment(label->_labelRenderer->getHorizontalAlignment());

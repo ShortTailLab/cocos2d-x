@@ -73,7 +73,6 @@ public class Cocos2dxHelper {
     private static String sCachePath;
 	private static Activity sActivity = null;
 	private static Cocos2dxHelperListener sCocos2dxHelperListener;
-	private static ConcurrentLinkedQueue<Runnable> jobs = new ConcurrentLinkedQueue<Runnable>();
 
     /**
      * Optional meta-that can be in the manifest for this component, specifying
@@ -87,18 +86,8 @@ public class Cocos2dxHelper {
 	// Constructors
 	// ===========================================================
 
-	public static void dispatchPendingRunnables() {
-		for (int i = RUNNABLES_PER_FRAME; i > 0; i--) {
-			Runnable job = jobs.poll();
-			if (job == null) {
-				return;
-			}
-			job.run();
-		}
-	}
-
 	public static void runOnGLThread(final Runnable r) {
-		jobs.add(r);
+		((Cocos2dxActivity)sActivity).runOnGLThread(r);
 	}
 
 	private static boolean sInited = false;
