@@ -66,6 +66,7 @@ ScrollView::ScrollView()
 , _minScale(0.0f)
 , _maxScale(0.0f)
 , _touchListener(nullptr)
+, _isFixedTouchPriority(false)
 {
 
 }
@@ -196,7 +197,12 @@ void ScrollView::setTouchEnabled(bool enabled)
         _touchListener->onTouchEnded = CC_CALLBACK_2(ScrollView::onTouchEnded, this);
         _touchListener->onTouchCancelled = CC_CALLBACK_2(ScrollView::onTouchCancelled, this);
         
-        _eventDispatcher->addEventListenerWithSceneGraphPriority(_touchListener, this);
+        if (this->_isFixedTouchPriority) {
+            _eventDispatcher->addEventListenerWithFixedPriority(_touchListener, -128);
+        }
+        else {
+            _eventDispatcher->addEventListenerWithSceneGraphPriority(_touchListener, this);
+        }
     }
     else
     {
@@ -204,6 +210,10 @@ void ScrollView::setTouchEnabled(bool enabled)
         _touchMoved = false;
         _touches.clear();
     }
+}
+
+void ScrollView::setFixedTouchPriority(bool fixedTouchPriority) {
+    this->_isFixedTouchPriority = fixedTouchPriority;
 }
 
 void ScrollView::setContentOffset(Point offset, bool animated/* = false*/)

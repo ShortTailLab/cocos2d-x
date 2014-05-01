@@ -234,6 +234,8 @@ public:
      * CCActionTweenDelegate
      */
     void updateTweenAction(float value, const std::string& key);
+    void setFixedTouchPriority(bool fixedTouchPriority);
+
 protected:
     /**
      * Relocates the container at the proper offset, in bounds of max/min offsets.
@@ -362,6 +364,7 @@ protected:
     
     CustomCommand _beforeDrawCommand;
     CustomCommand _afterDrawCommand;
+    bool _isFixedTouchPriority;
 };
 
 // end of GUI group
