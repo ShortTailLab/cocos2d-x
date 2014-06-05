@@ -1,4 +1,5 @@
 #include "CCLabelTTFLoader.h"
+#include "platform/CCFileUtils.h"
 
 using namespace cocos2d;
 
@@ -40,7 +41,16 @@ void LabelTTFLoader::onHandlePropTypeBlendFunc(Node * pNode, Node * pParent, con
 
 void LabelTTFLoader::onHandlePropTypeFontTTF(Node * pNode, Node * pParent, const char * pPropertyName, const char * pFontTTF, CCBReader * ccbReader) {
     if(strcmp(pPropertyName, PROPERTY_FONTNAME) == 0) {
-        ((Label *)pNode)->setSystemFontName(pFontTTF);
+        std::string completeFont(pFontTTF);
+        completeFont += ".ttf";
+        // if is user embed font, use ttf config, otherwise use setSystemFontName
+        if (FileUtils::getInstance()->isFileExist(completeFont)) {
+            TTFConfig ttfConfig(completeFont.c_str(), ((Label *)pNode)->getTTFConfig().fontSize, GlyphCollection::DYNAMIC);
+            ((Label *)pNode)->setTTFConfig(ttfConfig);
+        }
+        else {
+            ((Label *)pNode)->setSystemFontName(pFontTTF);
+        }
     } else {
         NodeLoader::onHandlePropTypeFontTTF(pNode, pParent, pPropertyName, pFontTTF, ccbReader);
     }
@@ -56,7 +66,15 @@ void LabelTTFLoader::onHandlePropTypeText(Node * pNode, Node * pParent, const ch
 
 void LabelTTFLoader::onHandlePropTypeFloatScale(Node * pNode, Node * pParent, const char * pPropertyName, float pFloatScale, CCBReader * ccbReader) {
     if(strcmp(pPropertyName, PROPERTY_FONTSIZE) == 0) {
-        ((Label *)pNode)->setSystemFontSize(pFloatScale);
+        TTFConfig config = ((Label *)pNode)->getTTFConfig();
+        // if is user embed font, update ttf config, otherwise setSystemFontSize
+        if (FileUtils::getInstance()->isFileExist(config.fontFilePath)) {
+            config.fontSize = (int)pFloatScale;
+            ((Label *)pNode)->setTTFConfig(config);
+        }
+        else {
+            ((Label *)pNode)->setSystemFontSize(pFloatScale);
+        }
     } else {
         NodeLoader::onHandlePropTypeFloatScale(pNode, pParent, pPropertyName, pFloatScale, ccbReader);
     }

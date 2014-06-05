@@ -30,6 +30,7 @@
 #include "CCLabel.h"
 #include "CCAction.h"
 #include "CCActionInterval.h"
+#include "platform/CCFileUtils.h"
 
 using namespace std;
 
@@ -360,7 +361,16 @@ void ControlButton::setTitleLabelForState(Node* titleLabel, State state)
 
 void ControlButton::setTitleTTFForState(const std::string& fontName, State state)
 {
-    this->setTitleLabelForState(Label::createWithSystemFont(getTitleForState(state), fontName, 12), state);
+    std::string completeFont = fontName+".ttf";
+    Label* label;
+    // if is user embed font, use ttf config, otherwise use setSystemFontName
+    if (FileUtils::getInstance()->isFileExist(completeFont)) {
+        label = Label::createWithTTF(getTitleForState(state), completeFont, 12);
+        this->setTitleLabelForState(label, state);
+    }
+    else {
+        this->setTitleLabelForState(Label::createWithSystemFont(getTitleForState(state), fontName, 12), state);
+    }
 }
 
 const std::string& ControlButton::getTitleTTFForState(State state)
@@ -384,7 +394,15 @@ void ControlButton::setTitleTTFSizeForState(float size, State state)
         Label* labelTTF = dynamic_cast<Label*>(label);
         if(labelTTF != 0)
         {
-            return labelTTF->setSystemFontSize(size);
+            TTFConfig config = labelTTF->getTTFConfig();
+            // if is user embed font, update ttf config, otherwise setSystemFontSize
+            if (FileUtils::getInstance()->isFileExist(config.fontFilePath)) {
+                config.fontSize = (int)size;
+                labelTTF->setTTFConfig(config);
+            }
+            else {
+                labelTTF->setSystemFontSize(size);
+            }
         }
     }
 }
