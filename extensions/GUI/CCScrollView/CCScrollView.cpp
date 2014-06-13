@@ -67,6 +67,7 @@ ScrollView::ScrollView()
 , _maxScale(0.0f)
 , _touchListener(nullptr)
 , _isFixedTouchPriority(false)
+, _accelerateEnabled(false)
 {
 
 }
@@ -214,6 +215,10 @@ void ScrollView::setTouchEnabled(bool enabled)
 
 void ScrollView::setFixedTouchPriority(bool fixedTouchPriority) {
     this->_isFixedTouchPriority = fixedTouchPriority;
+}
+
+void ScrollView::setAccelerateEnabled(bool enabled) {
+    this->_accelerateEnabled = enabled;
 }
 
 void ScrollView::setContentOffset(Point offset, bool animated/* = false*/)
@@ -409,7 +414,7 @@ void ScrollView::deaccelerateScrolling(float dt)
     
     _container->setPosition(_container->getPosition() + _scrollDistance);
     
-    if (_bounceable)
+    if (_bounceable || _accelerateEnabled)
     {
         maxInset = _maxInset;
         minInset = _minInset;
