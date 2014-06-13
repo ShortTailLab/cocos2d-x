@@ -235,6 +235,7 @@ public:
      */
     void updateTweenAction(float value, const std::string& key);
     void setFixedTouchPriority(bool fixedTouchPriority);
+    void setAccelerateEnabled(bool enabled);
 
 protected:
     /**
@@ -365,6 +366,7 @@ protected:
     CustomCommand _beforeDrawCommand;
     CustomCommand _afterDrawCommand;
     bool _isFixedTouchPriority;
+    bool _accelerateEnabled;
 };
 
 // end of GUI group
