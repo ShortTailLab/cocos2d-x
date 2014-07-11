@@ -269,12 +269,12 @@ To enable set it to a value different than 0. Disabled by default.
 
 /** Use physics integration API */
 #ifndef CC_USE_PHYSICS
-#define CC_USE_PHYSICS 1
+#define CC_USE_PHYSICS 0
 #endif
 
 /** Enable Script binding */
 #ifndef CC_ENABLE_SCRIPT_BINDING
-#define CC_ENABLE_SCRIPT_BINDING 1
+#define CC_ENABLE_SCRIPT_BINDING 0
 #endif
 
 /** @def CC_CONSTRUCTOR_ACCESS

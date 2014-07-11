@@ -38,9 +38,11 @@ THE SOFTWARE.
 extern "C"
 {
 #include "png.h"
-#include "tiffio.h"
+#if ENABLE_ALL_DECODER
 #include "etc1.h"
+#include "tiffio.h"
 #include "jpeglib.h"
+#endif
 }
 #include "s3tc.h"
 #include "atitc.h"
@@ -480,15 +482,18 @@ bool Image::initWithImageData(const unsigned char * data, ssize_t dataLen)
         case Format::PNG:
             ret = initWithPngData(unpackedData, unpackedLen);
             break;
+#if ENABLE_ALL_DECODER
         case Format::JPG:
             ret = initWithJpgData(unpackedData, unpackedLen);
             break;
         case Format::TIFF:
             ret = initWithTiffData(unpackedData, unpackedLen);
             break;
+#endif
         case Format::WEBP:
             ret = initWithWebpData(unpackedData, unpackedLen);
             break;
+#if ENABLE_ALL_DECODER
         case Format::PVR:
             ret = initWithPVRData(unpackedData, unpackedLen);
             break;
@@ -501,9 +506,11 @@ bool Image::initWithImageData(const unsigned char * data, ssize_t dataLen)
         case Format::ATITC:
             ret = initWithATITCData(unpackedData, unpackedLen);
             break;
+#endif
         default:
             {
                 // load and detect image format
+#if ENABLE_ALL_DECODER
                 tImageTGA* tgaData = tgaLoadBuffer(unpackedData, unpackedLen);
                 
                 if (tgaData != nullptr && tgaData->status == TGA_OK)
@@ -511,11 +518,14 @@ bool Image::initWithImageData(const unsigned char * data, ssize_t dataLen)
                     ret = initWithTGAData(tgaData);
                 }
                 else
+#endif
                 {
                     CCAssert(false, "unsupport image format!");
                 }
                 
+#if ENABLE_ALL_DECODER
                 free(tgaData);
+#endif
                 break;
             }
         }
@@ -541,7 +551,7 @@ bool Image::isPng(const unsigned char * data, ssize_t dataLen)
     return memcmp(PNG_SIGNATURE, data, sizeof(PNG_SIGNATURE)) == 0;
 }
 
-
+#if ENABLE_ALL_DECODER
 bool Image::isEtc(const unsigned char * data, ssize_t dataLen)
 {
     return etc1_pkm_is_valid((etc1_byte*)data) ? true : false;
@@ -598,6 +608,7 @@ bool Image::isTiff(const unsigned char * data, ssize_t dataLen)
     return (memcmp(data, TIFF_II, 2) == 0 && *(static_cast<const unsigned char*>(data) + 2) == 42 && *(static_cast<const unsigned char*>(data) + 3) == 0) ||
         (memcmp(data, TIFF_MM, 2) == 0 && *(static_cast<const unsigned char*>(data) + 2) == 0 && *(static_cast<const unsigned char*>(data) + 3) == 42);
 }
+#endif
 
 bool Image::isWebp(const unsigned char * data, ssize_t dataLen)
 {
@@ -632,6 +643,7 @@ Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
     {
         return Format::PNG;
     }
+#if ENABLE_ALL_DECODER
     else if (isJpg(data, dataLen))
     {
         return Format::JPG;
@@ -640,10 +652,12 @@ Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
     {
         return Format::TIFF;
     }
+#endif
     else if (isWebp(data, dataLen))
     {
         return Format::WEBP;
     }
+#if ENABLE_ALL_DECODER
     else if (isPvr(data, dataLen))
     {
         return Format::PVR;
@@ -660,6 +674,7 @@ Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
     {
         return Format::ATITC;
     }
+#endif
     else
     {
         return Format::UNKOWN;
@@ -681,6 +696,7 @@ bool Image::isCompressed()
     return Texture2D::getPixelFormatInfoMap().at(_renderFormat).compressed;
 }
 
+#if ENABLE_ALL_DECODER
 namespace
 {
 /*
@@ -834,6 +850,7 @@ bool Image::initWithJpgData(const unsigned char * data, ssize_t dataLen)
     };
     return bRet;
 }
+#endif
 
 bool Image::initWithPngData(const unsigned char * data, ssize_t dataLen)
 {
@@ -976,6 +993,7 @@ bool Image::initWithPngData(const unsigned char * data, ssize_t dataLen)
     return bRet;
 }
 
+#if ENABLE_ALL_DECODER
 namespace
 {
     static tmsize_t tiffReadProc(thandle_t fd, void* buf, tmsize_t size)
@@ -1838,6 +1856,7 @@ bool Image::initWithPVRData(const unsigned char * data, ssize_t dataLen)
 {
     return initWithPVRv2Data(data, dataLen) || initWithPVRv3Data(data, dataLen);
 }
+#endif
 
 bool Image::initWithWebpData(const unsigned char * data, ssize_t dataLen)
 {
@@ -1930,6 +1949,7 @@ bool Image::saveToFile(const std::string& filename, bool bIsToRGB)
             strLowerCasePath[i] = tolower(filename[i]);
         }
 
+#if ENABLE_ALL_DECODER
         if (std::string::npos != strLowerCasePath.find(".png"))
         {
             CC_BREAK_IF(!saveImageToPNG(filename, bIsToRGB));
@@ -1939,6 +1959,7 @@ bool Image::saveToFile(const std::string& filename, bool bIsToRGB)
             CC_BREAK_IF(!saveImageToJPG(filename));
         }
         else
+#endif
         {
             break;
         }
@@ -1950,6 +1971,7 @@ bool Image::saveToFile(const std::string& filename, bool bIsToRGB)
 }
 #endif
 
+#if ENABLE_ALL_DECODER
 bool Image::saveImageToPNG(const std::string& filePath, bool isToRGB)
 {
     bool bRet = false;
@@ -2172,6 +2194,7 @@ bool Image::saveImageToJPG(const std::string& filePath)
     } while (0);
     return bRet;
 }
+#endif
 
 NS_CC_END
 

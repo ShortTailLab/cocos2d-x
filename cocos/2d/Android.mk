@@ -91,7 +91,6 @@ CCTextFieldTTF.cpp \
 CCTexture2D.cpp \
 CCTextureAtlas.cpp \
 CCTextureCache.cpp \
-CCTileMapAtlas.cpp \
 CCTMXLayer.cpp \
 CCTMXObjectGroup.cpp \
 CCTMXTiledMap.cpp \
@@ -107,7 +106,6 @@ ccUTF8.cpp \
 ccUtils.cpp \
 CCVertex.cpp \
 cocos2d.cpp \
-TGAlib.cpp \
 TransformUtils.cpp \
 ZipUtils.cpp \
 platform/CCGLViewProtocol.cpp \
@@ -124,7 +122,6 @@ renderer/CCBatchCommand.cpp \
 renderer/CCRenderCommand.cpp \
 renderer/CCRenderer.cpp \
 renderer/CCRenderMaterial.cpp \
-../base/atitc.cpp \
 ../base/CCAffineTransform.cpp \
 ../base/CCAutoreleasePool.cpp \
 ../base/CCConsole.cpp \
@@ -134,8 +131,6 @@ renderer/CCRenderMaterial.cpp \
 ../base/CCNS.cpp \
 ../base/CCRef.cpp \
 ../base/CCValue.cpp \
-../base/etc1.cpp \
-../base/s3tc.cpp \
 ../deprecated/CCArray.cpp \
 ../deprecated/CCSet.cpp \
 ../deprecated/CCString.cpp \
@@ -212,7 +207,6 @@ LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -landroid
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos_freetype2_static
-LOCAL_WHOLE_STATIC_LIBRARIES += chipmunk_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos2dxandroid_static
 
 # define the macro to compile through support/zip_support/ioapi.c
@@ -224,5 +218,4 @@ LOCAL_EXPORT_CPPFLAGS := -Wno-literal-suffix -Wno-deprecated-declarations
 include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,freetype2/prebuilt/android)
-$(call import-module,chipmunk)
 $(call import-module,2d/platform/android)
