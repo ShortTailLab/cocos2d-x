@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include <condition_variable>
 #include <queue>
 #include <string>
+#include <array>
 #include <unordered_map>
 #include <functional>
 
@@ -198,7 +199,7 @@ protected:
         Image        *image;
     } ImageInfo;
     
-    std::thread* _loadingThread;
+    std::array<std::thread*, 2> _loadingThreads;
 
     std::queue<AsyncStruct*>* _asyncStructQueue;
     std::deque<ImageInfo*>* _imageInfoQueue;

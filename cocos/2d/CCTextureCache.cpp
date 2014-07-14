@@ -57,8 +57,7 @@ TextureCache * TextureCache::getInstance()
 }
 
 TextureCache::TextureCache()
-: _loadingThread(nullptr)
-, _asyncStructQueue(nullptr)
+: _asyncStructQueue(nullptr)
 , _imageInfoQueue(nullptr)
 , _needQuit(false)
 , _asyncRefCount(0)
@@ -71,8 +70,9 @@ TextureCache::~TextureCache()
 
     for( auto it=_textures.begin(); it!=_textures.end(); ++it)
         (it->second)->release();
-
-    CC_SAFE_DELETE(_loadingThread);
+    
+    for (auto tp : _loadingThreads)
+        delete tp;
 }
 
 void TextureCache::destroyInstance()
@@ -116,7 +116,8 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
         _imageInfoQueue   = new deque<ImageInfo*>();        
 
         // create a new thread to load images
-        _loadingThread = new std::thread(&TextureCache::loadImage, this);
+        for (size_t i=0;i<_loadingThreads.size();i++)
+            _loadingThreads[i] = new std::thread(&TextureCache::loadImage, this);
 
         _needQuit = false;
     }
@@ -222,59 +223,64 @@ void TextureCache::loadImage()
 
 void TextureCache::addImageAsyncCallBack(float dt)
 {
-    // the image is generated in loading thread
-    std::deque<ImageInfo*> *imagesQueue = _imageInfoQueue;
-
     _imageInfoMutex.lock();
-    if (imagesQueue->empty())
+    if (_imageInfoQueue->empty())
     {
         _imageInfoMutex.unlock();
     }
     else
     {
-        ImageInfo *imageInfo = imagesQueue->front();
-        imagesQueue->pop_front();
+        // the image is generated in loading thread
+        std::deque<ImageInfo*> imagesQueue;
+        _imageInfoQueue->swap(imagesQueue);
         _imageInfoMutex.unlock();
+        
+        while (!imagesQueue.empty()) {
+            ImageInfo *imageInfo = imagesQueue.front();
+            imagesQueue.pop_front();
 
-        AsyncStruct *asyncStruct = imageInfo->asyncStruct;
-        Image *image = imageInfo->image;
 
-        const std::string& filename = asyncStruct->filename;
+            AsyncStruct *asyncStruct = imageInfo->asyncStruct;
+            Image *image = imageInfo->image;
 
-        Texture2D *texture = nullptr;
-        if (image)
-        {
-            // generate texture in render thread
-            texture = new Texture2D();
+            const std::string& filename = asyncStruct->filename;
 
-            texture->initWithImage(image);
+            Texture2D *texture = nullptr;
+            if (image)
+            {
+                // generate texture in render thread
+                texture = new Texture2D();
+
+                texture->initWithImage(image);
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
-            // cache the texture file name
-            VolatileTextureMgr::addImageTexture(texture, filename);
+                // cache the texture file name
+                VolatileTextureMgr::addImageTexture(texture, filename);
 #endif
-            // cache the texture. retain it, since it is added in the map
-            _textures.insert( std::make_pair(filename, texture) );
-            texture->retain();
+                // cache the texture. retain it, since it is added in the map
+                _textures.insert( std::make_pair(filename, texture) );
+                texture->retain();
 
-            texture->autorelease();
-        }
-        else
-        {
-            auto it = _textures.find(asyncStruct->filename);
-            if(it != _textures.end())
-                texture = it->second;
+                texture->autorelease();
+            }
+            else
+            {
+                auto it = _textures.find(asyncStruct->filename);
+                if(it != _textures.end())
+                    texture = it->second;
+            }
+            
+            asyncStruct->callback(texture);
+            if(image)
+            {
+                image->release();
+            }       
+            delete asyncStruct;
+            delete imageInfo;
+
+            --_asyncRefCount;
         }
         
-        asyncStruct->callback(texture);
-        if(image)
-        {
-            image->release();
-        }       
-        delete asyncStruct;
-        delete imageInfo;
-
-        --_asyncRefCount;
         if (0 == _asyncRefCount)
         {
             Director::getInstance()->getScheduler()->unschedule(schedule_selector(TextureCache::addImageAsyncCallBack), this);
@@ -494,8 +500,12 @@ void TextureCache::waitForQuit()
 {
     // notify sub thread to quick
     _needQuit = true;
-    _sleepCondition.notify_one();
-    if (_loadingThread) _loadingThread->join();
+    _sleepCondition.notify_all();
+    for (auto tp : _loadingThreads) {
+        if (tp) {
+            tp->join();
+        }
+    }
 }
 
 std::string TextureCache::getCachedTextureInfo() const
