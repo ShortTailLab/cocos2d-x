@@ -129,11 +129,13 @@ bool ComRender::serialize(void* r)
 				_render = Sprite::create(filePath.c_str());
                 _render->retain();
 			}
+#if 0
 			else if(strcmp(className, "CCTMXTiledMap") == 0 && filePath.find(".tmx") != std::string::npos)
 			{
 				_render = TMXTiledMap::create(filePath.c_str());
                 _render->retain();
 			}
+#endif
 			else if(strcmp(className, "CCParticleSystemQuad") == 0 && filePath.find(".plist") != std::string::npos)
 			{
 				_render = ParticleSystemQuad::create(filePath.c_str());
