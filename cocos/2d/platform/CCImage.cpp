@@ -72,6 +72,7 @@ NS_CC_BEGIN
 //////////////////////////////////////////////////////////////////////////
 //struct and data for pvr structure
 
+#if ENABLE_ALL_DECODER
 namespace
 {
     static const int PVR_TEXTURE_FLAG_TYPE_MASK = 0xff;
@@ -347,6 +348,7 @@ namespace
     };
 }
 //atittc struct end
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -624,6 +626,7 @@ bool Image::isWebp(const unsigned char * data, ssize_t dataLen)
         && memcmp(static_cast<const unsigned char*>(data) + 8, WEBP_WEBP, 4) == 0;
 }
 
+#if ENABLE_ALL_DECODER
 bool Image::isPvr(const unsigned char * data, ssize_t dataLen)
 {
     if (static_cast<size_t>(dataLen) < sizeof(PVRv2TexHeader) || static_cast<size_t>(dataLen) < sizeof(PVRv3TexHeader))
@@ -636,6 +639,7 @@ bool Image::isPvr(const unsigned char * data, ssize_t dataLen)
     
     return memcmp(&headerv2->pvrTag, gPVRTexIdentifier, strlen(gPVRTexIdentifier)) == 0 || CC_SWAP_INT32_BIG_TO_HOST(headerv3->version) == 0x50565203;
 }
+#endif
 
 Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
 {
