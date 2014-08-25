@@ -94,7 +94,7 @@ Ref* ObjectFactory::createObject(const std::string &name)
 	Ref *o = nullptr;
 	do 
 	{
-		const TInfo t = _typeMap[name];
+		const TInfo& t = _typeMap[name];
 		CC_BREAK_IF(t._fun == nullptr);
 		o = t._fun();
 	} while (0);
@@ -132,7 +132,7 @@ Component* ObjectFactory::createComponent(const std::string &name)
 	Ref *o = NULL;
 	do 
 	{
-		const TInfo t = _typeMap[comName];
+		const TInfo& t = _typeMap[comName];
 		CC_BREAK_IF(t._fun == NULL);
 		o = t._fun();
 	} while (0);
@@ -172,7 +172,7 @@ ui::Widget* ObjectFactory::createGUI(std::string name)
     
     do
     {
-        const TInfo t = _typeMap[name];
+        const TInfo& t = _typeMap[name];
         CC_BREAK_IF(t._fun == NULL);
         object = t._fun();
     } while (0);
@@ -186,7 +186,7 @@ WidgetReaderProtocol* ObjectFactory::createWidgetReaderProtocol(std::string name
     
     do
     {
-        const TInfo t = _typeMap[name];
+        const TInfo& t = _typeMap[name];
         CC_BREAK_IF(t._fun == NULL);
         object = t._fun();
     } while (0);

@@ -76,6 +76,9 @@ protected:
     typedef std::map<std::string, Ref*> ParseObjectMap;
     ParseObjectMap _mapObject;
     
+private:
+    std::map<std::string, void*> fileJsonDictCache;
+    
 public:
     ParseCallBackMap getParseCallBackMap() { return _mapParseSelector; };
     ParseObjectMap getParseObjectMap() { return _mapObject; };
