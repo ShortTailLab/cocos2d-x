@@ -180,18 +180,27 @@ void GUIReader::registerTypeAndCallBack(const std::string& classType,
 Widget* GUIReader::widgetFromJsonFile(const char *fileName)
 {
 	std::string jsonpath;
-	rapidjson::Document jsonDict;
+	rapidjson::Document* pJsonDict;
     jsonpath = CCFileUtils::getInstance()->fullPathForFilename(fileName);
     size_t pos = jsonpath.find_last_of('/');
 	m_strFilePath = jsonpath.substr(0,pos+1);
-    std::string contentStr = FileUtils::getInstance()->getStringFromFile(jsonpath);
-	jsonDict.Parse<0>(contentStr.c_str());
-    if (jsonDict.HasParseError())
+    
+    auto cacheIter = fileJsonDictCache.find(jsonpath);
+    if (cacheIter == fileJsonDictCache.end()) {
+        std::string fileContent = CCFileUtils::getInstance()->getStringFromFile(jsonpath);
+        pJsonDict = new rapidjson::Document();
+        pJsonDict->Parse<0>(fileContent.c_str());
+        
+        cacheIter = fileJsonDictCache.insert(std::make_pair(jsonpath, pJsonDict)).first;
+    }
+    
+    pJsonDict = reinterpret_cast<rapidjson::Document*>(cacheIter->second);
+    if (pJsonDict->HasParseError())
     {
-        CCLOG("GetParseError %s\n",jsonDict.GetParseError());
+        CCLOG("GetParseError %s\n", pJsonDict->GetParseError());
     }
     Widget* widget = nullptr;
-    const char* fileVersion = DICTOOL->getStringValue_json(jsonDict, "version");
+    const char* fileVersion = DICTOOL->getStringValue_json(*pJsonDict, "version");
     WidgetPropertiesReader * pReader = nullptr;
     if (fileVersion)
     {
@@ -199,18 +208,18 @@ Widget* GUIReader::widgetFromJsonFile(const char *fileName)
         if (versionInteger < 250)
         {
             pReader = new WidgetPropertiesReader0250();
-            widget = pReader->createWidget(jsonDict, m_strFilePath.c_str(), fileName);
+            widget = pReader->createWidget(*pJsonDict, m_strFilePath.c_str(), fileName);
         }
         else
         {
             pReader = new WidgetPropertiesReader0300();
-            widget = pReader->createWidget(jsonDict, m_strFilePath.c_str(), fileName);
+            widget = pReader->createWidget(*pJsonDict, m_strFilePath.c_str(), fileName);
         }
     }
     else
     {
         pReader = new WidgetPropertiesReader0250();
-        widget = pReader->createWidget(jsonDict, m_strFilePath.c_str(), fileName);
+        widget = pReader->createWidget(*pJsonDict, m_strFilePath.c_str(), fileName);
     }
     
     CC_SAFE_DELETE(pReader);
