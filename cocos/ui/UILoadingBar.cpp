@@ -176,7 +176,13 @@ int LoadingBar::getDirection()
         }
         break;
     }
-//    barRendererScaleChangedWithSize();
+    
+    // LZY: uncommented following line to make sure _totalSize is updated
+    // during loadingbar creation.
+    // otherwise always have to schedule a next-frame
+    // update function to set initial loading bar progress
+    barRendererScaleChangedWithSize();
+    
     updateContentSizeWithTextureSize(_barRendererTextureSize);
     _barRendererAdaptDirty = true;
 }
