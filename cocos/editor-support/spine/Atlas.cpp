@@ -206,6 +206,11 @@ spAtlas* spAtlas_readAtlas (const char* begin, int length, const char* dir) {
 				self->pages = page;
 			lastPage = page;
 
+            // bug fix, spine 2+ adds width & height
+            if (!readTuple(end, tuple)) return abortAtlas(self);
+            page->width = (spAtlasFilter)indexOf(textureFilterNames, 7, tuple);
+            page->height = (spAtlasFilter)indexOf(textureFilterNames, 7, tuple + 1);
+            
 			if (!readValue(end, &str)) return abortAtlas(self);
 			page->format = (spAtlasFormat)indexOf(formatNames, 7, &str);
 
