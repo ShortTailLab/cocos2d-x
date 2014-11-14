@@ -175,7 +175,14 @@ void Skeleton::onDraw(const kmMat4 &transform, bool transformUpdated)
 			textureAtlas->removeAllQuads();
 		}
 		textureAtlas = regionTextureAtlas;
-        setFittedBlendingFunc(textureAtlas);
+        
+        //HACK to get around additive blending issue)
+        if(additive)
+        {
+            GL::blendFunc(GL_SRC_ALPHA, GL_ONE);
+        }
+        else
+            setFittedBlendingFunc(textureAtlas);
 
 		ssize_t quadCount = textureAtlas->getTotalQuads();
 		if (textureAtlas->getCapacity() == quadCount) {
