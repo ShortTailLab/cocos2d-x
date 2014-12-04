@@ -233,6 +233,7 @@ bool Sprite::initWithTexture(Texture2D *texture, const Rect& rect, bool rotated)
         _opacityModifyRGB = true;
         
         _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
+        _forceBlendMode = false;
         
         _flippedX = _flippedY = false;
         
@@ -1019,12 +1020,14 @@ void Sprite::updateBlendFunc(void)
     // it is possible to have an untextured sprite
     if (! _texture || ! _texture->hasPremultipliedAlpha())
     {
-        _blendFunc = BlendFunc::ALPHA_NON_PREMULTIPLIED;
+        if(!_forceBlendMode)
+            _blendFunc = BlendFunc::ALPHA_NON_PREMULTIPLIED;
         setOpacityModifyRGB(false);
     }
     else
     {
-        _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
+        if(_forceBlendMode)
+            _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
         setOpacityModifyRGB(true);
     }
 }

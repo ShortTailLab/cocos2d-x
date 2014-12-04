@@ -385,7 +385,10 @@ public:
     *In lua: local setBlendFunc(local src, local dst)
     *@endcode
     */
-    inline void setBlendFunc(const BlendFunc &blendFunc) override { _blendFunc = blendFunc; }
+    inline void setBlendFunc(const BlendFunc &blendFunc) override {
+        _forceBlendMode = true;
+        _blendFunc = blendFunc;
+    }
     /**
     * @js  NA
     * @lua NA
@@ -566,6 +569,7 @@ protected:
 
     // opacity and RGB protocol
     bool _opacityModifyRGB;
+    bool _forceBlendMode;
 
     // image is flipped
     bool _flippedX;                         /// Whether the sprite is flipped horizontally or not
