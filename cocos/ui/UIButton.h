@@ -205,6 +205,10 @@ public:
      */
     float getZoomScale()const;
     
+    const std::string& normalImage() const { return _normalFileName; }
+    const std::string& selectedImage() const { return _clickedFileName; }
+    const std::string& disabledImage() const { return _disabledFileName; }
+    
 CC_CONSTRUCTOR_ACCESS:
     virtual bool init() override;
     virtual bool init(const std::string& normalImage,
