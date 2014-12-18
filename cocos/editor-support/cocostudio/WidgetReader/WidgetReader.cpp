@@ -7,7 +7,7 @@
 #include "../ActionTimeline/CCActionTimeline.h"
 #include "cocostudio/CSParseBinary_generated.h"
 
-#include "tinyxml2/tinyxml2.h"
+#include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"
 
 USING_NS_CC;
@@ -633,8 +633,10 @@ namespace cocostudio
         bool ignoreSize = options->ignoreSize();
         widget->ignoreContentAdaptWithSize(ignoreSize);
         
+        /*
         Size contentSize(options->size()->width(), options->size()->height());
         widget->setContentSize(contentSize);
+         */
         
         int tag = options->tag();
         widget->setTag(tag);

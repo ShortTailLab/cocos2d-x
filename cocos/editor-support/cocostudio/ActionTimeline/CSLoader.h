@@ -32,7 +32,7 @@
 
 namespace flatbuffers
 {
-    struct FlatBufferBuilder;
+    class FlatBufferBuilder;
     
     struct NodeTree;
     
@@ -97,6 +97,9 @@ public:
     
     void registReaderObject(const std::string& className,
                             ObjectFactory::Instance ins);
+    
+    cocos2d::Node* createNodeWithFlatBuffersForSimulator(const std::string& filename);
+    cocos2d::Node* nodeWithFlatBuffersForSimulator(const flatbuffers::NodeTree* nodetree);
     
 protected:
     
