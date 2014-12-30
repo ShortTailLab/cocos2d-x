@@ -272,13 +272,13 @@ To enable set it to a value different than 0. Disabled by default.
 /** Support JPEG or not. If your application don't use jpeg format picture, you can undefine this macro to save package size.
  */
 #ifndef CC_USE_JPEG
-#define CC_USE_JPEG  1
+#define CC_USE_JPEG  0
 #endif // CC_USE_JPEG
 
 /** Support TIFF or not. If your application don't use TIFF format picture, you can undefine this macro to save package size.
  */
 #ifndef CC_USE_TIFF
-#define CC_USE_TIFF  1
+#define CC_USE_TIFF  0
 #endif // CC_USE_TIFF
 
 /** Support webp or not. If your application don't use webp format picture, you can undefine this macro to save package size.
@@ -289,7 +289,7 @@ To enable set it to a value different than 0. Disabled by default.
 
 /** Enable Script binding */
 #ifndef CC_ENABLE_SCRIPT_BINDING
-#define CC_ENABLE_SCRIPT_BINDING 1
+#define CC_ENABLE_SCRIPT_BINDING 0
 #endif
 
 /** @def CC_CONSTRUCTOR_ACCESS
